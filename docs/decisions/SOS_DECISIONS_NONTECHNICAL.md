@@ -188,7 +188,15 @@ When students share study decks or summary notes in the Community:
 ## 10. Guest-First and Local-First: True Data Sovereignty
 
 ### Guest-First (No Mandatory Sign-In)
-When you launch SOS for the first time, you are not asked for an email, password, credit card, or social login. You simply click **Continue as Guest**, and your workspace is ready immediately.
+When you launch SOS for the first time, you are not asked for an email, password, credit card, or social login. You simply enter as a Guest, and your workspace is ready immediately. 
+
+Even if you encounter the Login or Register screens (verified across the 5 Google Stitch Auth screens: Login, Register, Forgot Password, Verify Code, Reset Password), both screens feature an explicit, low-profile ghost button:
+```html
+<a href="../primary-shell/PrimaryAppShell.html" class="mt-[14px] text-[12.5px] text-[#71717A] hover:text-[#E4E4E7] font-medium text-center transition-colors">
+  Guest Mode →
+</a>
+```
+Clicking `Guest Mode →` bypasses authentication entirely and instantly opens the primary app shell. If you later choose to create an account from your Profile in Phase 08, SOS performs an atomic, non-destructive migration that preserves 100% of your existing local notes, decks, and settings.
 
 ### Local-First (Your Data Lives on Your Device)
 - All your notes, folders, highlights, flashcards, and uploaded files are saved in your computer's local database (Dexie / IndexedDB and your local filesystem).

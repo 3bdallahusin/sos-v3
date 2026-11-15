@@ -21,10 +21,11 @@ SOS is **not** another conventional Learning Management System (LMS), basic note
 - Receive real-time, context-aware AI assistance through a persistent assistant panel that understands the student's exact learning state.
 
 ### 1.2 Core Product Principles
-1. **Zero-Friction Access (Guest-First):** The application is 100% usable immediately upon launch. No mandatory registration, authentication wall, or forced cloud onboarding blocks learning.
-2. **Deep Focus & Context Preservation:** Eliminates application-switching friction. All primary study modes exist as interconnected tools within a single multi-tab workspace.
-3. **Direct Slide Ingestion (No Manual Conversion):** Students can upload native PowerPoint (`.pptx`) decks and PDF slides directly into Slides. SOS does not force users to manually convert files to PDF. The original uploaded file is strictly preserved without destructive modification as an SOS architectural responsibility.
-4. **Unified & Document-Synchronized Notes:** The spatial canvas is not an isolated whiteboard or screen-fixed overlay; it is document-synchronized and follows the document's coordinate environment and movement.
+1. **Zero-Friction Access (Guest-First):** The application is 100% usable immediately upon launch. No mandatory registration, authentication wall, or forced cloud onboarding blocks learning. Users land directly in the fully-featured local workspace with local IndexedDB/Dexie storage. Both Login and Register screens feature a prominent, low-profile `Guest Mode →` escape hatch (`text-[12.5px] text-[#71717A] hover:text-[#E4E4E7]`) that immediately opens the primary app shell without requiring credentials.
+2. **Optional Cloud Authentication Suite:** Authentication is strictly optional, housed under Profile / Settings, and comprises five verified screens: (1) Login with `Guest Mode →`, (2) Register with `Guest Mode →`, (3) Forgot Password, (4) Verify Code (6-digit OTP), and (5) Reset Password. Existing local guest work is seamlessly upgraded to cloud sync upon subsequent authentication without data loss.
+3. **Deep Focus & Context Preservation:** Eliminates application-switching friction. All primary study modes exist as interconnected tools within a single multi-tab workspace.
+4. **Direct Slide Ingestion (No Manual Conversion):** Students can upload native PowerPoint (`.pptx`) decks and PDF slides directly into Slides. SOS does not force users to manually convert files to PDF. The original uploaded file is strictly preserved without destructive modification as an SOS architectural responsibility.
+5. **Unified & Document-Synchronized Notes:** The spatial canvas is not an isolated whiteboard or screen-fixed overlay; it is document-synchronized and follows the document's coordinate environment and movement.
 5. **Local Data Ownership (Local-First):** Core learning content remains locally persisted by default. The existence of a backend does not mean user data is automatically transmitted or cloud-stored without explicit intent.
 6. **Active Retention Over Passive Consumption:** Ingested content can be directly converted into flashcards, practice questions, or spatial margin summaries.
 
@@ -234,6 +235,7 @@ Library is the central system for organizing academic materials:
 - Spaced repetition flashcards powered by FSRS (`ts-fsrs`) using recommended defaults and unified Quiz | Exam assessment engine.
 - Persistent AI assistant panel integrated with Google Gemini via server-side Fastify API with dynamic model selection.
 - Full local persistence via Dexie/IndexedDB and local filesystem with zero sign-in required.
+- Optional 5-Screen Authentication Suite (Login, Register, Forgot Password, Verify Code, Reset Password) accessible from Profile/Settings, featuring a low-profile `Guest Mode →` escape hatch and non-destructive guest-to-cloud migration.
 - Local `.sos` / ZIP export and restore for data durability.
 
 ### Deferred to Post-v1.0 Releases

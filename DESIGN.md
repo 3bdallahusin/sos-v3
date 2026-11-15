@@ -237,12 +237,35 @@ Used in **Library** and **Learning — Notes (Document Layer)**:
 
 ---
 
-### 6.3 Authentication Split Container
-Used across auth screens (accessible from Profile / Settings):
-- Floating centered modal container: `max-w-[980px]`, `rounded-28px`, border `#27272A`.
-- 50/50 split:
-  - Left: Minimalist black-and-white architectural/scholarly photography with obsidian readability gradient overlay, S [book] S logo mark, headline, and 3 value-proposition bullet points.
-  - Right: Clean sign-in / registration form card with segmented switcher, input fields, social auth (Google, Apple, GitHub), and submit buttons.
+### 6.3 Authentication Split Container & Five-Screen Auth Suite
+Used across the optional cloud authentication screens (accessible from Profile / Settings or unauthenticated entry points), verified directly against the authoritative Google Stitch screens `node_10504417724291484953` (Login), `node_4405147205431725673` (Register), `node_4893918853975949143` (Forgot Password), `node_11506060336308701706` (Verify Code), and `node_2644827725651608371` (Reset Password):
+
+- **Floating Centered Modal Container:** `max-w-[980px]`, `rounded-28px`, border `1px solid #27272A`, `bg-[#0E0E11]/95`, backdrop-blur `20px`.
+- **50/50 Desktop Split Layout:**
+  - **Left Showcase Panel:** Minimalist black-and-white architectural/scholarly photography with obsidian readability gradient overlay (`from-black/80 via-black/40 to-transparent`), S [book] S logo mark, headline (*"The Scholar's Operating System"*), and 3 value-proposition bullet points (Local-First Resilience, Document-Synchronized Workspace, Scholarly AI Synthesis).
+  - **Right Form Panel:** Clean sign-in / registration form card with segmented mode switcher (`Login` / `Register`), input fields (floating labels, `#18181B` field backgrounds, `#27272A` borders), social auth row (Google, Apple, GitHub), and high-contrast submit button (`#F4F4F5` on `#18181B`).
+
+#### Authoritative "Guest Mode →" Option Markup & Behavior
+Direct inspection of Google Stitch screens `node_10504417724291484953` (Login) and `node_4405147205431725673` (Register) confirms the exact low-profile ghost action that guarantees zero-friction, zero-account access:
+
+```html
+<!-- Low-Profile Minimal Ghost Option: Guest Mode -->
+<a href="../primary-shell/PrimaryAppShell.html" 
+   class="mt-[14px] text-[12.5px] text-[#71717A] hover:text-[#E4E4E7] font-medium text-center transition-colors">
+  Guest Mode →
+</a>
+```
+
+- **Placement:** Centered immediately beneath the third-party social auth buttons (Google, Apple, GitHub).
+- **Styling:** Subdued text-zinc-500 (`#71717A`), `12.5px` font size, `500` medium weight, transitioning to crisp zinc-200 (`#E4E4E7`) on hover, without a heavy button border or distracting background.
+- **Interaction:** One-click bypass directly into the Primary App Shell (`/home` or last active tool). All user data is persisted locally in IndexedDB/Dexie under the anonymous Guest profile, with subsequent seamless upgrade to cloud sync when the user registers or logs in from Profile/Settings.
+
+#### The Five Auth Screens
+1. **Auth — Login (`node_10504417724291484953`):** Split card with email/password inputs, "Remember me" checkbox, "Forgot password?" link, primary "Sign In" button, social auth icons, and the centered `Guest Mode →` escape hatch.
+2. **Auth — Register (`node_4405147205431725673`):** Split card with full name, email, password, confirm password, terms agreement, primary "Create Account" button, social auth icons, and the centered `Guest Mode →` escape hatch.
+3. **Auth — Forgot Password (`node_4893918853975949143`):** Password recovery request card with registered email input and "Send Reset Code" button, returning to Login on completion or cancellation.
+4. **Auth — Verify Code (`node_11506060336308701706`):** 6-digit OTP code verification card with individual digit input blocks, countdown resend timer (`Resend in 00:54`), and "Verify Code" confirmation.
+5. **Auth — Reset Password (`node_2644827725651608371`):** New password and confirm password inputs with real-time password complexity checklist (8+ chars, number, uppercase, special character) and "Update Password" action.
 
 ---
 

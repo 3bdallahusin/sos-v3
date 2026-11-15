@@ -302,8 +302,8 @@ The backend begins in **Phase 01** as an integral part of the architecture:
   2. Guest/device service identity registration without forced accounts.
   3. Server-side custody of AI provider credentials (Gemini API keys).
   4. AI request proxying, context transmission, SSE streaming, and quota enforcement.
-  5. PostgreSQL 18.7 database migrations and health monitoring.
-  6. Optional cloud accounts and future synchronization foundations.
+  5. PostgreSQL 18.x (local environment verified with PostgreSQL 18.6) database migrations and health monitoring.
+  6. Optional cloud accounts and future synchronization foundations via the 5-screen Auth Suite (Login, Register, Forgot Password, Verify Code, Reset Password) with zero-friction `Guest Mode →` bypass.
 
 ```mermaid
 flowchart LR
@@ -313,10 +313,11 @@ flowchart LR
         Plugin_AI["AI Gateway & Streaming Plugin"]
         Plugin_Community["Community & Forking Plugin"]
         Plugin_Sync["Sync & Account Migration Plugin"]
+        Plugin_Auth["Optional Auth Suite (5 Screens)"]
     end
 
     subgraph DataStorage ["Server Data Store"]
-        Postgres["PostgreSQL 18.7"]
+        Postgres["PostgreSQL 18.x (Verified 18.6)"]
         Drizzle["Drizzle ORM & Schema Engine"]
     end
 
@@ -415,7 +416,7 @@ When a user forks a resource from the Community:
 | ADR ID | Decision Title | Status | Summary & Governing Architectural Rule |
 | :--- | :--- | :--- | :--- |
 | **ADR-001** | Monorepo & Framework | `APPROVED` | pnpm workspace with React 19 + TypeScript 5.8 + Vite 8 in modular structure (`apps/web`, `apps/desktop`, `apps/api`, `packages/*`). |
-| **ADR-002** | Guest-First Access Policy | `APPROVED` | Full functionality in Guest Mode via local Dexie/OPFS; optional cloud accounts with atomic non-destructive migration. |
+| **ADR-002** | Guest-First Access Policy | `APPROVED` | Full functionality in Guest Mode via local Dexie/OPFS; low-profile `Guest Mode →` escape hatch on Login/Register; optional 5-screen Auth Suite in Phase 08 with atomic non-destructive migration. |
 | **ADR-003** | Hybrid Web + Desktop Strategy | `APPROVED` | Universal Web SPA core; Desktop uses Electron 45 with `WebContentsView` for embedded browsing and native filesystem. |
 | **ADR-004** | Tiered Tab Lifecycle | `APPROVED` | Three-tier lifecycle: Active (1 in DOM), Warm (5 in RAM cache), Cold (>5 flushed to local storage) to prevent memory crashes. |
 | **ADR-005** | Document-Synchronized Canvas | `APPROVED` | Notes canvas translates in lockstep with document scrolling; annotations use normalized document coordinates ($$\text{DocX}, \text{DocY}$$). No forced fixed-width constraint. |

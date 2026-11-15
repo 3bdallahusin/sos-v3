@@ -320,30 +320,47 @@ flowchart TD
 
 ---
 
-### Phase 08: Profile
+### Phase 08: Profile & Optional Authentication Suite
 
-- **Module Scope:** Student academic identity, study statistics, optional cloud accounts, non-destructive data migration.
+- **Module Scope:** Student academic identity, cumulative study statistics, optional cloud authentication suite (5 screens), non-destructive recoverable guest-to-cloud data migration.
 - **Detailed Work Streams:**
-  - Implement **Profile** view:
-    - Student profile card: display name, avatar, academic institution, field of study.
-    - Academic statistics summary: total study hours, total cards reviewed, assessments completed.
-  - **Optional Authentication Integration (ADR-002):**
-    - Implement optional login options (Passkeys/WebAuthn, OAuth, or passwordless magic link) via Fastify backend.
-  - **Non-Destructive Guest-to-Account Migration:**
-    - Migration routine: package local Guest Dexie tables, OPFS/filesystem binaries, and configuration.
-    - Create a pre-migration local snapshot to ensure full recoverability in case of network interruption.
-    - Associate data with the newly created server user profile in PostgreSQL 18.x via Fastify.
-    - Local database remains authoritative; zero data is deleted or orphaned during linking.
+  - **Subphase 8.1: Student Academic Profile:**
+    - Profile identity card: display name, academic institution, field of study, custom avatar selector.
+    - Academic statistics aggregation: cumulative study hours (from Tracking), total flashcards reviewed (from FSRS logs), assessments completed (from Quiz | Exam logs).
+    - Study streak and milestone badge display.
+  - **Subphase 8.2: Optional Five-Screen Cloud Authentication Suite (ADR-002, Verified Stitch Designs):**
+    - Implement the five verified cloud authentication screens matching the authoritative Google Stitch designs:
+      1. **Auth — Login (`node_10504417724291484953`):** 50/50 split modal (`max-w-[980px]`, `rounded-28px`, border `#27272A`), left scholarly showcase, right login card with email, password, "Remember me", social auth (Google, Apple, GitHub), and the centered low-profile ghost escape hatch:
+         ```html
+         <a href="../primary-shell/PrimaryAppShell.html" class="mt-[14px] text-[12.5px] text-[#71717A] hover:text-[#E4E4E7] font-medium text-center transition-colors">
+           Guest Mode →
+         </a>
+         ```
+      2. **Auth — Register (`node_4405147205431725673`):** 50/50 split modal with registration card (name, email, password, confirm password, terms toggle, social auth row), and identical low-profile `Guest Mode →` button beneath social auth.
+      3. **Auth — Forgot Password (`node_4893918853975949143`):** Password reset request card with registered email input and "Send Reset Code" button.
+      4. **Auth — Verify Code (`node_11506060336308701706`):** 6-digit OTP verification card with separate auto-advancing digit inputs and 60-second resend countdown timer.
+      5. **Auth — Reset Password (`node_2644827725651608371`):** Password reset card with real-time requirement indicators (length, casing, digits, special characters) and confirmation input.
+    - Cloud auth backend support via Fastify 5 endpoints (`/api/v1/auth/login`, `/api/v1/auth/register`, `/api/v1/auth/forgot-password`, `/api/v1/auth/verify-code`, `/api/v1/auth/reset-password`) using PostgreSQL 18.x and Drizzle ORM.
+  - **Subphase 8.3: Non-Destructive Guest-to-Account Migration:**
+    - Migration routine: package local Guest Dexie tables, OPFS/filesystem binaries, and configuration into an atomic migration payload.
+    - Create a pre-migration local snapshot to ensure full recoverability in case of network interruption or server rejection.
+    - Associate existing guest data with the newly created server user profile in PostgreSQL 18.x via Fastify.
+    - Local Dexie database remains authoritative; zero data is deleted, overwritten, or orphaned during account linking.
 - **Expected User-Facing Result:**
-  - Students can maintain their academic profile and track cumulative study volume.
-  - Guests can optionally register an account at any time to enable cloud sync, with full assurance that existing local notes, decks, and settings are preserved.
+  - Students can maintain their academic identity and track cumulative study volume.
+  - Users can freely access the entire operating system in Guest Mode without ever encountering a forced account gate.
+  - When accessing Login or Register, users can immediately bypass account entry with a single click on `Guest Mode →`.
+  - When a guest decides to register or sign in, all previously created local notes, decks, tracking sessions, and settings seamlessly migrate into the new cloud account with zero data loss.
 - **Acceptance Criteria:**
   - [ ] Profile accurately reflects cumulative study statistics aggregated from local logs.
   - [ ] Account creation is strictly optional; guest experience remains unhindered.
-  - [ ] Creating an account executes a non-destructive migration verified by data integrity checks.
+  - [ ] Both Login and Register screens display the centered `Guest Mode →` button, which immediately transitions to the primary app shell.
+  - [ ] All 5 Auth screens conform to Stitch visual specifications (50/50 split, `#0E0E11` surfaces, `#27272A` borders, `#71717A` ghost actions).
+  - [ ] Creating an account executes an atomic non-destructive migration verified by data integrity checks.
   - [ ] In the event of network disruption during migration, local data remains intact and recovery is automatic.
 - **Testing Requirements:**
-  - Unit tests verifying study statistics aggregation.
+  - Unit tests verifying study statistics aggregation and password complexity validation.
+  - End-to-end Playwright tests verifying the `Guest Mode →` click-through from both Login and Register screens.
   - Integration tests simulating non-destructive Guest-to-account migration with simulated network failure.
 
 ---
