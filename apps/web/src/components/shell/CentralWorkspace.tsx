@@ -4,9 +4,7 @@ import {
   Search,
   Send,
   Bell,
-  Maximize2,
-  PanelRightClose,
-  PanelRightOpen
+  Maximize2
 } from 'lucide-react';
 import { useShellStore } from '../../stores/shell-store.js';
 
@@ -108,25 +106,6 @@ export const CentralWorkspace: React.FC<CentralWorkspaceProps> = ({ children }) 
             <span className="w-2 h-2 rounded-full bg-[#F97316] animate-pulse" />
             <span className="font-mono text-[#F4F4F5] tabular-nums text-xs">24:18</span>
           </div>
-
-          {/* 6. AI Panel Drawer Toggle (for quick header access) */}
-          <button
-            type="button"
-            onClick={toggleAiPanel}
-            aria-label={aiPanelOpen ? 'Toggle AI panel' : 'Expand AI panel'}
-            title={aiPanelOpen ? 'Toggle AI panel (⌘J)' : 'Expand AI panel (⌘J)'}
-            className={`w-8 h-8 rounded-[10px] flex items-center justify-center transition-colors border ${
-              aiPanelOpen
-                ? 'bg-[#18181B] text-[#F4F4F5] border-[#27272A]'
-                : 'text-[#A1A1AA] hover:text-[#F4F4F5] hover:bg-white/5 border-transparent'
-            }`}
-          >
-            {aiPanelOpen ? (
-              <PanelRightClose className="w-4 h-4" />
-            ) : (
-              <PanelRightOpen className="w-4 h-4" />
-            )}
-          </button>
         </div>
       </header>
 

@@ -104,14 +104,13 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
     const aiPanel = page.locator('[data-testid="right-ai-panel"]');
     await expect(aiPanel).toBeVisible();
 
-    // Click collapse button in header
+    // Click collapse button in AI panel header
     const toggleButton = page.locator('button[aria-label="Collapse AI panel"]');
     await toggleButton.click();
     await expect(aiPanel).toBeHidden();
 
-    // Re-open with toggle button in global header
-    const openButton = page.locator('button[aria-label="Expand AI panel"]');
-    await openButton.click();
+    // Re-open via keyboard shortcut (Ctrl+J / ⌘J)
+    await page.keyboard.press('Control+j');
     await expect(aiPanel).toBeVisible();
   });
 

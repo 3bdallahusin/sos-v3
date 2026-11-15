@@ -7,8 +7,7 @@ import {
   Maximize2,
   ChevronDown,
   Paperclip,
-  ArrowUp,
-  Sparkles
+  ArrowUp
 } from 'lucide-react';
 import { useShellStore } from '../../stores/shell-store.js';
 
@@ -40,7 +39,7 @@ export const RightAiPanel: React.FC = () => {
         {/* Left: Tab Pill with Close & Add Tab */}
         <div className="flex items-center gap-1">
           <div className="h-7 px-2.5 rounded-[10px] bg-[#141417] text-[#F4F4F5] text-xs font-medium flex items-center gap-1.5 border border-[#27272A] shadow-sm">
-            <Sparkles className="w-3 h-3 text-[#F4F4F5]" />
+            <MessageSquare className="w-3 h-3 text-[#F4F4F5]" />
             <span>AI Assistant</span>
             <button
               type="button"
@@ -96,7 +95,7 @@ export const RightAiPanel: React.FC = () => {
       <div className="flex-1 py-4 px-3.5 flex flex-col gap-3 text-xs overflow-y-auto custom-scrollbar">
         <div className="p-3.5 rounded-[18px] bg-[#141417] border border-[#27272A] text-[#A1A1AA] leading-relaxed flex flex-col gap-2 shadow-sm">
           <div className="flex items-center gap-1.5 font-semibold text-[#F4F4F5]">
-            <Sparkles className="w-3.5 h-3.5 text-[#F4F4F5]" />
+            <MessageSquare className="w-3.5 h-3.5 text-[#F4F4F5]" />
             <span>Daily Study Briefing</span>
           </div>
           <p>
