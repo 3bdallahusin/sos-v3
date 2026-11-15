@@ -18,7 +18,9 @@ export const RightAiPanel: React.FC = () => {
     toggleAiPanel,
     isAiPanelFullscreen,
     toggleAiPanelFullscreen,
-    workspace
+    workspace,
+    rightAiPanelWidth,
+    isDragging
   } = useShellStore();
   const [contextPillVisible, setContextPillVisible] = useState(true);
   const [inputValue, setInputValue] = useState('');
@@ -36,9 +38,16 @@ export const RightAiPanel: React.FC = () => {
       id="ai-panel"
       aria-label="AI Assistant Panel"
       data-testid="right-ai-panel"
+      style={{
+        width: isAiPanelFullscreen ? undefined : `${rightAiPanelWidth}px`
+      }}
       className={`${
-        isAiPanelFullscreen ? 'flex-1 min-w-0' : 'w-[340px] shrink-0'
-      } h-full bg-[#09090B] border border-[#1F1F23] rounded-[24px] flex flex-col justify-between overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.60)] select-none`}
+        isAiPanelFullscreen ? 'flex-1 min-w-0' : 'shrink-0'
+      } h-full bg-[#09090B] border border-[#1F1F23] rounded-[24px] flex flex-col justify-between overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.60)] select-none ${
+        isDragging
+          ? ''
+          : 'transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]'
+      }`}
     >
       {/* Top Header Bar (48px height) */}
       <div

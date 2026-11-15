@@ -160,7 +160,7 @@ export const CentralWorkspace: React.FC<CentralWorkspaceProps> = ({ children }) 
     <main
       id="central-workspace"
       data-testid="central-workspace"
-      className="flex-1 min-w-0 bg-[#09090B] border border-[#1F1F23] rounded-[24px] flex flex-col overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.60)] relative transition-all duration-300"
+      className="flex-1 min-w-[480px] bg-[#09090B] border border-[#1F1F23] rounded-[24px] flex flex-col overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.60)] relative"
     >
       {/* Top Browser Tab Bar (48px height) */}
       <header

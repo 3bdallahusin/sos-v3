@@ -164,6 +164,78 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
     expect(aiRestoredBox!.width).toBe(340);
   });
 
+  test('verifies interactive resizable split panes, snap-to-collapse, and double-click reset', async ({ page }) => {
+    const leftRail = page.locator('[data-testid="left-rail"]');
+    const rightAi = page.locator('[data-testid="right-ai-panel"]');
+    const central = page.locator('[data-testid="central-workspace"]');
+    const leftHandle = page.locator('[data-testid="resize-handle-left"]');
+    const rightHandle = page.locator('[data-testid="resize-handle-right"]');
+
+    // 1. Initial handles visible
+    await expect(leftHandle).toBeVisible();
+    await expect(rightHandle).toBeVisible();
+
+    // 2. Expand Left Rail and verify initial 240px
+    const expandBtn = page.locator('button[aria-label="Expand navigation rail"]');
+    await expandBtn.click();
+    await page.waitForTimeout(400);
+    let railBox = await leftRail.boundingBox();
+    expect(railBox!.width).toBe(240);
+
+    // 3. Drag Left Handle to 280px
+    const leftHandleBox = await leftHandle.boundingBox();
+    await leftHandle.hover();
+    await page.mouse.down();
+    await page.mouse.move(288, leftHandleBox!.y + 100, { steps: 10 });
+    await page.mouse.up();
+    await page.waitForTimeout(200);
+
+    railBox = await leftRail.boundingBox();
+    expect(railBox!.width).toBe(280);
+
+    // 4. Double click left handle to reset to 240px
+    await leftHandle.dblclick();
+    await page.waitForTimeout(400);
+    railBox = await leftRail.boundingBox();
+    expect(railBox!.width).toBe(240);
+
+    // 5. Drag Left Handle below 130px -> snaps to collapsed 56px
+    const currentLeftBox = await leftHandle.boundingBox();
+    await leftHandle.hover();
+    await page.mouse.down();
+    await page.mouse.move(100, currentLeftBox!.y + 100, { steps: 10 });
+    await page.mouse.up();
+    await page.waitForTimeout(400);
+    railBox = await leftRail.boundingBox();
+    expect(railBox!.width).toBe(56);
+
+    // 6. Drag Right Handle to expand AI Panel to 450px
+    const rightHandleBox = await rightHandle.boundingBox();
+    await rightHandle.hover();
+    await page.mouse.down();
+    // 1440 - 8 - 450 = 982
+    await page.mouse.move(982, rightHandleBox!.y + 100, { steps: 10 });
+    await page.mouse.up();
+    await page.waitForTimeout(200);
+
+    let aiBox = await rightAi.boundingBox();
+    expect(aiBox!.width).toBe(450);
+
+    // 7. Verify Central Workspace safeguard (width >= 480px)
+    const centralBox = await central.boundingBox();
+    expect(centralBox!.width).toBeGreaterThanOrEqual(480);
+
+    // 8. Double click right handle to reset to 340px
+    await rightHandle.dblclick();
+    await page.waitForTimeout(400);
+    aiBox = await rightAi.boundingBox();
+    expect(aiBox!.width).toBe(340);
+
+    // 9. Verify persistence in localStorage
+    const storedRight = await page.evaluate(() => localStorage.getItem('sos:rightAiPanelWidth'));
+    expect(storedRight).toBe('340');
+  });
+
   test('verifies animated search bar expansion and live filtering', async ({ page }) => {
     const searchInput = page.locator('input[placeholder*="Search SOS"]');
 

@@ -30,7 +30,13 @@ const PRIMARY_NAV_ITEMS: NavDestination[] = [
 ];
 
 export const LeftRail: React.FC = () => {
-  const { railExpanded, toggleRail, workspace } = useShellStore();
+  const {
+    railExpanded,
+    toggleRail,
+    workspace,
+    leftRailWidth,
+    isDragging
+  } = useShellStore();
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
 
@@ -39,8 +45,13 @@ export const LeftRail: React.FC = () => {
       aria-label="Primary Navigation Rail"
       data-testid="left-rail"
       data-expanded={railExpanded}
-      className={`h-full flex flex-col justify-between items-center bg-[#09090B] border border-[#1F1F23] rounded-[24px] overflow-hidden transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex-shrink-0 select-none shadow-[0_12px_40px_rgba(0,0,0,0.60)] ${
-        railExpanded ? 'w-[240px]' : 'w-[56px]'
+      style={{
+        width: railExpanded ? `${leftRailWidth}px` : '56px'
+      }}
+      className={`h-full flex flex-col justify-between items-center bg-[#09090B] border border-[#1F1F23] rounded-[24px] overflow-hidden flex-shrink-0 select-none shadow-[0_12px_40px_rgba(0,0,0,0.60)] ${
+        isDragging
+          ? ''
+          : 'transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]'
       }`}
     >
       {/* 1. Top Collapse/Expand Toggle Header (Exact 48px height matching Central Workspace & AI Panel) */}
