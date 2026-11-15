@@ -319,9 +319,17 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
     await expect(homePage.getByText('2 / 5')).toBeVisible();
   });
 
-  test('verifies application tab favicon uses SOS Logo v3 asset', async ({ page }) => {
-    const favicon = page.locator('link[rel="icon"][href="/favicon.png"]');
-    await expect(favicon).toHaveCount(1);
+  test('verifies application tab favicon uses SOS Logo v3 asset and title is strictly SOS', async ({ page }) => {
+    // 1. Verify tab title
+    expect(await page.title()).toBe('SOS');
+
+    // 2. Verify SVG vector favicon
+    const svgFavicon = page.locator('link[rel="icon"][type="image/svg+xml"][href="/favicon.svg"]');
+    await expect(svgFavicon).toHaveCount(1);
+
+    // 3. Verify fallbacks
+    const pngFavicon = page.locator('link[rel="icon"][href="/favicon.png"]');
+    await expect(pngFavicon).toHaveCount(1);
 
     const appleIcon = page.locator('link[rel="apple-touch-icon"][href="/apple-touch-icon.png"]');
     await expect(appleIcon).toHaveCount(1);

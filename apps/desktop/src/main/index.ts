@@ -13,7 +13,7 @@ function createWindow(): void {
     minWidth: 1024,
     minHeight: 700,
     backgroundColor: '#000000',
-    title: 'SOS — Studying Operating System',
+    title: 'SOS',
     show: false,
     autoHideMenuBar: true,
     webPreferences: {

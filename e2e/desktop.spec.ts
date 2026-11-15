@@ -21,7 +21,7 @@ test.describe('SOS V3 Desktop Electron Integration (Phase 01)', () => {
 
     // Verify window title
     const title = await window.title();
-    expect(title).toBe('SOS — Studying Operating System');
+    expect(title).toBe('SOS');
 
     // Verify App Shell is visible in Electron window
     const shell = window.locator('[data-testid="app-shell"]');
