@@ -2,18 +2,21 @@
 
 @theme {
   --color-sos-base: #000000;
+  --color-sos-ground: #09090B;
   --color-sos-sidebar: #09090B;
   --color-sos-surface1: #0C0C0E;
   --color-sos-surface2: #141417;
   --color-sos-surface3: #1C1C21;
+  --color-sos-card: #111114;
+  --color-sos-badge: #18181B;
   --color-sos-hover: rgba(255, 255, 255, 0.05);
   --color-sos-active: rgba(255, 255, 255, 0.09);
 
-  --color-sos-border-subtle: #222226;
-  --color-sos-border-default: #2A2A30;
+  --color-sos-border-subtle: #1F1F23;
+  --color-sos-border-default: #27272A;
   --color-sos-border-strong: #3F3F46;
 
-  --color-sos-primary: #FAFAFA;
+  --color-sos-primary: #F4F4F5;
   --color-sos-secondary: #A1A1AA;
   --color-sos-muted: #71717A;
   --color-sos-pomodoro: #F97316;
@@ -22,27 +25,51 @@
   --radius-sos-control: 14px;
   --radius-sos-card: 18px;
   --radius-sos-island: 24px;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: 'Newsreader', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
 :root {
   color-scheme: dark;
 }
 
+body {
+  font-family: var(--font-sans);
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
 /* Restrained obsidian custom scrollbars */
+.custom-scrollbar::-webkit-scrollbar,
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
+.custom-scrollbar::-webkit-scrollbar-track,
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 
+.custom-scrollbar::-webkit-scrollbar-thumb,
 ::-webkit-scrollbar-thumb {
-  background: #222226;
+  background: #1F1F23;
   border-radius: 9999px;
 }
 
+.custom-scrollbar::-webkit-scrollbar-thumb:hover,
 ::-webkit-scrollbar-thumb:hover {
-  background: #2A2A30;
+  background: #27272A;
 }

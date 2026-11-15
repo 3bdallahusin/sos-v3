@@ -1,106 +1,212 @@
-import React from 'react';
-import { Sparkles, X, Paperclip, ArrowUp, Bot } from 'lucide-react';
+import React, { useState } from 'react';
+import {
+  MessageSquare,
+  X,
+  Plus,
+  Clock,
+  Maximize2,
+  ChevronDown,
+  Paperclip,
+  ArrowUp,
+  Sparkles
+} from 'lucide-react';
 import { useShellStore } from '../../stores/shell-store.js';
 
 export const RightAiPanel: React.FC = () => {
   const { aiPanelOpen, toggleAiPanel, workspace } = useShellStore();
+  const [contextPillVisible, setContextPillVisible] = useState(true);
+  const [inputValue, setInputValue] = useState('');
+  const [selectedModel, setSelectedModel] = useState('Claude 3.7 Sonnet');
+  const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
 
   if (!aiPanelOpen) {
     return null;
   }
 
+  const models = ['Claude 3.7 Sonnet', 'Gemini 2.5 Flash', 'GPT-4.5 Preview'];
+
   return (
     <aside
+      id="ai-panel"
       aria-label="AI Assistant Panel"
       data-testid="right-ai-panel"
-      className="w-[340px] h-full flex flex-col bg-[#09090B] border border-[#222226] rounded-[24px] overflow-hidden flex-shrink-0 select-none"
+      className="w-[340px] shrink-0 h-full bg-[#09090B] border border-[#1F1F23] rounded-[24px] flex flex-col justify-between overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.60)] select-none"
     >
-      {/* 48px Header */}
+      {/* Top Header Bar (48px height) */}
       <div
         data-testid="ai-panel-header"
-        className="h-12 border-b border-[#222226] px-4 flex items-center justify-between flex-shrink-0"
+        className="h-12 border-b border-[#1F1F23] px-2.5 flex items-center justify-between shrink-0 bg-[#0C0C0E]/60 select-none"
       >
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-[8px] bg-[#141417] border border-[#2A2A30] flex items-center justify-center">
-            <Sparkles className="w-3 h-3 text-[#F97316]" />
+        {/* Left: Tab Pill with Close & Add Tab */}
+        <div className="flex items-center gap-1">
+          <div className="h-7 px-2.5 rounded-[10px] bg-[#141417] text-[#F4F4F5] text-xs font-medium flex items-center gap-1.5 border border-[#27272A] shadow-sm">
+            <Sparkles className="w-3 h-3 text-[#F4F4F5]" />
+            <span>AI Assistant</span>
+            <button
+              type="button"
+              onClick={toggleAiPanel}
+              className="w-3.5 h-3.5 rounded-full flex items-center justify-center text-[#71717A] hover:text-[#F4F4F5] ml-0.5 transition-colors"
+              title="Close Tab"
+              aria-label="Close Tab"
+            >
+              <X className="w-3 h-3" />
+            </button>
           </div>
-          <span className="text-xs font-semibold text-[#FAFAFA] tracking-wide">
-            SOS Assistant
-          </span>
-          <span className="px-1.5 py-0.5 rounded-full bg-[#141417] border border-[#2A2A30] text-[9px] font-mono text-[#71717A]">
-            Phase 01
-          </span>
+          <button
+            type="button"
+            className="w-7 h-7 rounded-[8px] flex items-center justify-center hover:text-[#F4F4F5] hover:bg-white/5 text-[#71717A] active:scale-90 transition-all"
+            title="New Chat"
+            aria-label="New Chat"
+          >
+            <Plus className="w-3.5 h-3.5" />
+          </button>
         </div>
 
-        <button
-          type="button"
-          onClick={toggleAiPanel}
-          aria-label="Close AI panel"
-          title="Close AI panel"
-          className="w-7 h-7 rounded-[10px] flex items-center justify-center text-[#71717A] hover:text-[#FAFAFA] hover:bg-white/5 transition-colors"
-        >
-          <X className="w-3.5 h-3.5" />
-        </button>
-      </div>
-
-      {/* Conversation Stream Empty State */}
-      <div className="flex-1 p-4 overflow-y-auto flex flex-col justify-between">
-        <div className="flex flex-col items-center text-center mt-8 gap-3">
-          <div className="w-12 h-12 rounded-[18px] bg-[#0C0C0E] border border-[#222226] flex items-center justify-center text-[#A1A1AA]">
-            <Bot className="w-6 h-6 text-[#71717A]" />
-          </div>
-
-          <div className="flex flex-col gap-1 max-w-[260px]">
-            <h3 className="text-xs font-semibold text-[#FAFAFA]">
-              Context-Aware Study Partner
-            </h3>
-            <p className="text-[11px] text-[#71717A] leading-relaxed">
-              Your AI workspace companion connects seamlessly to your notes, slides, and study sessions.
-            </p>
-          </div>
-
-          {/* Connected Context Badge */}
-          <div className="w-full mt-2 p-2.5 rounded-[14px] bg-[#0C0C0E] border border-[#222226] flex items-center justify-between text-[11px]">
-            <span className="text-[#71717A]">Workspace Context:</span>
-            <span className="text-[#16A34A] font-medium flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A]" />
-              Guest (Local)
-            </span>
-          </div>
-
-          {/* Model Selection Indicator */}
-          <div className="w-full p-2.5 rounded-[14px] bg-[#0C0C0E] border border-[#222226] flex items-center justify-between text-[11px]">
-            <span className="text-[#71717A]">Model:</span>
-            <span className="text-[#FAFAFA] font-medium">Gemini 2.5 Flash</span>
-          </div>
-        </div>
-
-        <div className="text-[10px] text-center text-[#71717A] py-2">
-          Model execution & skills activate in subsequent learning phases.
+        {/* Right: History, Maximize, Collapse */}
+        <div className="flex items-center gap-0.5 text-[#71717A]">
+          <button
+            type="button"
+            className="w-7 h-7 rounded-[8px] flex items-center justify-center hover:text-[#F4F4F5] hover:bg-white/5 active:scale-90 transition-all"
+            title="History"
+            aria-label="History"
+          >
+            <Clock className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            className="w-7 h-7 rounded-[8px] flex items-center justify-center hover:text-[#F4F4F5] hover:bg-white/5 active:scale-90 transition-all"
+            title="Full Screen"
+            aria-label="Full Screen"
+          >
+            <Maximize2 className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={toggleAiPanel}
+            aria-label="Collapse AI panel"
+            title="Collapse AI Panel (⌘J)"
+            className="w-7 h-7 rounded-[8px] flex items-center justify-center hover:text-[#F4F4F5] hover:bg-white/5 transition-colors"
+          >
+            <MessageSquare className="w-4 h-4 text-[#71717A] hover:text-[#F4F4F5]" />
+          </button>
         </div>
       </div>
 
-      {/* Bottom Input Dock */}
-      <div className="p-3 border-t border-[#222226] flex flex-col gap-2 flex-shrink-0">
-        <div className="min-h-[44px] rounded-[14px] bg-[#141417] border border-[#2A2A30] px-3 py-2 flex items-center justify-between opacity-70">
-          <span className="text-xs text-[#63636B]">Ask SOS Assistant or type / for skills...</span>
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              disabled
-              aria-label="Attach context file"
-              className="w-6 h-6 rounded flex items-center justify-center text-[#71717A] cursor-not-allowed"
-            >
-              <Paperclip className="w-3.5 h-3.5" />
-            </button>
-            <button
-              type="button"
-              disabled
-              aria-label="Send query"
-              className="w-6 h-6 rounded-full bg-[#2A2A30] flex items-center justify-center text-[#71717A] cursor-not-allowed"
-            >
-              <ArrowUp className="w-3.5 h-3.5" />
-            </button>
+      {/* AI Thread / Daily Study Briefing Card */}
+      <div className="flex-1 py-4 px-3.5 flex flex-col gap-3 text-xs overflow-y-auto custom-scrollbar">
+        <div className="p-3.5 rounded-[18px] bg-[#141417] border border-[#27272A] text-[#A1A1AA] leading-relaxed flex flex-col gap-2 shadow-sm">
+          <div className="flex items-center gap-1.5 font-semibold text-[#F4F4F5]">
+            <Sparkles className="w-3.5 h-3.5 text-[#F4F4F5]" />
+            <span>Daily Study Briefing</span>
+          </div>
+          <p>
+            Good morning,{' '}
+            <span className="text-[#F4F4F5] font-medium">Abdalla</span>! You have 14
+            flashcards due for{' '}
+            <span className="text-[#F4F4F5] font-medium">SNARE Complex</span> and your{' '}
+            <span className="text-[#F4F4F5] font-medium">Neurobiology Lecture 04</span>{' '}
+            scheduled at 14:00.
+          </p>
+          <div className="p-2 rounded bg-[#09090B] border border-[#27272A] text-[11px] text-[#A1A1AA]">
+            Recommended focus: Complete the 15-min Kv1.1 quiz before lecture to prime your recall.
+          </div>
+        </div>
+      </div>
+
+      {/* Standardized Bottom AI Chat Input Dock (Matching Stitch pixel-for-pixel) */}
+      <div className="p-3 bg-[#09090B] border-t border-[#1F1F23] flex flex-col shrink-0">
+        {/* Context Row: Single active context pill followed immediately by 30x30 + button */}
+        <div className="flex items-center gap-2 mb-2 select-none">
+          {contextPillVisible && (
+            <div className="h-6 px-2.5 rounded-full bg-[#141417] border border-[#27272A] flex items-center gap-1.5 text-[11px] text-[#F4F4F5] shrink-0">
+              <span className="truncate max-w-[170px]">Home</span>
+              <button
+                type="button"
+                onClick={() => setContextPillVisible(false)}
+                className="text-[#71717A] hover:text-[#F4F4F5] transition-colors"
+                title="Remove context"
+                aria-label="Remove context"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={() => setContextPillVisible(true)}
+            className="w-[30px] h-[30px] rounded-full bg-[#141417] hover:bg-[#1A1A1E] border border-[#27272A] flex items-center justify-center text-[#71717A] hover:text-[#F4F4F5] shrink-0 transition-colors"
+            title="Add context"
+            aria-label="Add context"
+          >
+            <Plus className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* Rounded Input Box (border-radius: 14px, #111114, 1px solid #27272A) */}
+        <div className="rounded-[14px] bg-[#111114] border border-[#27272A] p-2.5 flex flex-col gap-2 shadow-sm relative">
+          <textarea
+            rows={1}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Ask SOS, / for skills, @ for context..."
+            className="w-full bg-transparent resize-none border-0 p-0 text-[12.5px] text-[#F4F4F5] placeholder-[#71717A] focus:ring-0 focus:outline-none"
+          />
+
+          <div className="flex items-center justify-between pt-1 border-t border-[#1F1F23]/60 text-xs">
+            {/* Left: Model Selector Pill displaying Claude 3.7 Sonnet ⌄ */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
+                className="h-6 px-2.5 rounded-full bg-[#18181B] hover:bg-[#202024] border border-[#27272A] text-[12px] font-medium text-[#D4D4D8] flex items-center gap-1.5 transition-colors"
+              >
+                <span>{selectedModel}</span>
+                <ChevronDown className="w-3 h-3 text-[#71717A]" />
+              </button>
+
+              {modelDropdownOpen && (
+                <div className="absolute bottom-8 left-0 mb-1 w-44 bg-[#141417] border border-[#27272A] rounded-[10px] shadow-lg py-1 z-50">
+                  {models.map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => {
+                        setSelectedModel(m);
+                        setModelDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-xs text-[#F4F4F5] hover:bg-white/5 transition-colors"
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Right: Paperclip attachment icon + circular white up-arrow submit button */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                className="text-[#71717A] hover:text-[#F4F4F5] p-1 transition-colors"
+                title="Attach context"
+                aria-label="Attach context"
+              >
+                <Paperclip className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (inputValue.trim()) {
+                    setInputValue('');
+                  }
+                }}
+                className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center hover:bg-[#E4E4E7] active:scale-95 transition-all shadow-sm"
+                title="Send message"
+                aria-label="Send message"
+              >
+                <ArrowUp className="w-3.5 h-3.5 text-black stroke-[2.5]" />
+              </button>
+            </div>
           </div>
         </div>
       </div>

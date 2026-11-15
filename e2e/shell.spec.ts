@@ -54,14 +54,14 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
 
   test('verifies eight navigation destinations in canonical order and routing', async ({ page }) => {
     const expectedDestinations = [
-      { id: 'home', label: 'Home', path: '/', placeholder: 'Home Dashboard' },
-      { id: 'library', label: 'Library', path: '/library', placeholder: 'Library & Knowledge Base' },
-      { id: 'learning', label: 'Learning', path: '/learning', placeholder: 'Learning Workspace' },
-      { id: 'tracking', label: 'Tracking', path: '/tracking', placeholder: 'Study Tracking' },
-      { id: 'calendar', label: 'Calendar', path: '/calendar', placeholder: 'Academic Calendar' },
-      { id: 'community', label: 'Community', path: '/community', placeholder: 'Peer Community' },
-      { id: 'profile', label: 'Profile', path: '/profile', placeholder: 'Student Profile' },
-      { id: 'settings', label: 'Settings', path: '/settings', placeholder: 'System Settings' }
+      { id: 'home', label: 'Home', path: '/', expectedText: 'Good morning' },
+      { id: 'library', label: 'Library', path: '/library', expectedText: 'Library & Knowledge Base' },
+      { id: 'learning', label: 'Learning', path: '/learning', expectedText: 'Learning Workspace' },
+      { id: 'tracking', label: 'Tracking', path: '/tracking', expectedText: 'Study Tracking' },
+      { id: 'calendar', label: 'Calendar', path: '/calendar', expectedText: 'Academic Calendar' },
+      { id: 'community', label: 'Community', path: '/community', expectedText: 'Peer Community' },
+      { id: 'profile', label: 'Profile', path: '/profile', expectedText: 'Student Profile' },
+      { id: 'settings', label: 'Settings', path: '/settings', expectedText: 'System Settings' }
     ];
 
     // Check all nav items exist in left rail in order
@@ -80,8 +80,8 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
       // Verify active styling
       await expect(navLink).toHaveAttribute('data-active', 'true');
 
-      // Verify placeholder content mounts in central viewport
-      await expect(page.getByText(item.placeholder)).toBeVisible();
+      // Verify target screen content mounts in central viewport
+      await expect(page.getByText(item.expectedText, { exact: false }).first()).toBeVisible();
     }
   });
 
@@ -94,11 +94,10 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
     await expect(canvas).toHaveCount(0);
   });
 
-  test('verifies static Header Timer mirror in neutral idle state', async ({ page }) => {
+  test('verifies Focus Timer pill is displayed in global header', async ({ page }) => {
     const timerMirror = page.locator('[data-testid="header-timer-mirror"]');
     await expect(timerMirror).toBeVisible();
-    await expect(timerMirror).toContainText('--:--');
-    await expect(timerMirror).toContainText('Idle');
+    await expect(timerMirror).toContainText('24:18');
   });
 
   test('verifies Right AI Panel toggle functionality', async ({ page }) => {
@@ -127,5 +126,51 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
       return dbs.some((db) => db.name === 'sos_local_v3');
     });
     expect(hasIndexedDb).toBe(true);
+  });
+
+  test('verifies pixel-accurate Home screen editorial cards and interactive tasks', async ({ page }) => {
+    const homePage = page.locator('[data-testid="home-page"]');
+    await expect(homePage).toBeVisible();
+
+    // 1. Greeting and Date
+    await expect(homePage.getByRole('heading', { name: 'Good morning, Abdalla' })).toBeVisible();
+    await expect(homePage.getByText('Saturday, November 14, 2026')).toBeVisible();
+
+    // 2. Horizon Bar
+    await expect(homePage.getByText('Fall Semester 2026')).toBeVisible();
+    await expect(homePage.getByText('48 days left')).toBeVisible();
+    await expect(homePage.getByText('50%')).toBeVisible();
+
+    // 3. Editorial Cards
+    await expect(homePage.getByText('DAILY QUOTE')).toBeVisible();
+    await expect(homePage.getByText(/We are what we repeatedly do/)).toBeVisible();
+    await expect(homePage.getByText('— Aristotle')).toBeVisible();
+
+    await expect(homePage.getByText('DAILY ESSAY')).toBeVisible();
+    await expect(homePage.getByText('On the Architecture of Deep Memory & Forgetting')).toBeVisible();
+    await expect(homePage.getByText('3 MIN READ')).toBeVisible();
+
+    // 4. Continue Where You Left Off
+    await expect(homePage.getByText('CONTINUE WHERE YOU LEFT OFF')).toBeVisible();
+    await expect(homePage.getByText('Kandel_Principles_Ch12.pdf')).toBeVisible();
+    await expect(homePage.getByText('Stanford_Neuro_Lecture_04.mp4')).toBeVisible();
+    await expect(homePage.getByText('Cellular_Plasticity_Synthesis.md')).toBeVisible();
+    await expect(homePage.getByText('SNARE_Machinery_Deck')).toBeVisible();
+
+    // 5. Today's Tasks
+    await expect(homePage.getByText("TODAY'S TASKS")).toBeVisible();
+    await expect(homePage.getByText('1 / 4')).toBeVisible();
+
+    // Toggle a task checkbox
+    const firstTask = homePage.getByText('Neurobiology Lecture 04');
+    await firstTask.click();
+    await expect(homePage.getByText('2 / 4')).toBeVisible();
+
+    // Quick add a task
+    const input = homePage.locator('input[placeholder="Add a task..."]');
+    await input.fill('Complete Mitochondria Review');
+    await input.press('Enter');
+    await expect(homePage.getByText('Complete Mitochondria Review')).toBeVisible();
+    await expect(homePage.getByText('2 / 5')).toBeVisible();
   });
 });

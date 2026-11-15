@@ -2,30 +2,32 @@ import React from 'react';
 import { Link, useRouterState } from '@tanstack/react-router';
 import {
   Home,
-  FolderClosed,
-  BookOpen,
-  Clock,
-  Calendar,
+  BookMarked,
+  GraduationCap,
   Users,
-  User,
+  Activity,
+  Calendar,
   Settings,
   ChevronLeft,
-  ChevronRight,
-  ShieldCheck
+  BookOpen
 } from 'lucide-react';
 import { useShellStore } from '../../stores/shell-store.js';
-import { NAVIGATION_ITEMS, type NavigationDestination } from '@sos/domain';
 
-const ICON_MAP: Record<NavigationDestination, React.ComponentType<{ className?: string }>> = {
-  home: Home,
-  library: FolderClosed,
-  learning: BookOpen,
-  tracking: Clock,
-  calendar: Calendar,
-  community: Users,
-  profile: User,
-  settings: Settings
-};
+interface NavDestination {
+  id: string;
+  label: string;
+  path: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+const PRIMARY_NAV_ITEMS: NavDestination[] = [
+  { id: 'home', label: 'Home', path: '/', icon: Home },
+  { id: 'library', label: 'Library', path: '/library', icon: BookMarked },
+  { id: 'learning', label: 'Learning', path: '/learning', icon: GraduationCap },
+  { id: 'community', label: 'Community', path: '/community', icon: Users },
+  { id: 'tracking', label: 'Tracking', path: '/tracking', icon: Activity },
+  { id: 'calendar', label: 'Calendar', path: '/calendar', icon: Calendar }
+];
 
 export const LeftRail: React.FC = () => {
   const { railExpanded, toggleRail, workspace } = useShellStore();
@@ -37,101 +39,177 @@ export const LeftRail: React.FC = () => {
       aria-label="Primary Navigation Rail"
       data-testid="left-rail"
       data-expanded={railExpanded}
-      className={`h-full flex flex-col bg-[#09090B] border border-[#222226] rounded-[24px] overflow-hidden transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex-shrink-0 select-none ${
+      className={`h-full flex flex-col justify-between items-center bg-[#09090B] border border-[#1F1F23] rounded-[24px] overflow-hidden transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex-shrink-0 select-none shadow-[0_12px_40px_rgba(0,0,0,0.60)] ${
         railExpanded ? 'w-[240px]' : 'w-[56px]'
       }`}
     >
-      {/* 48px Header */}
+      {/* 1. Top Collapse/Expand Toggle Header (Exact 48px height matching Central Workspace & AI Panel) */}
       <div
         data-testid="left-rail-header"
-        className="h-12 border-b border-[#222226] flex items-center px-2 justify-between flex-shrink-0"
+        className="h-12 w-full border-b border-[#1F1F23] flex items-center justify-center shrink-0 bg-[#09090B] px-2"
       >
-        <div className="flex items-center gap-2 overflow-hidden px-1">
-          <div className="w-8 h-8 rounded-full bg-[#141417] border border-[#2A2A30] flex items-center justify-center flex-shrink-0">
-            <div className="w-3.5 h-3.5 rounded-full border-2 border-[#FAFAFA] flex items-center justify-center">
-              <div className="w-1 h-1 rounded-full bg-[#F97316]" />
+        {railExpanded ? (
+          <div className="flex items-center justify-between w-full px-1">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-[8px] bg-[#141417] border border-[#27272A] flex items-center justify-center">
+                <BookOpen className="w-4 h-4 text-[#F4F4F5]" />
+              </div>
+              <span className="font-semibold text-xs tracking-wider uppercase text-[#F4F4F5] truncate">
+                SOS v3
+              </span>
             </div>
+            <button
+              type="button"
+              onClick={toggleRail}
+              aria-label="Collapse navigation rail"
+              title="Collapse navigation rail (⌘B)"
+              className="w-7 h-7 rounded-[8px] flex items-center justify-center text-[#71717A] hover:text-[#F4F4F5] hover:bg-white/5 transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
           </div>
-          {railExpanded && (
-            <span className="font-semibold text-xs tracking-wider uppercase text-[#FAFAFA] truncate">
-              SOS v3
-            </span>
-          )}
-        </div>
-
-        <button
-          type="button"
-          onClick={toggleRail}
-          aria-label={railExpanded ? 'Collapse navigation rail' : 'Expand navigation rail'}
-          title={railExpanded ? 'Collapse navigation rail' : 'Expand navigation rail'}
-          className="w-7 h-7 rounded-[10px] flex items-center justify-center text-[#71717A] hover:text-[#FAFAFA] hover:bg-white/5 transition-colors flex-shrink-0"
-        >
-          {railExpanded ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-        </button>
+        ) : (
+          <button
+            type="button"
+            onClick={toggleRail}
+            aria-label="Expand navigation rail"
+            title="Expand navigation rail (⌘B)"
+            className="w-8 h-8 rounded-[8px] bg-[#141417] border border-[#1F1F23] hover:border-[#27272A] flex items-center justify-center cursor-pointer hover:bg-white/5 transition-all shadow-sm group"
+          >
+            <BookOpen className="w-4 h-4 text-[#F4F4F5] group-hover:scale-105 transition-transform" />
+          </button>
+        )}
       </div>
 
-      {/* Navigation Stack (8 destinations) */}
-      <nav className="flex-1 py-3 px-1.5 flex flex-col gap-1 overflow-y-auto overflow-x-hidden">
-        {NAVIGATION_ITEMS.map((item) => {
-          const Icon = ICON_MAP[item.id];
-          const isActive =
-            item.path === '/'
-              ? currentPath === '/'
-              : currentPath.startsWith(item.path);
+      {/* Navigation Stack containing both Primary destinations and Bottom utilities */}
+      <nav className="flex-1 flex flex-col justify-between w-full overflow-hidden">
+        {/* 2. Primary Navigation Stack (6 icons in exact order) */}
+        <div className="flex-1 flex flex-col gap-2 items-center w-full px-2 py-3 overflow-y-auto custom-scrollbar">
+          {PRIMARY_NAV_ITEMS.map((item) => {
+            const Icon = item.icon;
+            const isActive =
+              item.path === '/'
+                ? currentPath === '/'
+                : currentPath.startsWith(item.path);
 
-          return (
+            return (
+              <div
+                key={item.id}
+                className={`relative group flex items-center w-full ${
+                  railExpanded ? 'justify-start' : 'justify-center'
+                }`}
+              >
+                <Link
+                  to={item.path}
+                  data-testid={`nav-item-${item.id}`}
+                  data-active={isActive}
+                  title={railExpanded ? undefined : item.label}
+                  className={`h-10 flex items-center transition-all ${
+                    railExpanded
+                      ? 'w-full px-3 gap-3 rounded-[12px]'
+                      : 'w-10 rounded-[8px] justify-center'
+                  } ${
+                    isActive
+                      ? 'bg-[#18181B] border border-[#27272A] text-[#F4F4F5] shadow-sm'
+                      : 'text-[#A1A1AA] hover:text-[#F4F4F5] hover:bg-white/5 border border-transparent active:scale-95'
+                  }`}
+                >
+                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  {railExpanded && (
+                    <span className="text-xs font-medium truncate">{item.label}</span>
+                  )}
+                </Link>
+
+                {/* Collapsed Tooltip */}
+                {!railExpanded && (
+                  <div className="absolute left-14 px-2.5 py-1 rounded-[10px] bg-[#1C1C21] border border-[#3F3F46] text-xs font-medium text-[#F4F4F5] whitespace-nowrap shadow-lg pointer-events-none z-50 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                    <span>{item.label}{isActive ? ' (Active)' : ''}</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* 3. Bottom Utility Stack (Divider -> Settings -> User Profile Avatar) */}
+        <div
+          data-testid="left-rail-bottom"
+          className="h-[104px] flex flex-col items-center justify-center gap-2 w-full border-t border-[#1F1F23] bg-[#09090B] shrink-0 px-2"
+        >
+          {/* Settings */}
+          <div
+            className={`relative group flex items-center w-full ${
+              railExpanded ? 'justify-start' : 'justify-center'
+            }`}
+          >
             <Link
-              key={item.id}
-              to={item.path}
-              data-testid={`nav-item-${item.id}`}
-              data-active={isActive}
-              title={railExpanded ? undefined : item.label}
-              className={`h-10 flex items-center rounded-[14px] transition-all duration-150 relative group ${
-                railExpanded ? 'px-3 gap-3 justify-start' : 'justify-center w-full'
+              to="/settings"
+              data-testid="nav-item-settings"
+              data-active={currentPath.startsWith('/settings')}
+              title={railExpanded ? undefined : 'Settings'}
+              className={`h-10 flex items-center transition-all ${
+                railExpanded
+                  ? 'w-full px-3 gap-3 rounded-[12px]'
+                  : 'w-10 rounded-[8px] justify-center'
               } ${
-                isActive
-                  ? 'bg-[#141417] text-[#FAFAFA] border border-[#2A2A30] shadow-sm'
-                  : 'text-[#A1A1AA] hover:text-[#FAFAFA] hover:bg-white/5 border border-transparent'
+                currentPath.startsWith('/settings')
+                  ? 'bg-[#18181B] border border-[#27272A] text-[#F4F4F5] shadow-sm'
+                  : 'text-[#A1A1AA] hover:text-[#F4F4F5] hover:bg-white/5 border border-transparent'
               }`}
             >
-              <Icon className="w-4 h-4 flex-shrink-0" />
+              <Settings className="w-5 h-5 flex-shrink-0" />
               {railExpanded && (
-                <span className="text-xs font-medium truncate">{item.label}</span>
+                <span className="text-xs font-medium truncate">Settings</span>
               )}
+            </Link>
+            {!railExpanded && (
+              <div className="absolute left-14 px-2.5 py-1 rounded-[10px] bg-[#1C1C21] border border-[#3F3F46] text-xs font-medium text-[#F4F4F5] whitespace-nowrap shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                <span>Settings</span>
+              </div>
+            )}
+          </div>
 
-              {/* Accessible tooltip on collapsed hover */}
-              {!railExpanded && (
-                <div className="absolute left-full ml-2 px-2.5 py-1 bg-[#1C1C21] border border-[#2A2A30] rounded-[10px] text-[11px] font-medium text-[#FAFAFA] whitespace-nowrap shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity z-50">
-                  {item.label}
+          {/* User Portrait Avatar */}
+          <div
+            className={`relative group flex items-center w-full pt-0.5 ${
+              railExpanded ? 'justify-start px-1' : 'justify-center'
+            }`}
+          >
+            <Link
+              to="/profile"
+              data-testid="nav-item-profile"
+              data-active={currentPath.startsWith('/profile')}
+              title={workspace?.name ?? 'Abdalla (Learner Profile)'}
+              className={`flex items-center gap-2.5 overflow-hidden transition-colors ${
+                railExpanded ? 'w-full' : ''
+              }`}
+            >
+              <div className="w-8 h-8 rounded-full border border-[#27272A] overflow-hidden cursor-pointer hover:border-[#F4F4F5] transition-colors shrink-0 bg-[#18181B] flex items-center justify-center">
+                <img
+                  src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=80&q=80"
+                  alt="Abdalla"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {railExpanded && (
+                <div className="flex flex-col min-w-0">
+                  <span className="text-xs font-medium text-[#F4F4F5] truncate">
+                    Abdalla
+                  </span>
+                  <span className="text-[10px] text-[#71717A] truncate">
+                    Learner Profile
+                  </span>
                 </div>
               )}
             </Link>
-          );
-        })}
-      </nav>
-
-      {/* Bottom Utility Stack: Guest Workspace identity indicator */}
-      <div
-        data-testid="left-rail-bottom"
-        className="p-2 border-t border-[#222226] flex items-center justify-center flex-shrink-0"
-      >
-        <div
-          title={workspace ? `Guest Workspace: ${workspace.id}` : 'Guest Mode'}
-          className={`h-9 rounded-[14px] bg-[#0C0C0E] border border-[#222226] flex items-center ${
-            railExpanded ? 'w-full px-2.5 gap-2 justify-start' : 'w-9 justify-center'
-          }`}
-        >
-          <ShieldCheck className="w-4 h-4 text-[#16A34A] flex-shrink-0" />
-          {railExpanded && (
-            <div className="flex flex-col min-w-0">
-              <span className="text-[11px] font-medium text-[#FAFAFA] truncate">Guest Mode</span>
-              <span className="text-[9px] text-[#71717A] truncate font-mono">
-                {workspace ? workspace.id.slice(0, 8) : 'local'}
-              </span>
-            </div>
-          )}
+            {!railExpanded && (
+              <div className="absolute left-14 px-2.5 py-1 rounded-[10px] bg-[#1C1C21] border border-[#3F3F46] text-xs font-medium text-[#F4F4F5] whitespace-nowrap shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                <span>Learner Profile</span>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </nav>
     </aside>
   );
 };
