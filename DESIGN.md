@@ -1,8 +1,8 @@
 # SOS V3 — Design System & Visual Specification
 
-**Status:** Canonical Visual & Interaction Design Specification  
-**Baseline Source:** Authoritative Google Stitch Project (`projects/1366384921760863805`, "Studying Operating System UX Architecture", specifically verified against the latest canonical screen `node_12800577758894789895` "Learning — Notes").  
-**Design Principles:** Obsidian Dark, Restrained Contrast, Three-Island Shell, 104px Docked Toolbar Alignment, Focus-First Scholarly Workspace.
+**Status:** Canonical Visual & Interaction Design Specification (Ready for Founder Approval)  
+**Baseline Source:** Authoritative Google Stitch Project (`projects/1366384921760863805`, "Studying Operating System UX Architecture", comprehensively audited across all 31 screens; canonical reference screens include `node_12800577758894789895` "Learning — Notes", `node_7463628782219524136` "Learning — PDF", `node_17892689879404894740` "Learning — Slides", `node_16576779288068446794` "Home", `node_4837319895449270972` "Library").  
+**Design Principles:** Obsidian Dark, Restrained Contrast, Three-Island Shell, Contextual 104px Docked Toolbar in Canvas Tools, Focus-First Scholarly Workspace.
 
 ---
 
@@ -142,8 +142,9 @@ The overall viewport layout is divided into three coordinated islands hosted wit
 │ Rail         │ (Document / Player / Canvas / Cards / Tool)│ Stream       │
 │              │                                            │              │
 ├──────────────┼────────────────────────────────────────────┼──────────────┤
-│ 104px Bottom │ DOCKED FULL-WIDTH BOTTOM TOOLBAR           │ Bottom Input │
-│ Utilities    │ (104px height, 2-tier docked workspace bar)│ Dock         │
+│ 104px Bottom │ CONTEXTUAL DOCKED BOTTOM TOOLBAR           │ Bottom Input │
+│ Utilities    │ (104px height, 2-tier docked bar mounted   │ Dock         │
+│              │  EXCLUSIVELY in canvas-enabled tools)      │              │
 └──────────────┴────────────────────────────────────────────┴──────────────┘
 ```
 
@@ -159,7 +160,7 @@ The overall viewport layout is divided into three coordinated islands hosted wit
    - `flex-1 min-w-0`, background `#09090B`, border `#222226`, radius `24px`.
    - Top Bar: Exact `48px` height, border-b `#222226`. Left contains breadcrumbs or tab pills; right contains Search (`⌘K`), Messages, Notifications, Full Screen, and Global Timer Pill (`🟠 24:18`).
    - Content Viewport: `flex-1 overflow-auto`, dedicated to the active tool.
-   - Docked Bottom Toolbar: Exact `104px` total height, full-width docked footer aligned with the 104px Left Rail utility area.
+   - Contextual Docked Bottom Toolbar: Exact `104px` total height, full-width docked footer aligned with the 104px Left Rail utility area. Mounted **exclusively** in canvas-enabled Learning tools (Notes, PDF Reader, Slides); non-canvas tools and views do not reserve or display this footer.
 5. **Right AI Assistant Panel**:
    - `w-[340px]` fixed width, collapsible via `⌘J`.
    - Top Bar: Exact `48px` height with Tab badge, `+` New Chat, History clock, Full Screen, Collapse icon.
@@ -171,7 +172,10 @@ The overall viewport layout is divided into three coordinated islands hosted wit
 ## 6. Shared Component Specifications
 
 ### 6.1 Docked Full-Width Bottom Toolbar (104px Authoritative Geometry)
-Used across **Learning — Notes**, **Learning — PDF**, and **Learning — Slides**, verified directly from the authoritative Google Stitch screen `node_12800577758894789895`:
+Used across **Learning — Notes**, **Learning — PDF**, and **Learning — Slides**, verified directly from the authoritative Google Stitch screens `node_12800577758894789895`, `node_7463628782219524136`, and `node_17892689879404894740`:
+
+> [!IMPORTANT]
+> The Docked Bottom Toolbar is **contextual**: it is mounted and reserves layout space **exclusively** within canvas-enabled Learning tools (Notes, PDF Reader, and Slides). It is **not** globally mounted or reserved in Home, Library, Tracking, Calendar, Community, Profile, Settings, or non-canvas Learning tools (Browser, Videos, Audios, Flashcards, Quizzes).
 
 ```mermaid
 flowchart TD
@@ -249,6 +253,45 @@ In **Learning — Notes**, the Spatial Canvas is **document-synchronized**:
 - Annotations (drawings, ink strokes, sticky notes) are stored in document-relative coordinates rather than fixed viewport/screen pixels.
 - The canvas does NOT float as an independent static screen overlay; it behaves as a natural drawing layer over the flowing scholarly document.
 - No artificial fixed-width column constraint is imposed on the document layout.
+
+---
+
+### 6.5 Complete Google Stitch Project Inventory & Screen Mapping
+Audited against Google Stitch project `projects/1366384921760863805` (*"Studying Operating System UX Architecture"*):
+
+| Screen Node ID | Screen Title | Application Section | Toolbar Present? | Key Designed Elements & Visual Observations |
+| :--- | :--- | :--- | :--- | :--- |
+| `node_16576779288068446794` | **Home** | Home (`/`) | No | Greeting ("Good morning, Abdalla"), daily quote card, tactile resume rows, quick-add task prompt, flashcards due alert badge. |
+| `node_4837319895449270972` | **Library — Open Left Nav Bar** | Library (`/library`) | No | 240px expanded navigation rail, folder hierarchy, multi-view switcher (Gallery/List/Table), search bar, asset tiles. |
+| `node_14608732497518408805` | **Library — Closed Left Nav Bar** | Library (`/library`) | No | 56px collapsed rail, resource cards, folder breadcrumb navigation, sorting/filter controls. |
+| `node_8073869317252361571` | **Learning — New Tab** | Learning (`/learning`) | No | Multi-tab study launcher, quick tool shortcuts, recent learning history. |
+| `node_12800577758894789895` | **Learning — Notes** | Learning (`/learning`) | **Yes (104px)** | Notion-style structured document, wide margins, Konva vector drawing stage, 104px 2-tier docked toolbar. |
+| `node_7463628782219524136` | **Learning — PDF** | Learning (`/learning`) | **Yes (104px)** | Continuous PDF scroll, high-DPI text layer, right page-margin annotations, 104px 2-tier docked toolbar. |
+| `node_17892689879404894740` | **Learning — Slides** | Learning (`/learning`) | **Yes (104px)** | 16:9 presentation slide viewport, slide stepping, visual thumbnail strip, 104px 2-tier docked toolbar. |
+| `node_17892689879404892434` | **Learning — Browser** | Learning (`/learning`) | No | Academic URL bar (`https://www.nature.com/...`), tab header, back/forward controls, 340px right AI drawer. |
+| `node_5558738367864913790` | **Learning — Videos** | Learning (`/learning`) | No | Video viewport, Stanford lecture metadata, synchronized transcript side-panel, playback speed controls. |
+| `node_16560811038932664838` | **Learning — Audios** | Learning (`/learning`) | No | Audio player, interactive waveform visualization, Huberman Lab podcast metadata, scrubber controls. |
+| `node_9182901545043552732` | **Learning — Flashcards** | Learning (`/learning`) | No | Dual-sided card flip container, deck progress (Learning/Review/Mastered), FSRS rating buttons (Again, Hard, Good, Easy). |
+| `node_17524375949220155526` | **Learning — Quizzes** | Learning (`/learning`) | No | Unified assessment interface, diagnostic exam, question countdown timer (`01:24`), score counter, multiple choice options. |
+| `node_14189043758052477137` | **Tracking** | Tracking (`/tracking`) | No | Authoritative focus timer, Pomodoro intervals, Pause/Finish/Reset actions, today's logged sessions list. |
+| `node_4632855273637405304` | **Calendar** | Calendar (`/calendar`) | No | Academic calendar, Day/Week/Month toggles, review queue timeline, milestone deadline alerts. |
+| `node_5136664046824391813` | **Community — Social Feed** | Community (`/community`) | No | Peer study posts, shared whiteboard recap notes, author follow buttons. *(Note: Canonical v1 product requirement scopes Community to shared deck/note catalog and independent copy forking; social feed is an aspirational design mockup).* |
+| `node_15769930946495080341` | **Community — Messages** | Community (`/community`) | No | Direct messaging threads. *(Deferred to post-v1 collaboration).* |
+| `node_13173701616693332706` | **Community — Communities** | Community (`/community`) | No | Subject group listings and university discovery. |
+| `node_1747604306834310900` | **Community — Community Detail** | Community (`/community`) | No | Specific study group resource repository. |
+| `node_6796427964380537734` | **Profile** | Profile (`/profile`) | No | Learner profile header, institution, field of study, cumulative study stats. |
+| `node_8348410134651814004` | **Profile (Activity)** | Profile (`/profile`) | No | Study history timeline, cards reviewed log. |
+| `node_7213598889210604917` | **Settings — General** | Settings (`/settings`) | No | App language, interface preferences, docked toolbar options. |
+| `node_4086788636629269152` | **Settings — Account** | Settings (`/settings`) | No | Account linking, profile details, sync toggles. |
+| `node_10583067124006883164` | **Settings — Usage** | Settings (`/settings`) | No | AI usage tracker, device quota metrics, local storage breakdown. |
+| `node_15809167322733006368` | **Settings — Memory** | Settings (`/settings`) | No | Context memory preferences. |
+| `node_14510997123343989261` | **Settings — Skills** | Settings (`/settings`) | No | Assistant skills catalog and capability configuration. |
+| `node_4351099006762728688` | **Settings — Skill Editor Modal** | Settings (`/settings`) | No | Custom tool parameter editor dialog. |
+| `node_10504417724291484953` | **Auth — Login** | Auth (Modal / Page) | No | 50/50 split modal: scholarly photography on left, sign-in form on right. |
+| `node_4405147205431725673` | **Auth — Register** | Auth (Modal / Page) | No | Registration card with email, passkey, and OAuth buttons. |
+| `node_4893918853975949143` | **Auth — Forgot Password** | Auth (Modal / Page) | No | Password recovery prompt. |
+| `node_11506060336308701706` | **Auth — Verify Code** | Auth (Modal / Page) | No | 6-digit OTP verification input. |
+| `node_2644827725651608371` | **Auth — Reset Password** | Auth (Modal / Page) | No | New password entry and confirmation. |
 
 ---
 

@@ -139,6 +139,7 @@ SOS solves this with **Document Synchronization**:
 - When you draw an arrow pointing to a paragraph, that arrow is recorded at its exact document position.
 - As you scroll down the page, the canvas translates with the document. Your drawings stay aligned with their text.
 - If you zoom in, both the text and your drawings zoom together smoothly.
+- **Coordinate Boundaries & Reflow:** Drawings are anchored to document coordinates ($$\text{DocX}, \text{DocY}$$) relative to the top-left of the document. Wide margins provide space for margin notes. Arbitrary text insertions above or line-wrap changes do not automatically push drawings downward; semantic block anchoring remains an unresolved design decision and a potential future extension.
 
 ---
 
@@ -222,7 +223,7 @@ SOS features an integrated AI study copilot housed in a persistent 340px right-h
 | **Vite** | The build tool and development server that packages the web application. | Starts in milliseconds; provides sub-100ms updates when modifying code. | Next.js, Webpack | Next.js adds complex server-side rendering overhead unnecessary for a local-first desktop app. |
 | **Electron** | Packages the web app into a native desktop application for Mac, Windows, and Linux. | Allows real embedded Chromium browsing (`WebContentsView`) and direct access to local files. | Tauri | Tauri's webview differences across operating systems break embedded browser and canvas parity. |
 | **Fastify** | High-speed Node.js backend server. | Extremely lightweight, low memory footprint, native TypeScript support, built-in schema validation. | FastAPI (Python), Express | Express is outdated; FastAPI would introduce a second language (Python) unnecessarily. |
-| **PostgreSQL 18** | Robust relational database running on the server. | Active stable major working recommendation (PostgreSQL 18.0 released Sept 2025; patch 18.7 released Nov 2026) for accounts, AI quotas, community sharing, and sync metadata (subject to hosting environment compatibility). | MySQL, MongoDB | Postgres has superior JSON handling, ACID reliability, and relational integrity. |
+| **PostgreSQL 18** | Robust relational database running on the server. | Active stable major-version baseline (PostgreSQL 18.0 released Sept 2025; local environment verified with 18.6, patch versions updateable at implementation time) for accounts, AI quotas, community sharing, and sync metadata (subject to hosting environment compatibility). | MySQL, MongoDB | Postgres has superior JSON handling, ACID reliability, and relational integrity. |
 | **Dexie (IndexedDB)**| Database running directly inside your browser or desktop app. | Stores thousands of notes, cards, and annotations locally with instant sub-millisecond queries. | SQLite WASM | Dexie is mature, rock-solid in all browsers, and requires zero complex WASM memory management. |
 | **OPFS** | Origin Private File System; high-speed browser file storage. | Allows the Web version to store large 500MB PDF textbooks and videos without crashing browser RAM. | Storing blobs in IndexedDB | IndexedDB crashes or slows down when storing hundreds of massive binary files. |
 | **Tiptap (ProseMirror)**| The structured rich-text document editor. | Powers clean block editing (headings, lists, tables) with clean JSON storage; highly extensible. | Lexical, Slate | Slate is unstable; Lexical has a steeper curve; Tiptap has the best extension ecosystem. |
@@ -270,10 +271,10 @@ A sound architecture plans for the future without over-engineering today. Here i
 | **REQ-007** | Community | Forking creates an independent copy in Library with preserved attribution snapshot. | `CONFIRMED_PRODUCT_REQUIREMENT` |
 | **REQ-008** | Audio | Persistent shell audio singleton that continues playing when switching tabs. | `CONFIRMED_PRODUCT_REQUIREMENT` |
 | **TECH-001** | Stack | React 19 + TypeScript 5.8 + Vite 8 in pnpm monorepo. | `APPROVED` |
-| **TECH-002** | Backend | Node.js LTS + Fastify 5 + PostgreSQL 18.7 + Drizzle ORM begins in Phase 01. | `APPROVED` |
+| **TECH-002** | Backend | Node.js LTS + Fastify 5 + PostgreSQL 18.x (major-version baseline) + Drizzle ORM begins in Phase 01. | `APPROVED` |
 | **TECH-003** | Desktop | Electron 45 with `WebContentsView` for isolated embedded browsing. | `APPROVED` |
 | **TECH-004** | Storage | Dexie (IndexedDB) for local data; OPFS / filesystem for binary files. | `APPROVED` |
-| **TECH-005** | Toolbar | 104px Docked Bottom Toolbar anchored to layout, invariant to canvas pan/zoom. | `APPROVED` |
+| **TECH-005** | Toolbar | 104px Docked Bottom Toolbar anchored to layout in canvas-enabled Learning tools, invariant to canvas pan/zoom. | `APPROVED` |
 | **TECH-006** | PDF Engine | PDF.js 4.10 for ordinary PDFs and PDF presentation decks. | `APPROVED` |
 | **TECH-007** | PPTX Engine | Dedicated presentation viewing SDK (Nutrient Web SDK as leading candidate, Apryse, Syncfusion, or transparent conversion). | `RECOMMENDED_PENDING_VALIDATION` |
 | **TECH-008** | Flashcards | FSRS algorithm via `ts-fsrs` using recommended defaults. | `RECOMMENDED` |

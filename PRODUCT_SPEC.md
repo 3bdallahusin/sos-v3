@@ -144,9 +144,10 @@ flowchart TD
 - **Document Synchronization:** The Canvas is **document-synchronized**; it follows the document's coordinate environment and movement. When the student scrolls or pans through the document, the Canvas moves in lockstep with the document.
 - **Coordinate & Reflow Policy:**
   - Canvas marks are stored in zoom-invariant document coordinates ($$\text{DocX}, \text{DocY}$$), not screen/viewport pixels.
-  - Document-relative coordinates anchor to the top-left origin of the document scroll container.
-  - No mandatory fixed-width document column is imposed; responsive wide-margin layout provides dedicated canvas space alongside text blocks.
-  - Spatial marks remain anchored to their document coordinates; semantic block anchoring (automatically shifting strokes when text paragraphs are inserted above) is an advanced feature explicitly deferred post-v1.
+  - Document-relative coordinates anchor strictly to the top-left origin ($$0, 0$$) of the document scroll container.
+  - The coordinate model guarantees that spatial marks remain locked to their document coordinates across zoom, pan, and scroll.
+  - No mandatory fixed-width document column is imposed; responsive wide margins provide dedicated spatial canvas space alongside text blocks.
+  - Arbitrary text insertions or line reflow do not automatically push or pull existing annotations downward; semantic block anchoring remains an unresolved design decision and a potential future extension.
 
 ### 3.7 Tool 7: Flashcards
 - **Capabilities:** Active recall flashcard review engine utilizing modern spaced repetition scheduling.
@@ -160,15 +161,16 @@ flowchart TD
 
 ---
 
-## 4. Workspace Interaction: Docked Full-Width Bottom Toolbar
+## 4. Workspace Interaction: Docked Bottom Toolbar (Contextual to Canvas Tools)
 
-In accordance with the design specification in [DESIGN.md](file:///d:/THE%20DECAGON/OTHER/SOS%20v3/DESIGN.md), the primary annotation toolbar is **fixed and docked** at the base of the central workspace:
+In accordance with the design specification in [DESIGN.md](file:///d:/THE%20DECAGON/OTHER/SOS%20v3/DESIGN.md), the primary annotation toolbar is **fixed and docked** at the base of the central workspace container **exclusively within canvas-enabled Learning tools (Notes, PDF Reader, Slides)**:
 
 ### 4.1 Behavioral Principles
 1. **Docked Geometry:** Approximately `104px` total height, spanning `100%` width of the central workspace container (`#09090B` surface, `1px` top border `#1F1F23`).
-2. **Layout Space Reservation:** The document/presentation content area sits directly above it with `flex: 1`, reserving the 104px vertical height so that the toolbar **never covers** document text or presentation slides.
-3. **Canvas Invariance:** The toolbar is an anchored application interface element, **not a canvas object**. It does not move during canvas panning and does not scale during zoom operations.
-4. **Synchronous Responsiveness:** When the Left Navigation Rail expands (56px to 240px) or the Right AI Assistant Drawer opens (340px) or closes, the central workspace resizes horizontally, and the docked toolbar resizes synchronously.
+2. **Contextual Scope:** The 104px docked toolbar is mounted exclusively in canvas-enabled Learning tools (Notes, PDF Reader, Slides). It is **not** globally mounted or reserved across Home, Library, Tracking, Calendar, Community, Profile, Settings, or non-canvas Learning tools.
+3. **Layout Space Reservation:** Where mounted, the document/presentation content area sits directly above it with `flex: 1`, reserving the 104px vertical height so that the toolbar **never covers** document text, PDF pages, or presentation slides.
+4. **Canvas Invariance:** The toolbar is an anchored application interface element, **not a canvas object**. It does not move during canvas panning and does not scale during zoom operations.
+5. **Synchronous Responsiveness:** When the Left Navigation Rail expands (56px to 240px) or the Right AI Assistant Drawer opens (340px) or closes, the central workspace resizes horizontally, and the docked toolbar resizes synchronously.
 
 ---
 
@@ -206,11 +208,11 @@ Library is the central system for organizing academic materials:
 | **DEC-005** | Real Embedded Browser | Desktop uses Electron `WebContentsView` for embedded browsing with session isolation; Web uses external tab launcher paired with article reading mode. |
 | **DEC-006** | Tiered Tab State Preservation | Three-tier lifecycle: Active (1 in DOM), Warm (in RAM cache), Cold (on disk) to prevent memory exhaustion while keeping <50ms switch speeds. |
 | **DEC-007** | Strict Obsidian Design Palette | Dark, minimal, obsidian-inspired grayscale palette (`#000000`, `#09090B`, `#0C0C0E`, `#141417`, `#222226`, `#2A2A30`), 48px header, 56px/240px rail, 340px AI panel, 104px docked toolbar. |
-| **DEC-008** | Context-Aware AI Panel | Persistent ~340px right drawer. Google Gemini API as initial candidate. Server-side credentials. User-approved context selection. No silent paid fallback. BYOK is not mandatory. |
+| **DEC-008** | Context-Aware AI Panel | Persistent ~340px right drawer. Google Gemini API as initial candidate. Server-side credentials. User-approved context selection. No silent paid fallback. BYOK is strictly optional and not mandatory for students; dynamic Model Registry populates model selector. |
 | **DEC-009** | Guest-First & Local-First Access | Full functionality immediately in Guest Mode without mandatory sign-in. Local storage (Dexie/IndexedDB + OPFS/filesystem) by default. Cloud accounts strictly optional. |
 | **DEC-010** | Hybrid Web + Desktop Strategy | Web is universal core product; Desktop provides enhanced local filesystem access and embedded Chromium browser. |
-| **DEC-011** | Docked Workspace Toolbar | Canvas annotation toolbar is fixed and docked at workspace footer (104px height), reserves layout space, and is invariant to canvas pan/zoom. |
-| **DEC-012** | Backend Begins in Phase 01 | Node.js + Fastify 5 + PostgreSQL 18.7 + Drizzle backend starts in Phase 01 alongside frontend foundations. |
+| **DEC-011** | Docked Workspace Toolbar | Canvas annotation toolbar is fixed and docked at workspace footer (104px height) exclusively in canvas-enabled Learning tools (Notes, PDF Reader, Slides), reserves layout space, and is invariant to canvas pan/zoom. |
+| **DEC-012** | Backend Begins in Phase 01 | Node.js + Fastify 5 + PostgreSQL 18.x (major-version baseline; patch versions updateable at implementation time) + Drizzle backend starts in Phase 01 alongside frontend foundations. |
 | **DEC-013** | Library Flexible Folders | User-defined flexible folder hierarchy with Gallery, List, and Table views; no forced rigid taxonomy. |
 | **DEC-014** | Authoritative Tracking & Mirror Timer | Tracking owns the session; Header Timer is a static display mirror deriving time from timestamps. |
 | **DEC-015** | Community Independent Copy Forking | Forking copies the resource into the user's Library with attribution snapshot and independent ownership. |

@@ -15,15 +15,15 @@ $$\text{App Shell} \longrightarrow \text{Home} \longrightarrow \text{Library} \l
 
 ```mermaid
 flowchart TD
-    P01["Phase 01: App Shell & Backend Foundation\n(pnpm Monorepo, Fastify 5 API, PostgreSQL 18.7, Drizzle, Dexie 4, Guest Workspace, Global Shell Layout)"]
-    P02["Phase 02: Home\n(Dashboard, Daily Goals, Streak Counter, Quick Resume Carousel, Activity Feed)"]
+    P01["Phase 01: App Shell & Backend Foundation\n(pnpm Monorepo, Fastify 5 API, PostgreSQL 18.x, Drizzle, Dexie 4, Guest Workspace, Global Shell Layout)"]
+    P02["Phase 02: Home\n(Dashboard, Daily Goals, Recent Activity Feed, Quick Resume Carousel)"]
     P03["Phase 03: Library & Early Data Backup\n(Flexible Folders, Gallery/List/Table Views, Pages, OPFS/FS Storage, .sos Backup & Restore)"]
     P04["Phase 04: Learning (8 Study Tools)\n(Subphases 4.1–4.8: Notes, Canvas, PDF, Slides [DG-01], Audio/Video, Browser [DG-02], Flashcards, Quiz|Exam)"]
     P05["Phase 05: Tracking\n(Authoritative Study Session Engine, Persistent Timestamps, Header Timer Display Mirror, Analytics)"]
-    P06["Phase 06: Calendar\n(Study Schedule, Deadlines, Spaced Repetition Review Queues, Milestone Countdown)"]
+    P06["Phase 06: Calendar\n(Study Schedule, Deadlines, Spaced Repetition Review Queues, Milestone Planning)"]
     P07["Phase 07: Community\n(Discovery Catalog, Shared Decks/Notes, Independent Copy Forking, Provenance Immutability)"]
-    P08["Phase 08: Profile\n(Student Academic Identity, Level/XP, Optional Accounts, Non-Destructive Data Migration)"]
-    P09["Phase 09: Settings\n(Preferences, Storage Management, AI Model & Quota Configuration, Cloud Sync Settings)"]
+    P08["Phase 08: Profile\n(Student Academic Identity, Study Stats, Optional Accounts, Non-Destructive Data Migration)"]
+    P09["Phase 09: Settings\n(Preferences, Storage Sovereignty Inspector, AI Model Registry Preferences, Optional Sync)"]
 
     P01 --> P02
     P02 --> P03
@@ -37,10 +37,11 @@ flowchart TD
 
 ### Core Implementation Principles
 1. **Vertical Slices with Immediate Value:** Each phase delivers an end-to-end usable section of the operating system.
-2. **Backend Established in Phase 01 (ADR-012):** The Fastify 5 + PostgreSQL 18 (active stable line: 18.0 released Sept 25, 2025; current patch 18.7 released Nov 12, 2026) backend begins on day one alongside the client shell. It is never deferred to an afterthought.
+2. **Backend Established in Phase 01 (ADR-012):** The Fastify 5 + PostgreSQL 18.x (PostgreSQL 18 major-version baseline; local environment verified with 18.6, patch versions updateable at implementation time) backend begins on day one alongside the client shell. It is never deferred to an afterthought.
 3. **Local-First & Guest-First Core (ADR-002):** The client initializes immediately into an isolated Guest workspace backed by Dexie 4 (IndexedDB) on the web and local filesystem on desktop. Network connectivity is never a prerequisite for core study activities.
 4. **Early Data Portability (Phase 03):** Local workspace backup, export, and restore (`.sos` / ZIP archive) are implemented early in Phase 03 alongside the Library, ensuring users can safeguard their data before heavy multi-tool content generation begins in Phase 04.
-5. **Rigorous Decision Gates (`DG-01`, `DG-02`):** Complex third-party integrations (such as the direct PPTX presentation engine and native embedded browser) follow formal decision gates with defined fallback architectures.
+5. **Contextual Toolbar Scope:** The verified 104px docked toolbar belongs specifically to canvas-enabled Learning tools (Notes, PDF Reader, Slides). The App Shell provides a flexible workspace layout composition without forcing an unnecessary 104px global reservation across non-canvas views (Home, Library, Tracking, Calendar, Community, Profile, Settings).
+6. **Rigorous Decision Gates (`DG-01`, `DG-02`):** Complex third-party integrations (such as the direct PPTX presentation engine and native embedded browser) follow formal decision gates with defined evaluation criteria.
 
 ---
 
@@ -48,15 +49,15 @@ flowchart TD
 
 | Phase | Section / Module | Primary Scope | Key Technical Deliverables | Exit Criteria |
 | :--- | :--- | :--- | :--- | :--- |
-| **Phase 01** | **App Shell & Backend** | Foundational OS layout, backend monolith, local storage bridge, Guest initialization | pnpm monorepo, Fastify 5 API, PostgreSQL 18.7, Drizzle ORM, Dexie 4, 48px Header, 56/240px Left Rail, 340px AI Drawer, 104px Docked Toolbar reservation | Web and Desktop apps launch cleanly into Guest workspace; Fastify `/health` returns 200 OK; 0px layout shifts |
-| **Phase 02** | **Home** | Student dashboard, daily progress, recent activity feed, quick resume | Streak counter, daily goal progress ring, recent documents carousel, quick capture modal, active study summary | User sees daily stats and resumes recent study assets with one click |
-| **Phase 03** | **Library & Backup** | Asset catalog, flexible folder hierarchy, multi-view presentation, early data portability | Flexible folder tree, Gallery/List/Table views, OPFS/filesystem binary storage, full `.sos` archive export & restore | Upload 100MB+ PDFs/media; switch views seamlessly; complete export/import round-trip with zero data corruption |
-| **Phase 04** | **Learning (8 Tools)** | Core multi-tab study workspace hosting all eight specialized learning tools | 8 internal subphases (4.1–4.8), Tiered Tab Lifecycle (Active/Warm/Cold), document canvas synchronization, Decision Gates DG-01 & DG-02 | 30+ tabs open without memory crash; Notes canvas synchronized; direct PPTX and PDF playback; FSRS flashcards; unified Quiz \| Exam |
-| **Phase 05** | **Tracking** | Authoritative study time tracking, Pomodoro/focus intervals, session analytics | Timestamp-based session engine, pause/resume logs, static Header Timer mirror, daily/weekly focus charts | Header Timer remains exact without drifting over system sleep; full session history persisted locally |
-| **Phase 06** | **Calendar** | Academic planning, study schedules, milestone deadlines, review queues | Monthly/weekly/daily schedule views, FSRS review schedule integration, deadline countdown badges, event-to-note linking | Review sessions appear automatically on schedule; deadlines trigger alert badges |
-| **Phase 07** | **Community** | Peer study resource discovery, public decks/notes, independent copy forking | Public discovery catalog, search & filtering, resource detail preview, independent copy forking engine, provenance snapshot | Forking creates decoupled personal copy preserving author attribution; zero shared-write coupling |
-| **Phase 08** | **Profile** | Student academic identity, achievements, optional accounts, migration | Student profile editor, academic level & XP calculations, optional auth (Passkey/OAuth), atomic Guest-to-account migration | Guest study data fully preserved during account creation with zero data loss or duplication |
-| **Phase 09** | **Settings** | System preferences, local storage sovereignty, AI provider setup, cloud sync | Theme/editor preferences, storage usage inspector, local data purge, Gemini API key custody & quotas, sync toggles | User can configure AI models, inspect local storage usage, and toggle optional sync |
+| **Phase 01** | **App Shell & Backend** | Foundational OS layout, backend monolith, local storage bridge, Guest initialization | pnpm monorepo, Fastify 5 API, PostgreSQL 18.x, Drizzle ORM, Dexie 4, 48px Header, 56/240px Left Rail, 340px AI Drawer, tool workspace layout container | Web and Desktop apps launch cleanly into Guest workspace; Fastify `/health` returns 200 OK; layout transitions match DESIGN.md |
+| **Phase 02** | **Home** | Student dashboard, daily progress, recent activity feed, quick resume | Daily study goal progress, recent documents resume rows, quick-capture scratchpad, active study summary | User sees daily study summary and resumes recent study assets with one click |
+| **Phase 03** | **Library & Backup** | Asset catalog, flexible folder hierarchy, multi-view presentation, early data portability | Flexible folder tree, Gallery/List/Table views, OPFS/filesystem binary storage, full `.sos` archive export & restore | Chunked binary ingestion into OPFS/filesystem without UI thread blocking; seamless view switching; export/restore round-trip with data integrity verification |
+| **Phase 04** | **Learning (8 Tools)** | Core multi-tab study workspace hosting all eight specialized learning tools | 8 internal subphases (4.1–4.8), Tiered Tab Lifecycle (Active/Warm/Cold), document canvas synchronization, Decision Gates DG-01 & DG-02 | Tab lifecycle memory benchmarks pass; Notes canvas synchronized with document movement; direct PPTX and PDF playback; FSRS flashcards; unified Quiz \| Exam |
+| **Phase 05** | **Tracking** | Authoritative study time tracking, Pomodoro/focus intervals, session analytics | Timestamp-based session engine, pause/resume logs, static Header Timer mirror, daily/weekly focus charts | Header Timer remains in lockstep without drift across system sleep; full session history persisted locally |
+| **Phase 06** | **Calendar** | Academic planning, study schedules, milestone deadlines, review queues | Monthly/weekly/daily schedule views, FSRS review schedule integration, milestone deadline badges, event-to-note linking | Review sessions appear on schedule; milestone deadlines render cleanly |
+| **Phase 07** | **Community** | Peer study resource discovery, public decks/notes, independent copy forking | Public discovery catalog, search & filtering, resource preview, independent copy forking engine, provenance snapshot | Forking creates decoupled personal copy preserving author attribution; zero shared-write coupling |
+| **Phase 08** | **Profile** | Student academic identity, study statistics, optional accounts, migration | Student profile editor, study stats aggregation, optional auth, non-destructive recoverable Guest-to-account migration | Guest study data fully preserved during account creation with pre-migration snapshot and verified data integrity |
+| **Phase 09** | **Settings** | System preferences, local storage sovereignty, AI Model Registry preferences, optional sync | Theme/editor preferences, storage usage inspector, local data purge, Fastify AI proxy custody & Model Registry preferences, optional sync toggles | User can select available models from Model Registry, inspect local storage usage, and toggle optional sync |
 
 ---
 
@@ -73,27 +74,26 @@ flowchart TD
   - Build persistent UI Shell:
     - **Top Global Header (48px):** Window controls, workspace breadcrumbs, static Header Timer mirror, global search shortcut (`⌘K`), right drawer toggle (`⌘J`).
     - **Left Navigation Rail (56px collapsed / 240px expanded):** Smooth icon-only to labeled-rail transition hosting the eight primary navigation destinations.
-    - **Docked Bottom Toolbar Zone (104px):** Fixed footer reservation with zero content occlusion, maintaining vertical centering for two tool tiers (40px Tier 1 + 44px Tier 2 + 10px balanced padding).
+    - **Central Workspace Layout Container:** Responsive central container that hosts the active tool; provides docked toolbar mounting zone for canvas-enabled tools without reserving toolbar space in non-canvas views.
     - **Right AI Assistant Drawer (340px):** Collapsible lateral panel container.
   - Setup `@tanstack/react-router` with route boundaries for all primary application sections.
   - Implement client-side Guest Mode workspace initialization and local persistence bridge via **Dexie 4 (IndexedDB)**.
   - **Backend API Foundation:** Initialize **Node.js LTS + Fastify 5** modular monolith alongside the client shell.
-  - Setup **PostgreSQL 18** (active stable release line: PostgreSQL 18.0 released Sept 25, 2025; patch 18.7 released Nov 12, 2026) with **Drizzle ORM** schema definitions and initial migrations.
+  - Setup **PostgreSQL 18.x** (PostgreSQL 18 major-version baseline; local environment verified with 18.6, patch versions updateable at implementation time) with **Drizzle ORM** schema definitions and initial migrations.
   - Establish shared **Zod** contracts for runtime validation across API and client.
   - Implement health checks (`/health`), structured logging, security headers (CSP, CORS), and error boundaries.
 - **Expected User-Facing Result:**
   - Application launches instantly into the obsidian operating system shell without mandatory sign-in.
   - User enters immediately as a Guest into an isolated local workspace.
   - Left rail smoothly expands from 56px to 240px; right AI drawer toggles from 0px to 340px without layout distortion.
-  - The 104px docked toolbar zone at the base of the central workspace is reserved with zero content occlusion.
   - Fastify backend runs independently, exposing healthy API endpoints and serving configuration.
 - **Acceptance Criteria:**
   - [ ] Web and desktop applications start cleanly with zero runtime console errors.
   - [ ] Guest can enter immediately without mandatory registration or network dependence for basic UI operations.
   - [ ] A unique local workspace ID (UUIDv7) is created and persists across application restarts and page reloads.
-  - [ ] Fastify API starts independently, connects to PostgreSQL 18.7, runs Drizzle migrations, and reports `200 OK` on `/health`.
+  - [ ] Fastify API starts independently, connects to PostgreSQL 18.x, runs Drizzle migrations, and reports `200 OK` on `/health`.
   - [ ] Client bundles contain zero backend secrets or API keys.
-  - [ ] Docked toolbar zone reserves exactly 104px vertical height at the workspace base.
+  - [ ] Layout transitions (rail expand/collapse, AI drawer toggle) conform to `DESIGN.md` specifications without unexpected layout jitter.
 - **Testing Requirements:**
   - Vitest unit tests verifying route matching, local Dexie initialization, and Zod contract schemas.
   - Fastify endpoint integration tests verifying `/health` and OpenAPI specification generation.
@@ -107,22 +107,21 @@ flowchart TD
 - **Detailed Work Streams:**
   - Implement the **Home** dashboard (`/`):
     - Personalized greeting and current date display.
-    - Streak counter (consecutive days of study activity calculated from local Tracking logs).
-    - Daily goal progress ring (target focus hours vs. actual completed focus time).
-    - Quick-resume carousel displaying the most recently opened study tabs (Notes, Slides, PDFs, Videos).
+    - Daily study goal progress (focus time logged vs. daily target).
+    - Quick-resume section displaying tactile rows of the most recently opened study assets (Notes, Slides, PDFs, Videos).
     - Recent activity feed showing completed study sessions, newly created flashcard decks, and quiz scores.
-    - Quick-capture modal: instant scratchpad note or rapid card creation from the home view.
+    - Quick-capture scratchpad note creation directly from the home view.
 - **Expected User-Facing Result:**
-  - Upon opening SOS, the student sees a motivating summary of their academic momentum and daily focus goal.
-  - Clicking any item in the quick-resume carousel immediately opens it into the Learning workspace.
+  - Upon opening SOS, the student sees a motivating summary of their academic progress and daily focus.
+  - Clicking any item in the quick-resume list opens it directly into the Learning workspace.
 - **Acceptance Criteria:**
-  - [ ] Home displays accurate daily focus time and streak count calculated from local Dexie tracking logs.
-  - [ ] Quick-resume cards show accurate file type icons, titles, and last-accessed relative timestamps.
-  - [ ] Clicking a resume card navigates directly to the target asset in the Learning workspace.
+  - [ ] Home displays accurate daily focus time calculated from local Dexie tracking logs.
+  - [ ] Quick-resume rows show accurate file type icons, titles, and last-accessed relative timestamps.
+  - [ ] Clicking a resume row navigates directly to the target asset in the Learning workspace.
   - [ ] Quick-capture note persists to the Library without leaving the Home view.
 - **Testing Requirements:**
-  - Unit tests verifying streak calculation logic across date boundaries and time zones.
-  - Component tests verifying rendering of empty, partial, and full dashboard states.
+  - Unit tests verifying study time aggregation logic across date boundaries and time zones.
+  - Component tests verifying rendering of empty, partial, and populated dashboard states.
 
 ---
 
@@ -147,8 +146,8 @@ flowchart TD
 - **Acceptance Criteria:**
   - [ ] Flexible folder creation, renaming, nesting, and item moving operate reliably.
   - [ ] Gallery, List, and Table views render the same underlying resources with proper metadata.
-  - [ ] Large files (100MB+ PDFs/videos) stream into OPFS / filesystem without blocking the UI thread.
-  - [ ] Full `.sos` export/import round-trip preserves all folder hierarchies, metadata, and binary file integrity.
+  - [ ] Large binary files stream into OPFS / filesystem in chunks without blocking the UI thread.
+  - [ ] Full `.sos` export/import round-trip preserves folder hierarchies, metadata, and binary file integrity.
   - [ ] Broken or corrupted imports are caught gracefully with actionable error messages without damaging existing workspace data.
 - **Testing Requirements:**
   - Unit tests verifying OPFS/filesystem storage adapters and checksum verification.
@@ -161,9 +160,9 @@ flowchart TD
 
 - **Module Scope:** The primary multi-tab learning engine hosting all eight specialized study tools.
 - **Architecture Foundations:**
-  - Tiered Tab Engine (Active / Warm / Cold) to support 30+ open tabs without memory exhaustion.
+  - Tiered Tab Engine (Active / Warm / Cold): active tab mounted in DOM, warm tabs cached in memory, cold tabs evicted to local disk to keep memory bounded.
   - Workspace multi-tab bar with drag-and-drop reordering, pin/unpin, and close actions.
-  - Shared spatial coordinate math engine and 104px Docked Bottom Toolbar integration.
+  - Shared spatial coordinate math engine and 104px Docked Bottom Toolbar integration for canvas-enabled tools.
 - **Subphase Structure:**
 
 #### Subphase 4.1: Notes & Document Editor Core
@@ -178,8 +177,8 @@ flowchart TD
 - Vector drawing tools: freehand pen input with pressure sensitivity, semi-transparent highlighters, shapes (rectangles, ellipses), arrows/connectors, and text boxes.
 - **Document Synchronization:** Anchor the Konva canvas stage to the document scroll container so drawings and vector ink scroll and pan in lockstep with document text.
 - Implement normalized document coordinates ($$\text{DocX}, \text{DocY}$$) invariant to screen resolution and zoom.
-- **Docked Full-Width Bottom Toolbar (104px):** Fixed at workspace footer; tool selection, stroke weights (fine/medium/thick), academic ink swatches, laser pointer, eraser, and undo/redo.
-- Coordinate boundaries policy: spatial marks anchor to document coordinates ($$\text{DocX}, \text{DocY}$$); semantic block anchoring is explicitly deferred post-v1.
+- **Docked Full-Width Bottom Toolbar (104px):** Fixed at workspace footer for canvas-enabled tools; tool selection, stroke weights (fine/medium/thick), academic ink swatches, laser pointer, eraser, and undo/redo.
+- **Coordinate Boundaries Policy:** The coordinate model guarantees that spatial marks remain anchored to normalized document coordinates ($$\text{DocX}, \text{DocY}$$) relative to the document origin ($$0, 0$$) across zoom, pan, and scroll. Wide margins provide dedicated spatial canvas space. Arbitrary text edits or line reflow do not automatically push or pull existing annotations; semantic block anchoring remains an unresolved design decision and possible future extension.
 
 #### Subphase 4.3: PDF Reader (Academic Handouts & Textbooks)
 - Implement dedicated **PDF Reader** using **PDF.js 4.10 (`pdfjs-dist`)**.
@@ -188,6 +187,7 @@ flowchart TD
 - Text Layer integration for native text selection, clipboard copying, and search keyword highlighting.
 - Page navigation sidebar with visual thumbnails and document table of contents (outlines).
 - Page-relative annotation integration: adapting Konva spatial annotation layer to PDF page coordinates.
+- Docked 104px Bottom Toolbar integration for page-margin annotations and highlights.
 
 #### Subphase 4.4: Slides: PDF + Direct PowerPoint (.pptx) Presentation Engine
 - Implement dedicated **Slides** presentation review tool.
@@ -196,9 +196,9 @@ flowchart TD
 - **Dual Rendering Adapters:**
   - PDF slide decks route to client-side **PDF.js** slide adapter.
   - Native PowerPoint `.pptx` decks route to the evaluated presentation SDK.
-- **DECISION GATE DG-01 (Direct PPTX Engine):**
-  - *Criteria:* Fidelity evaluation of candidate client-side SDKs (Nutrient Web SDK with Office Files licensing component as leading candidate `RECOMMENDED_PENDING_VALIDATION`, Apryse WebViewer with Office Conversion add-on, Syncfusion JavaScript PowerPoint Library) against complex academic decks (layouts, typography, shapes, tables, charts).
-  - *Fallback:* If commercial licensing or client-side WASM performance fails acceptance benchmarks, activate the server-side Fastify background headless conversion worker (`soffice --headless --convert-to pdf`) producing high-fidelity PDF slides transparently without requiring user-side manual conversion.
+- **DECISION GATE DG-01 (Direct PPTX Engine Evaluation):**
+  - *Candidate Evaluation:* Fidelity, performance, and licensing evaluation of candidate client-side SDKs (Nutrient Web SDK with Office Files licensing component as leading candidate `RECOMMENDED_PENDING_VALIDATION`, Apryse WebViewer with Office Conversion add-on, Syncfusion JavaScript PowerPoint Library) against complex academic decks (layouts, typography, shapes, tables, charts).
+  - *Decision Policy:* No final SDK is selected prior to validation. If a fundamentally different rendering or conversion architecture is later considered, it requires a separate evidence-based decision and founder approval. Direct native PPTX upload remains a mandatory requirement.
 - Slide-scoped spatial annotations: vector ink, highlighters, laser pointer, and notes tied to `page_number`.
 - Original file preservation: the uploaded `.pptx` or `.pdf` file is strictly preserved without destructive modification.
 
@@ -224,22 +224,22 @@ flowchart TD
 - Supported question types: multiple choice, multi-select, true/false, fill-in-the-blank, open response.
 - Configurable per-assessment parameters: optional time limits, question shuffling/ordering, immediate vs. deferred feedback, passing thresholds.
 - All configurations apply directly to the individual Assessment itself without any Quiz-vs-Exam architectural division.
-- Detailed score review, rationale display, and automatic generation of review flashcards from missed questions.
+- Detailed score review, rationale display, and review flashcard generation.
 
 - **Acceptance Criteria (Phase 04):**
-  - [ ] 30+ tabs open across multiple tools with warm/cold unmounting maintaining <500MB RAM usage.
-  - [ ] Canvas stage scrolls synchronously with Tiptap documents without visual jitter (60fps).
-  - [ ] 104px Docked Toolbar remains docked at the base with 0px content occlusion across all canvas-enabled tools.
+  - [ ] Tab lifecycle management passes memory benchmarks, evicting inactive tab DOM nodes to warm RAM cache and cold disk state under memory pressure.
+  - [ ] Canvas stage scrolls synchronously with Tiptap documents without visual jitter.
+  - [ ] 104px Docked Toolbar mounts correctly in Notes, PDF Reader, and Slides without occluding content, and is absent in non-canvas tools.
   - [ ] Both `.pptx` and `.pdf` files open directly in Slides without requiring user-side manual conversion.
   - [ ] Audio playback continues uninterrupted when switching between Notes, Slides, and Library.
-  - [ ] Opening an HTML modal in Electron automatically hides `WebContentsView` via the Visibility Coordinator.
+  - [ ] Opening an HTML modal in Electron hides `WebContentsView` via the Visibility Coordinator.
   - [ ] Flashcard scheduling computes valid next review dates using FSRS algorithm defaults.
   - [ ] Quiz | Exam operates as one unified assessment tool with per-assessment configuration.
 - **Testing Requirements:**
   - Coordinate math unit tests verifying scroll, pan, and zoom invariance.
   - Format router unit tests verifying slide engine dispatch.
   - FSRS algorithm verification tests against standard repetition sequences.
-  - Playwright end-to-end tests covering tab transitions, media playback, and assessment completion.
+  - Memory profiling tests measuring tab unmounting and state restoration latency.
 
 ---
 
@@ -253,10 +253,10 @@ flowchart TD
     - Elimination of drift: system sleep, tab backgrounding, and clock adjustments do not cause timer drift.
   - **Header Timer Integration:** Wire the Top Global Header timer as a lightweight, static display-only mirror subscribing to Tracking Engine state via Zustand.
   - Study Session History: persist full session records to Dexie with associated subject tags, folder links, and productivity ratings.
-  - Analytics Dashboard: daily, weekly, and monthly study time distribution charts, focus streaks, and peak focus hour breakdowns.
+  - Analytics Dashboard: daily, weekly, and monthly study time distribution charts and focus hour breakdowns.
 - **Expected User-Facing Result:**
   - The Header Timer accurately reflects active study time without drifting.
-  - Students can review detailed historical logs and visual charts of their study habits across days and weeks.
+  - Students can review historical logs and visual charts of their study habits across days and weeks.
 - **Acceptance Criteria:**
   - [ ] Header Timer remains in exact lockstep with the Tracking session and does not drift after sleep or tab switching.
   - [ ] Pausing, resuming, or stopping in Tracking immediately updates the Header Timer mirror.
@@ -274,7 +274,7 @@ flowchart TD
 - **Detailed Work Streams:**
   - Implement **Calendar** views: Monthly, Weekly, and Daily agenda layouts.
   - Event types: Exam dates, assignment deadlines, scheduled study sessions, class lectures.
-  - Integration with **Flashcards (FSRS):** Automatically project upcoming daily flashcard review queues onto the calendar.
+  - Integration with **Flashcards (FSRS):** Project upcoming daily flashcard review queues onto the calendar.
   - Integration with **Tracking:** Allow scheduling planned focus sessions that can be started directly from the calendar.
   - Deadline countdown badges: prominent countdowns for high-priority upcoming exams.
   - Deep-linking: clicking a calendar event opens the associated study note, slide deck, or assessment.
@@ -305,9 +305,9 @@ flowchart TD
     - Zero shared-write coupling: subsequent edits made by the user do not alter the community version; community updates do not overwrite user edits.
   - **Publishing Workflow (Optional Cloud Users):**
     - Authenticated users can publish selected decks or notes to the community catalog via the Fastify API.
-    - Content validation, sanitize HTML, and automated moderation filters.
+    - Content validation, HTML sanitization, and automated moderation filters.
 - **Expected User-Facing Result:**
-  - Students can discover high-quality peer study decks and fork them into their personal Library with one click.
+  - Students can discover peer study decks and fork them into their personal Library with one click.
   - Forked decks can be edited, reorganized, or expanded without fear of altering the original or having personal edits overwritten.
 - **Acceptance Criteria:**
   - [ ] Browsing and searching the community catalog is fast and responsive.
@@ -322,56 +322,58 @@ flowchart TD
 
 ### Phase 08: Profile
 
-- **Module Scope:** Student academic identity, study statistics, gamification milestones, optional cloud accounts, non-destructive data migration.
+- **Module Scope:** Student academic identity, study statistics, optional cloud accounts, non-destructive data migration.
 - **Detailed Work Streams:**
   - Implement **Profile** view:
     - Student profile card: display name, avatar, academic institution, field of study.
-    - Academic statistics summary: total study hours, total cards reviewed, assessments completed, current streak.
-    - Achievement milestones: visual badges for study streaks, card mastery, and consistent tracking.
+    - Academic statistics summary: total study hours, total cards reviewed, assessments completed.
   - **Optional Authentication Integration (ADR-002):**
-    - Implement optional login options: Passkeys (WebAuthn), OAuth (Google, GitHub, Apple), or passwordless magic link via Fastify.
+    - Implement optional login options (Passkeys/WebAuthn, OAuth, or passwordless magic link) via Fastify backend.
   - **Non-Destructive Guest-to-Account Migration:**
-    - Atomic migration routine: package all local Guest Dexie tables, OPFS/filesystem binaries, and configuration.
-    - Upload and associate with the newly created server user profile in PostgreSQL 18.7 via Fastify.
-    - Local database remains authoritative; zero data is deleted, overwritten, or orphaned during linking.
+    - Migration routine: package local Guest Dexie tables, OPFS/filesystem binaries, and configuration.
+    - Create a pre-migration local snapshot to ensure full recoverability in case of network interruption.
+    - Associate data with the newly created server user profile in PostgreSQL 18.x via Fastify.
+    - Local database remains authoritative; zero data is deleted or orphaned during linking.
 - **Expected User-Facing Result:**
-  - Students can track their academic milestones and level up their study habits.
-  - Guests can optionally choose to register an account at any time to enable cloud sync, with 100% guarantee that all existing local notes, decks, and settings are preserved.
+  - Students can maintain their academic profile and track cumulative study volume.
+  - Guests can optionally register an account at any time to enable cloud sync, with full assurance that existing local notes, decks, and settings are preserved.
 - **Acceptance Criteria:**
   - [ ] Profile accurately reflects cumulative study statistics aggregated from local logs.
   - [ ] Account creation is strictly optional; guest experience remains unhindered.
-  - [ ] Creating an account executes an atomic migration that never loses or duplicates local Guest study data.
+  - [ ] Creating an account executes a non-destructive migration verified by data integrity checks.
   - [ ] In the event of network disruption during migration, local data remains intact and recovery is automatic.
 - **Testing Requirements:**
-  - Unit tests verifying academic XP and achievement milestone criteria.
-  - End-to-end integration tests simulating atomic Guest-to-account migration with simulated network failure.
+  - Unit tests verifying study statistics aggregation.
+  - Integration tests simulating non-destructive Guest-to-account migration with simulated network failure.
 
 ---
 
 ### Phase 09: Settings & AI Configuration
 
-- **Module Scope:** Application preferences, theme configuration, local storage management, AI provider setup and quotas, optional cloud sync settings.
+- **Module Scope:** Application preferences, theme configuration, local storage management, AI Model Registry preferences, optional cloud sync settings.
 - **Detailed Work Streams:**
   - Implement **Settings** interface:
     - **General & Appearance:** Theme customization (Obsidian dark palette defaults, accent colors), typography sizing, docked toolbar preferences.
     - **Storage Sovereignty Inspector:** Visual breakdown of local disk space consumed by Dexie tables, OPFS binary blobs, and cached PDF/video files.
     - **Data Management:** Local database reset, cache clearing, and manual `.sos` archive backup trigger.
-    - **Context-Aware AI Assistant Configuration (Google Gemini):**
-      - Server-side Fastify API proxy for all AI requests; API keys remain strictly on the backend.
-      - Dynamic model catalog: client queries backend registry and displays generic placeholders ("Select Model" / "Available Models").
+    - **Context-Aware AI Assistant Preferences:**
+      - Server-side Fastify API proxy maintains custody of provider credentials (Gemini API keys); keys are never exposed to client or Electron renderer.
+      - Dynamic Model Registry: client queries backend registry and presents user-facing model selection from available models.
       - Integration via **Vercel AI SDK Core** with `@ai-sdk/google`.
-      - Per-device usage tracking, quota exhaustion alerts, and graceful degradation without silent paid fallback.
+      - Per-device usage tracking and quota management on the backend; clear UI notifications on quota limits without silent paid fallback.
       - Context inclusion rules (`@file`, `@slides`, `@selection`) with user transparency preview.
+      - BYOK is strictly optional and not mandatory for ordinary students.
     - **Cloud Synchronization Settings (Optional):**
       - Sync status indicator, manual sync trigger, conflict resolution policy settings.
 - **Expected User-Facing Result:**
   - Students can customize their environment, inspect how much local storage SOS is using, and safely purge temporary caches.
-  - Students configure and interact with the AI assistant with complete transparency over provider usage and quotas.
+  - Students can select available AI models from the Model Registry without having to provide their own API keys.
   - Cloud users can inspect sync health and manage connected devices.
 - **Acceptance Criteria:**
-  - [ ] Theme toggles apply instantly across the entire App Shell and active study tools.
+  - [ ] Theme toggles apply instantly across the App Shell and active study tools.
   - [ ] Storage inspector displays accurate byte counts for local database and binary caches.
-  - [ ] AI configuration cleanly routes through Fastify proxy with zero client-side credential exposure.
+  - [ ] AI requests cleanly route through Fastify proxy with zero client-side credential exposure.
+  - [ ] Model selector populates dynamically from backend Model Registry.
   - [ ] When AI quotas are reached, UI presents clear informational alerts without initiating unapproved paid billing.
 - **Testing Requirements:**
   - Unit tests verifying preference persistence in Dexie.
@@ -404,8 +406,8 @@ gantt
 
 | Release Milestone | Phases Included | Target Capability |
 | :--- | :--- | :--- |
-| **Milestone 1: The Shell, Core Data & Backend** | Phase 01, 02, 03 | Obsidian shell, navigation rail, 104px docked toolbar zone, Fastify backend API, PostgreSQL 18.7, Drizzle ORM, Guest workspace, Home dashboard, flexible Library folders, multi-view catalog, binary storage, and `.sos` backup/restore. |
-| **Milestone 2: The Multi-Tool Learning Engine** | Phase 04 (Subphases 4.1–4.8) | Structured Tiptap Notes, Konva document-synchronized spatial canvas, 104px docked toolbar, PDF.js PDF Reader, direct PPTX & PDF Slides engine (shared shell, thumbnails, fullscreen), persistent Audio Singleton, video player, desktop embedded browser (`WebContentsView`), FSRS flashcards, and unified Quiz \| Exam assessment tool. |
-| **Milestone 3: Tracking & Academic Planning** | Phase 05, 06 | Authoritative Tracking engine, Header Timer mirror, study analytics, academic calendar, FSRS review schedule projections, and deadline countdown badges. |
-| **Milestone 4: Community, Profile & Accounts** | Phase 07, 08 | Community discovery catalog, independent copy forking with provenance snapshot, student academic profile & XP, optional authentication, and atomic non-destructive Guest migration. |
+| **Milestone 1: The Shell, Core Data & Backend** | Phase 01, 02, 03 | Obsidian shell, navigation rail, Fastify backend API, PostgreSQL 18.x, Drizzle ORM, Guest workspace, Home dashboard, flexible Library folders, multi-view catalog, binary storage, and `.sos` backup/restore. |
+| **Milestone 2: The Multi-Tool Learning Engine** | Phase 04 (Subphases 4.1–4.8) | Structured Tiptap Notes, Konva document-synchronized spatial canvas, 104px docked toolbar in canvas tools, PDF.js PDF Reader, direct PPTX & PDF Slides engine (shared shell, thumbnails, fullscreen), persistent Audio Singleton, video player, desktop embedded browser (`WebContentsView`), FSRS flashcards, and unified Quiz \| Exam assessment tool. |
+| **Milestone 3: Tracking & Academic Planning** | Phase 05, 06 | Authoritative Tracking engine, Header Timer mirror, study analytics, academic calendar, FSRS review schedule projections, and milestone deadline badges. |
+| **Milestone 4: Community, Profile & Accounts** | Phase 07, 08 | Community discovery catalog, independent copy forking with provenance snapshot, student academic profile, optional authentication, and non-destructive recoverable Guest migration. |
 | **Milestone 5: Settings, Storage & Context AI** | Phase 09 | User preferences, storage sovereignty inspector, persistent ~340px AI panel, Google Gemini integration via Vercel AI SDK Core, dynamic model selection, server credential custody, and optional cloud sync settings. |
