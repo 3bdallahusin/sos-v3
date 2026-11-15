@@ -3,10 +3,14 @@ import {
   HealthResponseSchema,
   ReadinessResponseSchema,
   NavigationDestinationSchema,
-  WorkspaceSchema
+  WorkspaceSchema,
+  TaskItemSchema,
+  RecentStudyItemSchema,
+  DailyStudyGoalSchema,
+  QuickCaptureNoteSchema
 } from '../src/index.js';
 
-describe('Shared Contracts (Phase 01)', () => {
+describe('Shared Contracts (Phase 01 & Phase 02)', () => {
   it('validates health response schema', () => {
     const valid = {
       status: 'ok',
@@ -58,5 +62,43 @@ describe('Shared Contracts (Phase 01)', () => {
       }
     };
     expect(WorkspaceSchema.safeParse(ws).success).toBe(true);
+  });
+
+  it('validates Phase 02 TaskItemSchema', () => {
+    const task = {
+      id: 'task-1',
+      title: 'Neurobiology Lecture 04',
+      completed: false,
+      order: 0,
+      createdAt: new Date().toISOString()
+    };
+    expect(TaskItemSchema.safeParse(task).success).toBe(true);
+
+    const invalidTask = { id: '', title: '' };
+    expect(TaskItemSchema.safeParse(invalidTask).success).toBe(false);
+  });
+
+  it('validates Phase 02 RecentStudyItemSchema', () => {
+    const item = {
+      id: 'item-1',
+      title: 'Kandel_Principles_Ch12.pdf',
+      subtitle: 'Page 42',
+      type: 'pdf',
+      path: '/learning',
+      lastOpenedAt: new Date().toISOString()
+    };
+    expect(RecentStudyItemSchema.safeParse(item).success).toBe(true);
+  });
+
+  it('validates Phase 02 QuickCaptureNoteSchema', () => {
+    const note = {
+      id: 'note-1',
+      title: 'Quick insight on LTP',
+      content: 'Long-term potentiation requires NMDA receptor activation.',
+      tags: ['neuro', 'synapse'],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    expect(QuickCaptureNoteSchema.safeParse(note).success).toBe(true);
   });
 });

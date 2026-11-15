@@ -56,3 +56,71 @@ export interface Workspace {
 export interface GuestWorkspace extends Workspace {
   isGuest: true;
 }
+
+// ==========================================
+// Phase 02: Home Domain Models
+// ==========================================
+
+export interface TaskItem {
+  id: string;
+  workspaceId?: string;
+  title: string;
+  completed: boolean;
+  createdAt: string;
+  completedAt?: string | null;
+  order: number;
+}
+
+export type StudyAssetType =
+  | 'pdf'
+  | 'slides'
+  | 'video'
+  | 'audio'
+  | 'notes'
+  | 'flashcards'
+  | 'quiz'
+  | 'browser';
+
+export interface RecentStudyItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  type: StudyAssetType;
+  path: string;
+  lastOpenedAt: string;
+  progressPercent?: number;
+  details?: string;
+}
+
+export interface DailyStudyGoal {
+  date: string;
+  targetMinutes: number;
+  completedMinutes: number;
+  streakDays: number;
+  horizonDaysLeft: number;
+  horizonSemesterName: string;
+  horizonProgressPercent: number;
+}
+
+export interface DailyEditorial {
+  quote: {
+    text: string;
+    author: string;
+  };
+  essay: {
+    title: string;
+    summary: string;
+    readTimeMinutes: number;
+    url?: string;
+  };
+}
+
+export interface QuickCaptureNote {
+  id: string;
+  workspaceId?: string;
+  title: string;
+  content: string;
+  tags?: string[];
+  createdAt: string;
+  updatedAt: string;
+}

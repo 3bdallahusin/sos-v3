@@ -34,3 +34,63 @@ export const WorkspaceSchema = z.object({
   }).optional()
 });
 export type WorkspaceContract = z.infer<typeof WorkspaceSchema>;
+
+// ==========================================
+// Phase 02: Home Contracts
+// ==========================================
+
+export const TaskItemSchema = z.object({
+  id: z.string().min(1),
+  workspaceId: z.string().optional(),
+  title: z.string().min(1),
+  completed: z.boolean(),
+  createdAt: z.string(),
+  completedAt: z.string().nullable().optional(),
+  order: z.number().int()
+});
+export type TaskItemContract = z.infer<typeof TaskItemSchema>;
+
+export const StudyAssetTypeSchema = z.enum([
+  'pdf',
+  'slides',
+  'video',
+  'audio',
+  'notes',
+  'flashcards',
+  'quiz',
+  'browser'
+]);
+
+export const RecentStudyItemSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(1),
+  subtitle: z.string(),
+  type: StudyAssetTypeSchema,
+  path: z.string(),
+  lastOpenedAt: z.string(),
+  progressPercent: z.number().min(0).max(100).optional(),
+  details: z.string().optional()
+});
+export type RecentStudyItemContract = z.infer<typeof RecentStudyItemSchema>;
+
+export const DailyStudyGoalSchema = z.object({
+  date: z.string(),
+  targetMinutes: z.number().nonnegative(),
+  completedMinutes: z.number().nonnegative(),
+  streakDays: z.number().nonnegative(),
+  horizonDaysLeft: z.number().int(),
+  horizonSemesterName: z.string().optional(),
+  horizonProgressPercent: z.number().min(0).max(100)
+});
+export type DailyStudyGoalContract = z.infer<typeof DailyStudyGoalSchema>;
+
+export const QuickCaptureNoteSchema = z.object({
+  id: z.string().min(1),
+  workspaceId: z.string().optional(),
+  title: z.string().min(1),
+  content: z.string(),
+  tags: z.array(z.string()).optional(),
+  createdAt: z.string(),
+  updatedAt: z.string()
+});
+export type QuickCaptureNoteContract = z.infer<typeof QuickCaptureNoteSchema>;
