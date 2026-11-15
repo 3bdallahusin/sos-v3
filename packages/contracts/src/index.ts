@@ -84,4 +84,90 @@ export const DailyStudyGoalSchema = z.object({
 });
 export type DailyStudyGoalContract = z.infer<typeof DailyStudyGoalSchema>;
 
+// ==========================================
+// Phase 03: Library Contracts
+// ==========================================
+
+export const LibraryItemTypeSchema = z.enum([
+  'pdf',
+  'notes',
+  'video',
+  'audio',
+  'slides',
+  'flashcards',
+  'page'
+]);
+export type LibraryItemTypeContract = z.infer<typeof LibraryItemTypeSchema>;
+
+export const FolderSummaryBlockSchema = z.object({
+  id: z.string().min(1),
+  type: z.enum(['paragraph', 'callout']),
+  title: z.string().optional(),
+  text: z.string(),
+  icon: z.string().optional()
+});
+export type FolderSummaryBlockContract = z.infer<typeof FolderSummaryBlockSchema>;
+
+export const LibraryFolderSchema = z.object({
+  id: z.string().min(1),
+  workspaceId: z.string().min(1),
+  parentId: z.string().nullable(),
+  name: z.string().min(1),
+  icon: z.string().optional(),
+  coverUrl: z.string().optional(),
+  description: z.string().optional(),
+  summaryBlocks: z.array(FolderSummaryBlockSchema).optional(),
+  color: z.string().optional(),
+  order: z.number().int(),
+  createdAt: z.string(),
+  updatedAt: z.string()
+});
+export type LibraryFolderContract = z.infer<typeof LibraryFolderSchema>;
+
+export const LibraryItemSchema = z.object({
+  id: z.string().min(1),
+  workspaceId: z.string().min(1),
+  folderId: z.string().nullable(),
+  title: z.string().min(1),
+  type: LibraryItemTypeSchema,
+  subtitle: z.string().optional(),
+  coverUrl: z.string().optional(),
+  icon: z.string().optional(),
+  sizeBytes: z.number().nonnegative().optional(),
+  readTimeMinutes: z.number().nonnegative().optional(),
+  assetPath: z.string().optional(),
+  content: z.string().optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+  createdAt: z.string(),
+  updatedAt: z.string()
+});
+export type LibraryItemContract = z.infer<typeof LibraryItemSchema>;
+
+export const LibraryViewModeSchema = z.enum(['gallery', 'list', 'table']);
+export type LibraryViewModeContract = z.infer<typeof LibraryViewModeSchema>;
+
+export const LibraryCardSizeSchema = z.enum(['compact', 'normal', 'spacious']);
+export type LibraryCardSizeContract = z.infer<typeof LibraryCardSizeSchema>;
+
+export const LibraryViewSettingsSchema = z.object({
+  viewMode: LibraryViewModeSchema,
+  cardSize: LibraryCardSizeSchema,
+  sortBy: z.enum(['name', 'updatedAt', 'createdAt', 'type']).optional(),
+  sortOrder: z.enum(['asc', 'desc']).optional()
+});
+export type LibraryViewSettingsContract = z.infer<typeof LibraryViewSettingsSchema>;
+
+export const LibraryBackupManifestSchema = z.object({
+  version: z.number().int().positive(),
+  appName: z.literal('SOS'),
+  schemaVersion: z.number().int().positive(),
+  exportedAt: z.string(),
+  workspaceId: z.string().optional(),
+  checksum: z.string().min(1),
+  foldersCount: z.number().int().nonnegative(),
+  itemsCount: z.number().int().nonnegative()
+});
+export type LibraryBackupManifestContract = z.infer<typeof LibraryBackupManifestSchema>;
+
+
 
