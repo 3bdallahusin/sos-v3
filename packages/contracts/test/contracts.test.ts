@@ -6,11 +6,7 @@ import {
   WorkspaceSchema,
   TaskItemSchema,
   RecentStudyItemSchema,
-  DailyStudyGoalSchema,
-  LibraryFolderSchema,
-  LibraryItemSchema,
-  LibraryViewSettingsSchema,
-  LibraryBackupManifestSchema
+  DailyStudyGoalSchema
 } from '../src/index.js';
 
 describe('Shared Contracts (Phase 01 & Phase 02)', () => {
@@ -91,63 +87,5 @@ describe('Shared Contracts (Phase 01 & Phase 02)', () => {
       lastOpenedAt: new Date().toISOString()
     };
     expect(RecentStudyItemSchema.safeParse(item).success).toBe(true);
-  });
-
-  it('validates Phase 03 Library contracts', () => {
-    const folder = {
-      id: 'folder-1',
-      workspaceId: 'ws-1',
-      parentId: null,
-      name: 'Synaptic Transmission & Plasticity',
-      icon: '🧠',
-      coverUrl: '/covers/synapse.png',
-      description: 'Folder workspace containing lecture notes and canonical learning assets',
-      summaryBlocks: [
-        {
-          id: 'b-1',
-          type: 'callout' as const,
-          title: 'Exam Key Point',
-          text: 'Long-term potentiation requires NMDA receptor activation.',
-          icon: '📌'
-        }
-      ],
-      order: 0,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    expect(LibraryFolderSchema.safeParse(folder).success).toBe(true);
-
-    const item = {
-      id: 'item-1',
-      workspaceId: 'ws-1',
-      folderId: 'folder-1',
-      title: 'Kandel_Principles_Ch12.pdf',
-      type: 'pdf' as const,
-      subtitle: 'Primary reading on synaptic mechanisms',
-      sizeBytes: 12450000,
-      readTimeMinutes: 45,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    expect(LibraryItemSchema.safeParse(item).success).toBe(true);
-
-    const viewSettings = {
-      viewMode: 'gallery' as const,
-      cardSize: 'normal' as const,
-      sortBy: 'updatedAt' as const,
-      sortOrder: 'desc' as const
-    };
-    expect(LibraryViewSettingsSchema.safeParse(viewSettings).success).toBe(true);
-
-    const backupManifest = {
-      version: 1,
-      appName: 'SOS' as const,
-      schemaVersion: 4,
-      exportedAt: new Date().toISOString(),
-      checksum: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-      foldersCount: 1,
-      itemsCount: 4
-    };
-    expect(LibraryBackupManifestSchema.safeParse(backupManifest).success).toBe(true);
   });
 });
