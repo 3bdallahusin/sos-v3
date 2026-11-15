@@ -21,7 +21,7 @@ flowchart TD
     end
 
     subgraph ProductSections ["Complete Product Module Grid"]
-        S0["Global App Shell (Header 48px + Rail 56/240px + AI Panel 340px + Docked Toolbar 104px)"]
+        S0["Global App Shell (Header 48px + Rail 56/240px + AI Panel 340px)"]
         S1["1. Home (Dashboard & Daily Goals)"]
         S2["2. Library (Flexible Folders & Asset Catalog)"]
         S3["3. Learning (8 Primary Study Tools)"]
@@ -119,8 +119,8 @@ SOS delivers a cohesive experience across both Web and Desktop targets while res
 ```mermaid
 graph TD
     subgraph UniversalWebCore ["Universal SOS Web Target (Any Modern Browser)"]
-        W_Shell["Complete 8-Destination App Shell + Docked Toolbar"]
-        W_Tools["All 8 Learning Tools Available"]
+        W_Shell["Complete 8-Destination App Shell (Header 48px + Rail 56/240px)"]
+        W_Tools["All 8 Learning Tools (Contextual 104px Docked Toolbar in Notes/PDF/Slides)"]
         W_Slides["Slides: PDF via PDF.js + PPTX via Evaluated SDK"]
         W_Browser["Browser Tool: Iframe for compatible sites + External Launcher"]
         W_Storage["Local Storage: Dexie (IndexedDB) + OPFS for large files"]

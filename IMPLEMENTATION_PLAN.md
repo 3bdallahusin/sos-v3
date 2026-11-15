@@ -75,7 +75,7 @@ flowchart TD
   - Build persistent UI Shell:
     - **Top Global Header (48px):** Window controls, workspace breadcrumbs, static Header Timer mirror, global search shortcut (`⌘K`), right drawer toggle (`⌘J`).
     - **Left Navigation Rail (56px collapsed / 240px expanded):** Smooth icon-only to labeled-rail transition hosting the eight primary navigation destinations.
-    - **Central Workspace Layout Container:** Responsive central container that hosts the active tool; provides docked toolbar mounting zone for canvas-enabled tools without reserving toolbar space in non-canvas views.
+    - **Central Workspace Layout Container:** Responsive central container that hosts the active tool; provides a mounting zone for canvas-enabled tools when active, without reserving toolbar layout space in non-canvas views. (Note: The 104px Docked Toolbar is NOT implemented in Phase 01; it belongs exclusively to Phase 04 canvas-enabled Learning tools).
     - **Right AI Assistant Drawer (340px):** Collapsible lateral panel container.
   - Setup `@tanstack/react-router` with route boundaries for all primary application sections.
   - Implement client-side Guest Mode workspace initialization and local persistence bridge via **Dexie 4 (IndexedDB)**.

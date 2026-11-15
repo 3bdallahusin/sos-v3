@@ -37,7 +37,7 @@ SOS is structured around the global **App Shell** foundation hosting **eight pri
 
 ```mermaid
 flowchart TD
-    Shell["SOS App Shell (Header 48px + Rail 56/240px + AI Panel 340px + Docked Toolbar 104px)"]
+    Shell["SOS App Shell (Header 48px + Rail 56/240px + AI Panel 340px)"]
     
     Shell --> Sec1["1. Home (Dashboard & Daily Overview)"]
     Shell --> Sec2["2. Library (Flexible Folders & Asset Catalog)"]
@@ -53,7 +53,7 @@ flowchart TD
 
 | Section | Left Nav Item | Core Purpose & Scope | Baseline Status | Initial Release Scope |
 | :--- | :--- | :--- | :--- | :--- |
-| **0. App Shell** | Global Shell | Persistent outer frame: 48px top header (with static mirror timer), 56px/240px collapsible navigation rail, global search, breadcrumbs, 104px docked toolbar zone, and 340px collapsible AI assistant drawer. | **Verified Design** | Fully implemented in Phase 01. |
+| **0. App Shell** | Global Shell | Persistent outer frame: 48px top header (with static mirror timer), 56px/240px collapsible navigation rail, global search, breadcrumbs, responsive central workspace container, and 340px collapsible AI assistant drawer. (Docked toolbar is NOT global; it is mounted exclusively in canvas Learning tools). | **Verified Design** | Fully implemented in Phase 01. |
 | **1. Home** | Home (`/`) | Personal study command center: greeting, daily streak, quick-resume carousel, upcoming deadlines, daily goal progress, and recent activity feed. | **Verified Design** | Implemented with local reactive data in Phase 02. |
 | **2. Library** | Library (`/library`) | Central academic asset repository based on user-defined flexible folders: Gallery, List, and Table views, customizable metadata, structured Pages, binary file ingestion, and early `.sos` backup/restore. | **Core System** | Implemented with local storage hierarchy & backup in Phase 03. |
 | **3. Learning** | Learning (`/learning`) | The core operational workspace: multi-tab environment running the eight primary learning tools, document-synchronized canvas, 104px docked toolbar, and shell-level audio singleton. | **Core System** | Implemented across subphases 4.1–4.8 in Phase 04. |
@@ -223,7 +223,7 @@ Library is the central system for organizing academic materials:
 ## 9. Product Scope & Initial Release Boundaries
 
 ### In Scope for Initial Release (v1.0)
-- Full App Shell with 48px Header, 56px/240px Navigation Rail, 340px AI Panel, and 104px Docked Toolbar.
+- Full App Shell with 48px Header, 56px/240px Navigation Rail, and 340px AI Panel (with contextual 104px Docked Toolbar in canvas Learning tools).
 - Home dashboard with local stats, daily goals, and quick-resume shortcuts.
 - Library with flexible user-defined folders, multi-view catalog (Gallery/List/Table), and structured Pages.
 - Multi-Tab Learning Workspace supporting all 8 tools with Active/Warm/Cold lifecycle.
