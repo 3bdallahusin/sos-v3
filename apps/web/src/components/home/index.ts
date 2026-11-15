@@ -4,4 +4,3 @@ export { DailyQuoteCard } from './DailyQuoteCard.js';
 export { DailyEssayCard } from './DailyEssayCard.js';
 export { QuickResumeSection } from './QuickResumeSection.js';
 export { TasksSection } from './TasksSection.js';
-export { QuickCaptureModal } from './QuickCaptureModal.js';

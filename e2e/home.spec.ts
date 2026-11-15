@@ -6,11 +6,20 @@ test.describe('SOS V3 Phase 02: Home Dashboard', () => {
     await expect(page.locator('[data-testid="home-page"]')).toBeVisible();
   });
 
-  test('verifies complete Home dashboard layout and Stitch visual structure', async ({ page }) => {
-    // 1. Greeting Header
+  test('verifies complete Home dashboard layout, dynamic greeting and date, and absence of bottom status bar', async ({ page }) => {
+    // 1. Dynamic Greeting Header (Generic fallback for guest, dynamic time of day)
     const greetingHeader = page.locator('[data-testid="greeting-header"]');
     await expect(greetingHeader).toBeVisible();
-    await expect(greetingHeader.locator('h1')).toContainText('Abdalla');
+    await expect(greetingHeader.locator('[data-testid="greeting-heading"]')).toHaveText(/Good (morning|afternoon|evening)/);
+
+    // Dynamic date in local timezone
+    const expectedDate = new Intl.DateTimeFormat(undefined, {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    }).format(new Date());
+    await expect(greetingHeader.locator('[data-testid="greeting-date"]')).toHaveText(expectedDate);
 
     // 2. Horizon Bar
     const horizonBar = page.locator('[data-testid="horizon-bar"]');
@@ -45,6 +54,12 @@ test.describe('SOS V3 Phase 02: Home Dashboard', () => {
     await expect(tasksSection).toBeVisible();
     await expect(tasksSection).toContainText("TODAY'S TASKS");
     await expect(page.locator('[data-testid="tasks-counter"]')).toContainText('1 / 4');
+
+    // 5. Verify Complete Removal of Bottom Status Footer
+    await expect(page.locator('[data-testid="open-quick-capture-btn"]')).toHaveCount(0);
+    await expect(page.getByText('Quick Scratchpad Note')).toHaveCount(0);
+    await expect(page.getByText('SOS Local Persistence')).toHaveCount(0);
+    await expect(page.getByText('Dexie v2')).toHaveCount(0);
   });
 
   test('interactively adds, completes, and deletes tasks with persistence', async ({ page }) => {
@@ -67,6 +82,9 @@ test.describe('SOS V3 Phase 02: Home Dashboard', () => {
     await lastCheckbox.click();
     await expect(counter).toContainText('2 / 5');
 
+    // Allow Dexie transaction to commit before page reload
+    await page.waitForTimeout(300);
+
     // Reload the page to verify local Dexie persistence
     await page.reload();
     await expect(page.locator('[data-testid="home-page"]')).toBeVisible();
@@ -83,34 +101,40 @@ test.describe('SOS V3 Phase 02: Home Dashboard', () => {
     await expect(counter).toContainText('1 / 4');
   });
 
-  test('opens quick-capture scratchpad modal and saves notes to Dexie', async ({ page }) => {
-    // Open Quick Capture modal via button
-    const openBtn = page.locator('[data-testid="open-quick-capture-btn"]');
-    await expect(openBtn).toBeVisible();
-    await openBtn.click();
+  test('swaps corner-bracket fullscreen icons dynamically on CentralWorkspace and RightAiPanel', async ({ page }) => {
+    // 1. Central Workspace Fullscreen Toggle
+    const centerFsBtn = page.locator('button[aria-label="Toggle Workspace Fullscreen"]');
+    await expect(centerFsBtn).toBeVisible();
 
-    const modal = page.locator('[data-testid="quick-capture-modal"]');
-    await expect(modal).toBeVisible();
-    await expect(modal).toContainText('Quick Capture Note');
+    // In default state (AI panel open), outward corner brackets are rendered
+    await centerFsBtn.click(); // Collapses AI panel into fullscreen focus mode
+    await page.waitForTimeout(400);
+    await page.screenshot({ path: 'home-center-fullscreen.png' });
 
-    // Fill in title and content
-    const titleInput = page.locator('[data-testid="quick-capture-title-input"]');
-    const contentInput = page.locator('[data-testid="quick-capture-content-input"]');
-    await titleInput.fill('Dopamine Receptor Signaling Pathways');
-    await contentInput.fill('D1-like receptors stimulate adenylyl cyclase via Gs, whereas D2-like inhibit via Gi.');
+    // AI panel is now closed, central workspace is in Fullscreen Focus Mode
+    // The button title now says "Exit Fullscreen Focus Mode"
+    await expect(centerFsBtn).toHaveAttribute('title', /Exit Fullscreen Focus Mode/);
 
-    // Capture visual screenshot of modal
-    await page.screenshot({ path: 'home-quick-capture-modal-verification.png' });
+    // Click again to exit fullscreen
+    await centerFsBtn.click();
+    await page.waitForTimeout(400);
+    await expect(centerFsBtn).toHaveAttribute('title', /Focus Mode/);
 
-    // Save note
-    const saveBtn = page.locator('[data-testid="quick-capture-save-btn"]');
-    await saveBtn.click();
+    // 2. Right AI Panel Fullscreen Toggle
+    const aiFsBtn = page.locator('button[aria-label="Fullscreen AI panel"]');
+    await expect(aiFsBtn).toBeVisible();
 
-    // Verify modal closes and toast appears
-    await expect(modal).not.toBeVisible();
-    const toast = page.locator('[data-testid="home-toast"]');
-    await expect(toast).toBeVisible();
-    await expect(toast).toContainText('Dopamine Receptor Signaling Pathways');
+    // Click to enter AI Panel Fullscreen
+    await aiFsBtn.click();
+    await page.waitForTimeout(400);
+    await page.screenshot({ path: 'home-ai-fullscreen.png' });
+    const exitAiFsBtn = page.locator('button[aria-label="Exit AI panel fullscreen"]');
+    await expect(exitAiFsBtn).toBeVisible();
+
+    // Click again to restore default width
+    await exitAiFsBtn.click();
+    await page.waitForTimeout(400);
+    await expect(page.locator('button[aria-label="Fullscreen AI panel"]')).toBeVisible();
   });
 
   test('navigates to learning view when clicking a resume item', async ({ page }) => {

@@ -4,8 +4,7 @@ import {
   type Workspace,
   type GuestWorkspace,
   type TaskItem,
-  type RecentStudyItem,
-  type QuickCaptureNote
+  type RecentStudyItem
 } from '@sos/domain';
 
 export interface ShellPreferenceRecord {
@@ -19,7 +18,6 @@ export class SosDexieDatabase extends Dexie {
   shellPreferences!: EntityTable<ShellPreferenceRecord, 'key'>;
   tasks!: EntityTable<TaskItem, 'id'>;
   recentItems!: EntityTable<RecentStudyItem, 'id'>;
-  quickNotes!: EntityTable<QuickCaptureNote, 'id'>;
 
   constructor() {
     super('sos_local_v3');
@@ -33,6 +31,10 @@ export class SosDexieDatabase extends Dexie {
       tasks: 'id, workspaceId, completed, order, createdAt',
       recentItems: 'id, type, lastOpenedAt',
       quickNotes: 'id, workspaceId, createdAt'
+    });
+    // Schema Version 3: Cleanly drops obsolete quickNotes object store without affecting existing tables
+    this.version(3).stores({
+      quickNotes: null
     });
   }
 }
@@ -101,14 +103,10 @@ export async function setShellPreference(key: string, value: unknown): Promise<v
       value,
       updatedAt: new Date().toISOString()
     });
-  } catch (error) {
-    console.warn(`Failed to persist shell preference "${key}":`, error);
+  } catch (err) {
+    console.warn(`Failed to persist preference ${key}:`, err);
   }
 }
-
-// ==========================================
-// Phase 02: Home Persistence Operations
-// ==========================================
 
 export const INITIAL_TASKS: TaskItem[] = [
   {
@@ -249,24 +247,5 @@ export async function saveRecentStudyItem(item: RecentStudyItem): Promise<void> 
     await db.recentItems.put(item);
   } catch (err) {
     console.warn('Failed to save recent item to Dexie:', err);
-  }
-}
-
-export async function loadQuickCaptureNotes(workspaceId?: string): Promise<QuickCaptureNote[]> {
-  try {
-    const db = getLocalDatabase();
-    return await db.quickNotes.toArray();
-  } catch (err) {
-    console.warn('Failed to load quick notes from Dexie:', err);
-    return [];
-  }
-}
-
-export async function saveQuickCaptureNote(note: QuickCaptureNote): Promise<void> {
-  try {
-    const db = getLocalDatabase();
-    await db.quickNotes.put(note);
-  } catch (err) {
-    console.warn('Failed to save quick note to Dexie:', err);
   }
 }

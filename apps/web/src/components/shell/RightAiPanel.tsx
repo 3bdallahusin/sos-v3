@@ -4,12 +4,11 @@ import {
   X,
   Plus,
   Clock,
-  Maximize2,
-  Minimize2,
   ChevronDown,
   Paperclip,
   ArrowUp
 } from 'lucide-react';
+import { CornerExpandIcon, CornerCollapseIcon } from './CornerIcons.js';
 import { useShellStore } from '../../stores/shell-store.js';
 
 export const RightAiPanel: React.FC = () => {
@@ -101,9 +100,9 @@ export const RightAiPanel: React.FC = () => {
             aria-label={isAiPanelFullscreen ? "Exit AI panel fullscreen" : "Fullscreen AI panel"}
           >
             {isAiPanelFullscreen ? (
-              <Minimize2 className="w-3.5 h-3.5" />
+              <CornerCollapseIcon className="w-3.5 h-3.5" />
             ) : (
-              <Maximize2 className="w-3.5 h-3.5" />
+              <CornerExpandIcon className="w-3.5 h-3.5" />
             )}
           </button>
           <button

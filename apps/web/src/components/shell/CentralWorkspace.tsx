@@ -4,9 +4,9 @@ import {
   Search,
   Send,
   Bell,
-  Maximize2,
   MessageCircle
 } from 'lucide-react';
+import { CornerExpandIcon, CornerCollapseIcon } from './CornerIcons.js';
 import { useShellStore } from '../../stores/shell-store.js';
 
 interface CentralWorkspaceProps {
@@ -285,10 +285,14 @@ export const CentralWorkspace: React.FC<CentralWorkspaceProps> = ({ children }) 
             type="button"
             onClick={toggleAiPanel}
             className="w-8 h-8 rounded-[10px] flex items-center justify-center text-[#A1A1AA] hover:text-[#F4F4F5] hover:bg-white/5 active:scale-90 transition-all"
-            title={aiPanelOpen ? "Focus Mode / Hide AI Panel (⌘J)" : "Show AI Panel (⌘J)"}
+            title={!aiPanelOpen ? "Exit Fullscreen Focus Mode (⌘J)" : "Focus Mode / Hide AI Panel (⌘J)"}
             aria-label="Toggle Workspace Fullscreen"
           >
-            <Maximize2 className="w-4 h-4" />
+            {!aiPanelOpen ? (
+              <CornerCollapseIcon className="w-3.5 h-3.5" />
+            ) : (
+              <CornerExpandIcon className="w-3.5 h-3.5" />
+            )}
           </button>
 
           {/* 5. Standard Global Tracking Timer Pill (🟠 24:18) */}

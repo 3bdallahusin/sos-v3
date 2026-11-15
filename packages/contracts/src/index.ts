@@ -84,13 +84,4 @@ export const DailyStudyGoalSchema = z.object({
 });
 export type DailyStudyGoalContract = z.infer<typeof DailyStudyGoalSchema>;
 
-export const QuickCaptureNoteSchema = z.object({
-  id: z.string().min(1),
-  workspaceId: z.string().optional(),
-  title: z.string().min(1),
-  content: z.string(),
-  tags: z.array(z.string()).optional(),
-  createdAt: z.string(),
-  updatedAt: z.string()
-});
-export type QuickCaptureNoteContract = z.infer<typeof QuickCaptureNoteSchema>;
+

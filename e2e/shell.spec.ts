@@ -277,9 +277,15 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
     const homePage = page.locator('[data-testid="home-page"]');
     await expect(homePage).toBeVisible();
 
-    // 1. Greeting and Date
-    await expect(homePage.getByRole('heading', { name: 'Good morning, Abdalla' })).toBeVisible();
-    await expect(homePage.getByText('Saturday, November 14, 2026')).toBeVisible();
+    // 1. Dynamic Greeting and Local Date
+    await expect(homePage.getByTestId('greeting-heading')).toHaveText(/Good (morning|afternoon|evening)/);
+    const expectedLocalDate = new Intl.DateTimeFormat(undefined, {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    }).format(new Date());
+    await expect(homePage.getByTestId('greeting-date')).toHaveText(expectedLocalDate);
 
     // 2. Horizon Bar
     await expect(homePage.getByText('Fall Semester 2026')).toBeVisible();

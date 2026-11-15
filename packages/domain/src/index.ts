@@ -115,12 +115,4 @@ export interface DailyEditorial {
   };
 }
 
-export interface QuickCaptureNote {
-  id: string;
-  workspaceId?: string;
-  title: string;
-  content: string;
-  tags?: string[];
-  createdAt: string;
-  updatedAt: string;
-}
+

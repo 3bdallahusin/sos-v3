@@ -6,8 +6,7 @@ import {
   WorkspaceSchema,
   TaskItemSchema,
   RecentStudyItemSchema,
-  DailyStudyGoalSchema,
-  QuickCaptureNoteSchema
+  DailyStudyGoalSchema
 } from '../src/index.js';
 
 describe('Shared Contracts (Phase 01 & Phase 02)', () => {
@@ -88,17 +87,5 @@ describe('Shared Contracts (Phase 01 & Phase 02)', () => {
       lastOpenedAt: new Date().toISOString()
     };
     expect(RecentStudyItemSchema.safeParse(item).success).toBe(true);
-  });
-
-  it('validates Phase 02 QuickCaptureNoteSchema', () => {
-    const note = {
-      id: 'note-1',
-      title: 'Quick insight on LTP',
-      content: 'Long-term potentiation requires NMDA receptor activation.',
-      tags: ['neuro', 'synapse'],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    expect(QuickCaptureNoteSchema.safeParse(note).success).toBe(true);
   });
 });
