@@ -37,13 +37,14 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
     // 1440 - (8px outer * 2) - 56px (rail) - 340px (ai) - (8px gap * 2) = 1012px
     expect(centralBox!.width).toBeGreaterThan(950);
 
-    // 5. Expand Left Rail to 240px and verify Logo v3 is rendered
+    // 5. Expand Left Rail to 240px and verify Logo v3 is rendered without text label
     const toggleButton = page.locator('button[aria-label="Expand navigation rail"]');
     await toggleButton.click();
     await page.waitForTimeout(400); // Allow spring animation
     railBox = await leftRail.boundingBox();
     expect(railBox!.width).toBe(240);
     await expect(page.locator('img[alt="SOS Logo v3"]')).toBeVisible();
+    await expect(leftRail.getByText('SOS V3')).toHaveCount(0);
 
     // Collapse it back to 56px
     const collapseButton = page.locator('button[aria-label="Collapse navigation rail"]');
@@ -129,6 +130,38 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
     // 6. Re-open via keyboard shortcut (Ctrl+J / ⌘J)
     await page.keyboard.press('Control+j');
     await expect(aiPanel).toBeVisible();
+  });
+
+  test('verifies AI Panel Fullscreen Mode toggle and mutual exclusivity', async ({ page }) => {
+    const aiPanel = page.locator('[data-testid="right-ai-panel"]');
+    const centralWorkspace = page.locator('[data-testid="central-workspace"]');
+    await expect(aiPanel).toBeVisible();
+    await expect(centralWorkspace).toBeVisible();
+
+    // 1. Click Full Screen button on AI Panel
+    const aiFullscreenBtn = page.locator('button[aria-label="Fullscreen AI panel"]');
+    await aiFullscreenBtn.click();
+    await page.waitForTimeout(200);
+
+    // Central workspace should be hidden, AI panel should be expanded
+    await expect(centralWorkspace).toBeHidden();
+    const exitFullscreenBtn = page.locator('button[aria-label="Exit AI panel fullscreen"]');
+    await expect(exitFullscreenBtn).toBeVisible();
+
+    // Check AI panel width is full flex-1 (e.g. > 1000px on 1440px viewport)
+    const aiBox = await aiPanel.boundingBox();
+    expect(aiBox).not.toBeNull();
+    expect(aiBox!.width).toBeGreaterThan(1000);
+
+    // 2. Click Exit Fullscreen button on AI Panel
+    await exitFullscreenBtn.click();
+    await page.waitForTimeout(200);
+    await expect(centralWorkspace).toBeVisible();
+    await expect(aiFullscreenBtn).toBeVisible();
+
+    // Check AI panel returned to 340px
+    const aiRestoredBox = await aiPanel.boundingBox();
+    expect(aiRestoredBox!.width).toBe(340);
   });
 
   test('verifies animated search bar expansion and live filtering', async ({ page }) => {

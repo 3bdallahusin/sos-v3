@@ -5,6 +5,7 @@ import { getShellPreference, setShellPreference } from '@sos/persistence';
 interface ShellStoreState {
   railExpanded: boolean;
   aiPanelOpen: boolean;
+  isAiPanelFullscreen: boolean;
   hasUnreadMessages: boolean;
   hasUnreadNotifications: boolean;
   workspace: GuestWorkspace | null;
@@ -15,6 +16,8 @@ interface ShellStoreState {
   setRailExpanded: (expanded: boolean) => void;
   toggleAiPanel: () => void;
   setAiPanelOpen: (open: boolean) => void;
+  toggleAiPanelFullscreen: () => void;
+  setIsAiPanelFullscreen: (isFullscreen: boolean) => void;
   setHasUnreadMessages: (hasUnread: boolean) => void;
   setHasUnreadNotifications: (hasUnread: boolean) => void;
   setWorkspace: (workspace: GuestWorkspace | null) => void;
@@ -26,6 +29,7 @@ interface ShellStoreState {
 export const useShellStore = create<ShellStoreState>((set, get) => ({
   railExpanded: false,
   aiPanelOpen: true,
+  isAiPanelFullscreen: false,
   hasUnreadMessages: false,
   hasUnreadNotifications: false,
   workspace: null,
@@ -45,13 +49,34 @@ export const useShellStore = create<ShellStoreState>((set, get) => ({
 
   toggleAiPanel: () => {
     const next = !get().aiPanelOpen;
-    set({ aiPanelOpen: next });
+    set({
+      aiPanelOpen: next,
+      isAiPanelFullscreen: false
+    });
     setShellPreference('shell:aiPanelOpen', next);
   },
 
   setAiPanelOpen: (open: boolean) => {
-    set({ aiPanelOpen: open });
+    set({
+      aiPanelOpen: open,
+      isAiPanelFullscreen: open ? get().isAiPanelFullscreen : false
+    });
     setShellPreference('shell:aiPanelOpen', open);
+  },
+
+  toggleAiPanelFullscreen: () => {
+    const next = !get().isAiPanelFullscreen;
+    set({
+      isAiPanelFullscreen: next,
+      aiPanelOpen: true
+    });
+  },
+
+  setIsAiPanelFullscreen: (isAiPanelFullscreen: boolean) => {
+    set({
+      isAiPanelFullscreen,
+      aiPanelOpen: isAiPanelFullscreen ? true : get().aiPanelOpen
+    });
   },
 
   setHasUnreadMessages: (hasUnreadMessages) => set({ hasUnreadMessages }),

@@ -49,16 +49,13 @@ export const LeftRail: React.FC = () => {
         className="h-12 w-full border-b border-[#1F1F23] flex items-center justify-center shrink-0 bg-[#09090B] px-2"
       >
         {railExpanded ? (
-          <div className="flex items-center justify-between w-full px-1">
-            <div className="flex items-center gap-2.5">
+          <div className="flex items-center justify-between w-full px-2.5">
+            <div className="flex items-center">
               <img
-                src="/logo-v3.jpg"
+                src="/logo-v3.png"
                 alt="SOS Logo v3"
-                className="w-7 h-7 rounded-[8px] object-cover border border-[#27272A] shadow-sm"
+                className="h-[26px] w-auto object-contain select-none pointer-events-none"
               />
-              <span className="font-semibold text-xs tracking-wider uppercase text-[#F4F4F5] truncate">
-                SOS v3
-              </span>
             </div>
             <button
               type="button"

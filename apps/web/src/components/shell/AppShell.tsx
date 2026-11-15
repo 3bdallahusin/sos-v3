@@ -9,7 +9,7 @@ interface AppShellProps {
 }
 
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
-  const { toggleAiPanel, toggleRail } = useShellStore();
+  const { toggleAiPanel, toggleRail, isAiPanelFullscreen } = useShellStore();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -35,7 +35,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
       className="h-screen w-screen p-2 bg-[#000000] flex gap-2 overflow-hidden select-none"
     >
       <LeftRail />
-      <CentralWorkspace>{children}</CentralWorkspace>
+      {!isAiPanelFullscreen && <CentralWorkspace>{children}</CentralWorkspace>}
       <RightAiPanel />
     </div>
   );
