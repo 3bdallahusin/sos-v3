@@ -77,11 +77,11 @@ flowchart TD
 
 | Component | Selected Technology & Pinned Version | Status | Engineering Rationale |
 | :--- | :--- | :--- | :--- |
-| **Workspace Architecture** | pnpm 12.21.0 Monorepo (`save-exact=true`) | `APPROVED` | Strict workspace dependency isolation across apps and packages, single reproducible lockfile. |
+| **Workspace Architecture** | pnpm 12.21.0 Monorepo (`save-exact=true`) | `APPROVED` | Strict workspace dependency isolation across apps and packages, single reproducible lockfile. Shared UI/canvas/editor packages use `peerDependencies` for React 19 to guarantee single-instance runtime. |
 | **Frontend Framework** | React 19.3.1 & React DOM 19.3.1 | `APPROVED` | Universal component model, high-performance concurrent rendering, zero SSR hydration mismatches. |
 | **Language & Typing** | TypeScript 7.0.2 (Strict) | `APPROVED` | Maximum static safety across shared contracts, domain logic, and client/server packages. |
 | **Client Bundler** | Vite 8.3.8 & @vitejs/plugin-react 6.3.0 | `APPROVED` | Sub-100ms HMR, native Rolldown/ESBuild pipeline, optimized static SPA output. |
-| **Desktop Shell** | Electron 45.3.2 & electron-vite 6.0.0 | `APPROVED` | Native Chromium engine enabling `WebContentsView` for embedded browsing, local filesystem access, and OS window control. |
+| **Desktop Shell** | Electron 45.3.2 & electron-vite 6.0.0 | `APPROVED` | Native Chromium engine (Chromium 156.0.8078.100, Node 24.22.2) enabling `WebContentsView` for embedded browsing, local filesystem access, and OS window control. (Note: 45.3.2 is the latest published 45.x release; 45.3.3 does not exist on npm). |
 | **Routing** | TanStack Router 1.170.46 | `APPROVED` | Fully type-safe route trees, search parameter validation, and nested layout preservation. |
 | **Styling** | Tailwind CSS 4.3.5 & @tailwindcss/vite 4.3.5 | `APPROVED` | CSS-first `@theme` block matching obsidian tokens without JavaScript configuration overhead. |
 | **Ephemeral UI State** | React State & Zustand 5.1.0 | `APPROVED` | Lightweight stores for transient UI states (active tab, tool switcher, modal visibility). RAM is a cache, not source of truth. |
@@ -92,9 +92,9 @@ flowchart TD
 | **Backend Framework** | Node.js 24 + Fastify 5.12.8 | `APPROVED` | High-throughput, low-overhead async server, native TypeScript support, built-in schema validation, SSE streaming. |
 | **Backend Security** | @fastify/cors 11.4.3, @fastify/helmet 13.2.0, @fastify/rate-limit 11.2.2 | `APPROVED` | Platform security headers, CORS boundary enforcement, and guest request throttling. |
 | **Backend Documentation** | @fastify/swagger 9.9.4 & @fastify/swagger-ui 6.1.4 | `APPROVED` | Auto-generated OpenAPI v3 documentation and interactive exploration UI for Fastify endpoints. |
-| **Server Database** | PostgreSQL 18.x (Verified 18.6) | `APPROVED` | Active stable major-version baseline (local environment running 18.6) for server-owned identity, AI usage logs, community metadata, and future sync. |
+| **Server Database** | PostgreSQL 18.x (Verified 18.6) | `APPROVED` | Active cluster on port 5432 using strictly isolated database `sos_v3_dev` and dedicated non-superuser role `sos_v3_app` (denied access to V2 databases) for server-owned identity, AI usage logs, community metadata, and future sync. |
 | **Database Driver** | postgres.js 4.1.1 (`postgres`) | `APPROVED` | Fastest full-featured native PostgreSQL client for Node.js with connection pooling and typed queries. |
-| **Server ORM & Migrations** | Drizzle ORM 0.45.4 & Drizzle Kit 0.31.11 | `APPROVED` | Lightweight TypeScript-first SQL query builder and migration runner with zero runtime bloat. |
+| **Server ORM & Migrations** | Drizzle ORM 0.45.4 & Drizzle Kit 0.31.11 | `APPROVED` | Lightweight TypeScript-first SQL query builder and migration runner with zero runtime bloat. Transitive `esbuild` pinned to 0.25.12 via workspace override for 0 audit vulnerabilities. |
 | **Validation & Schemas** | Zod 4.6.7 | `APPROVED` | Universal runtime validation sharing contract schemas between frontend, desktop, and Fastify endpoints. |
 | **Document Rich-Text Core** | Tiptap 3.34.0 / ProseMirror | `APPROVED` | Headless, block-based structured document engine with versioned JSON serialization across `@tiptap/core`, `@tiptap/react`, `@tiptap/starter-kit`, and structured content extensions. |
 | **Vector Drawing Canvas** | Konva 10.9.1 & React-Konva 19.3.2 | `APPROVED` | High-performance 2D canvas with hardware-accelerated transforms, hit testing, and vector serialization. |
@@ -104,9 +104,9 @@ flowchart TD
 | **Backup & Restoration** | JSZip 3.10.2 | `APPROVED` | Client-side compressed `.sos` workspace export and import archive generator in `packages/persistence`. |
 | **Mathematical Notation** | KaTeX 0.19.1 & @types/katex 0.16.8 | `APPROVED` | KaTeX math notation renderer in `packages/ui` for mathematical expressions in Notes and Flashcards. |
 | **UI Iconography** | Lucide React 1.73.0 | `APPROVED` | Clean, lightweight SVG icon system matching Google Stitch design specifications. |
-| **AI Integration Core** | Vercel AI SDK Core (`ai` 7.0.173) | `APPROVED` | Universal streaming and tool-calling abstraction decoupled from Vercel hosting. |
-| **AI Initial Provider** | `@ai-sdk/google` 4.0.121 (Gemini API) | `APPROVED` | Direct connection to Google Gemini Developer API with server-side API key custody. No AI Gateway required. |
-| **AI UI Components** | `@ai-sdk/react` 4.0.177 | `APPROVED` | React hooks and streaming UI primitives for AI assistant panel. |
+| **AI Integration Core (Backend)** | Vercel AI SDK Core (`ai` 7.0.173) | `APPROVED` | Universal streaming and tool-calling abstraction in `apps/api`, decoupled from Vercel hosting. |
+| **AI Initial Provider (Backend)** | `@ai-sdk/google` 4.0.121 (Gemini API) | `APPROVED` | Direct connection to Google Gemini Developer API with server-side API key custody in `apps/api`. No AI Gateway required. |
+| **AI UI Components (Frontend)** | `@ai-sdk/react` 4.0.177 | `APPROVED` | React hooks and streaming UI primitives located in `apps/web` for the AI assistant panel. |
 | **Unit Testing** | Vitest 5.1.0 & @vitest/coverage-v8 5.1.0 | `APPROVED` | Fast unit testing with Vite 8 compatibility and native v8 code coverage reporting. |
 | **End-to-End Testing** | Playwright 1.65.1 (`@playwright/test`) | `APPROVED` | Cross-browser and Electron E2E test runner with installed Chromium browser binary. |
 
@@ -310,7 +310,7 @@ The backend begins in **Phase 01** as an integral part of the architecture:
   2. Guest/device service identity registration without forced accounts.
   3. Server-side custody of AI provider credentials (Gemini API keys).
   4. AI request proxying, context transmission, SSE streaming, and quota enforcement.
-  5. PostgreSQL 18.x (local environment verified with PostgreSQL 18.6) database migrations and health monitoring.
+  5. PostgreSQL 18.x (local environment verified with PostgreSQL 18.6 on port 5432 with isolated database `sos_v3_dev` and restricted application role `sos_v3_app`) database migrations and health monitoring.
   6. Optional cloud accounts and future synchronization foundations via the 5-screen Auth Suite (Login, Register, Forgot Password, Verify Code, Reset Password) with zero-friction `Guest Mode →` bypass.
 
 ```mermaid

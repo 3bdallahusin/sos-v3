@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ai-sdk/react": "4.0.177",
     "@sos/canvas": "workspace:*",
     "@sos/contracts": "workspace:*",
     "@sos/domain": "workspace:*",
