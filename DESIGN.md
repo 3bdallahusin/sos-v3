@@ -1,7 +1,7 @@
 # SOS V3 — Design System & Visual Specification
 
 **Status:** Canonical Visual & Interaction Design Specification  
-**Baseline Source:** Design tokens, geometry, and component specifications derived from project documentation (Note: Only design tokens, layout metrics, and text specifications were reviewed; live Stitch visual mockups or interactive canvas exports were not visually accessed).  
+**Baseline Source:** Authoritative Google Stitch Project (`projects/1366384921760863805`, "Studying Operating System UX Architecture", specifically verified against the latest canonical screen `node_12800577758894789895` "Learning — Notes").  
 **Design Principles:** Obsidian Dark, Restrained Contrast, Three-Island Shell, 104px Docked Toolbar Alignment, Focus-First Scholarly Workspace.
 
 ---
@@ -128,7 +128,7 @@ zIndex: {
 
 ## 5. Three-Island Layout Anatomy
 
-The overall viewport layout is divided into three coordinated islands:
+The overall viewport layout is divided into three coordinated islands hosted within the App Shell, providing seamless access to the **eight primary navigation destinations** (Home, Library, Learning, Tracking, Calendar, Community, Profile, Settings):
 
 ```
 ┌──────────────┬────────────────────────────────────────────┬──────────────┐
@@ -138,8 +138,8 @@ The overall viewport layout is divided into three coordinated islands:
 ├──────────────┼────────────────────────────────────────────┼──────────────┤
 │ 48px Header  │ 48px Header (Tabs / Breadcrumb + Controls) │ 48px Header  │
 ├──────────────┼────────────────────────────────────────────┼──────────────┤
-│ Navigation   │ Content Viewport (flex-1)                  │ Conversation │
-│ Icons Rail   │ (Document / Player / Canvas / Cards / Tool)│ Stream       │
+│ 8 Nav Icons  │ Content Viewport (flex-1)                  │ Conversation │
+│ Rail         │ (Document / Player / Canvas / Cards / Tool)│ Stream       │
 │              │                                            │              │
 ├──────────────┼────────────────────────────────────────────┼──────────────┤
 │ 104px Bottom │ DOCKED FULL-WIDTH BOTTOM TOOLBAR           │ Bottom Input │
@@ -153,7 +153,7 @@ The overall viewport layout is divided into three coordinated islands:
    - Collapsed (Default): `56px` fixed width.
    - Expanded: `240px` (or `260px` in Library tree view).
    - Top Brand Header: `48px` height with circular expand trigger.
-   - Middle Stack: Navigation icon buttons (`w-10 h-10`).
+   - Middle Stack: Eight Navigation icon buttons (`w-10 h-10`).
    - Bottom Utility Stack: `104px` height housing Settings button (`w-10 h-10`) and User Profile Avatar (`w-8 h-8`).
 4. **Central Workspace Island**:
    - `flex-1 min-w-0`, background `#09090B`, border `#222226`, radius `24px`.
@@ -170,80 +170,57 @@ The overall viewport layout is divided into three coordinated islands:
 
 ## 6. Shared Component Specifications
 
-### 6.1 Docked Full-Width Bottom Toolbar (104px Height)
-Used across **Learning — Notes**, **Learning — PDF**, and **Learning — Slides**:
+### 6.1 Docked Full-Width Bottom Toolbar (104px Authoritative Geometry)
+Used across **Learning — Notes**, **Learning — PDF**, and **Learning — Slides**, verified directly from the authoritative Google Stitch screen `node_12800577758894789895`:
 
 ```mermaid
 flowchart TD
-    subgraph DockedToolbarContainer ["Docked Bottom Toolbar (w-full, h-[104px], #09090B, border-t #1F1F23, z-30)"]
-        subgraph Tier1 ["Tier 1: Active Tool Options Row (h-10, border-b #1F1F23/60, flex items-center justify-center)"]
-            T1_Laser["Laser Pointer Icon Button"]
+    subgraph DockedToolbarContainer ["Docked Bottom Toolbar (w-full, h-[104px], #09090B, border-t #1F1F23, flex-col justify-center, z-30)"]
+        subgraph Tier1 ["Tier 1: Active Pen Options Row (h-10 / 40px, border-b #1F1F23/60, flex items-center justify-center gap-3)"]
+            T1_Weights["3 Stroke Weights (Fine 2px, Medium 4px Active Pill, Thick 6px)"]
             T1_Div1["Divider (w-px h-3.5 #27272A)"]
-            T1_Weights["Stroke Weights (Fine 2px, Medium 4px Active Pill, Thick 6px)"]
-            T1_Div2["Divider (w-px h-3.5 #27272A)"]
             T1_Colors["5 Ink Swatches (Off-White, Amber, Terracotta, Slate Blue, Sage Green)"]
         end
 
-        subgraph Tier2 ["Tier 2: Primary Annotation Tools Row (h-11, pt-0.5, flex items-center justify-center gap-1)"]
-            T2_Select["1. Select (V)"]
-            T2_Hand["2. Hand / Pan (H)"]
-            T2_Div1["Divider"]
-            T2_Pen["3. Pen (P) [Active]"]
-            T2_High["4. Highlighter (H)"]
-            T2_Erase["5. Eraser (E)"]
-            T2_Div2["Divider"]
-            T2_Shapes["6. Shapes Dropdown (S)"]
-            T2_Arrow["7. Arrow Dropdown (A)"]
-            T2_Text["8. Text Box (T)"]
-            T2_Div3["Divider"]
-            T2_Undo["9. Undo (Cmd+Z)"]
-            T2_Redo["10. Redo (Cmd+Y)"]
+        subgraph Tier2 ["Tier 2: Primary Annotation Tools Row (h-11 / 44px, pt-0.5, flex items-center justify-center gap-1)"]
+            T2_Nav["1. Select (V) | 2. Hand / Pan (H)"]
+            T2_Div1["Divider (w-px h-4 #27272A)"]
+            T2_Draw["3. Pen (P) [Active] | 4. Highlighter (H) | 5. Eraser (E) | 6. Laser Pointer (L)"]
+            T2_Div2["Divider (w-px h-4 #27272A)"]
+            T2_Obj["7. Shapes Dropdown (S) | 8. Arrow Dropdown (A) | 9. Text Box (T)"]
+            T2_Div3["Divider (w-px h-4 #27272A)"]
+            T2_History["10. Undo (Cmd+Z) | 11. Redo (Cmd+Y)"]
         end
     end
 
     Tier1 --> Tier2
 ```
 
-#### Geometry, Layout & Alignment Rules
+#### Exact Geometry, Layout & Alignment (Stitch Verified)
+- **Stitch Reference:** Screen `node_12800577758894789895` ("Learning — Notes"), `<footer id="docked-bottom-bar">`.
 - **Placement:** Docked at the bottom of the central workspace container (`footer#docked-bottom-bar`).
 - **Dimensions:** Width `100%` (spans full width of the central island), Height exactly `104px` (`h-[104px]`, `shrink-0`).
-- **Visual Styling:** Background `#09090B`, top border `1px solid #1F1F23`, no outer border-radius (integrates seamlessly into the 24px rounded island shell).
-- **Vertical Alignment:** Perfectly aligns horizontally with the `104px` Bottom Utility Stack of the Left Navigation Rail (Settings + Profile Avatar).
-- **Space Reservation:** The content area sits directly above it with `flex: 1`, reserving the 104px vertical height. The toolbar **never covers** document text, PDF pages, or slide canvases.
+- **Visual Styling:** Background `#09090B`, top border `1px solid #1F1F23`, horizontal padding `px-4`, `flex flex-col justify-center select-none z-30`.
+- **Vertical Alignment:** Perfectly aligns horizontally with the `104px` Bottom Utility Stack of the Left Navigation Rail (`<div class="h-[104px] flex flex-col items-center justify-center">`).
+- **Space Reservation:** The document/presentation content area sits directly above it with `flex: 1`, reserving the 104px vertical height. The toolbar **never covers** document text, PDF pages, or slide canvases.
 - **Canvas / Pan / Zoom Invariance:** The toolbar is part of the workspace shell, **not** a canvas object. Canvas panning and zooming have **zero effect** on toolbar position, scale, or rendering.
 - **Responsive Behavior:** When the Left Navigation Rail expands (56px to 240px) or the AI Assistant Drawer opens/closes (340px), the central workspace container resizes, and the docked toolbar resizes synchronously across the full width with smooth CSS transitions.
 
-#### Internal Two-Tier Structure
-1. **Tier 1 (Active Pen / Tool Options Row - 40px Height):**
-   - Centered horizontal flex row (`h-10 border-b border-[#1F1F23]/60 px-2`).
-   - *Laser Pointer Button:* 28x28px (`w-7 h-7`), rounded-md, laser ray icon.
+#### Internal Two-Tier Structure & Discrepancy Resolution
+The previous documentation noted an apparent arithmetic discrepancy ($$40\text{px} + 44\text{px} = 84\text{px} \neq 104\text{px}$$). Direct inspection of the authoritative Stitch HTML establishes the exact implementation:
+1. **Tier 1 (Active Pen Options Row):** `h-10` (`40px`), `flex items-center justify-center gap-3 border-b border-[#1F1F23]/60 px-2`.
+   - *Stroke Weights (3 circular dots):* Fine 2px dot (`#A1A1AA`), Medium 3.5px dot (`#F4F4F5`) enclosed in an active 20x20px pill (`bg-[#222227]`, border `1px solid #323238`), Thick 5px dot (`#A1A1AA`).
    - *Divider:* Vertical rule `1px x 14px` (`bg-[#27272A]`).
-   - *Stroke Weights:* 3 circular dots:
-     - Fine: 2px dot (`#A1A1AA`).
-     - Medium (Active): 3.5px dot (`#F4F4F5`) enclosed in a 20x20px pill (`bg-[#222227]`, border `1px solid #323238`).
-     - Thick: 5px dot (`#A1A1AA`).
-   - *Divider:* Vertical rule `1px x 14px` (`bg-[#27272A]`).
-   - *5 Academic Ink Swatches:* 14x14px circular buttons:
-     - Off-White (`#F4F4F5`, ring `1.5px #71717A`, ring-offset `1px #09090B`).
-     - Muted Amber (`#D97706`).
-     - Terracotta (`#DC2626`).
-     - Slate Blue (`#3B82F6`).
-     - Sage Green (`#16A34A`).
-2. **Tier 2 (Primary Annotation Tools Row - 44px Height):**
-   - Centered horizontal flex row (`h-11 pt-0.5 gap-1 text-sos-secondary`).
-   - *1. Selection Pointer:* `mouse-pointer` icon, shortcut `V`.
-   - *2. Hand / Pan:* `hand` icon, shortcut `H`.
+   - *5 Academic Ink Swatches:* 14x14px circular buttons: Off-White (`#F4F4F5`, ring `1.5px #71717A`, ring-offset `1px #09090B`), Muted Amber (`#D97706`), Terracotta (`#DC2626`), Slate Blue (`#3B82F6`), Sage Green (`#16A34A`).
+2. **Tier 2 (Primary Annotation Tools Row):** `h-11` (`44px` with `pt-0.5` padding-top), `flex items-center justify-center gap-1 text-sos-secondary pt-0.5`.
+   - *Navigation Group:* 1. Selection Pointer (`mouse-pointer`, V, 28x28px `w-7 h-7`), 2. Hand / Pan (`hand`, H, `w-7 h-7`).
    - *Divider:* Vertical rule `1px x 16px` (`bg-[#27272A] mx-1`).
-   - *3. Draw / Pen (Active):* `pen-tool` icon, shortcut `P`, styled with `bg-[#222227] border border-[#323238] text-[#F4F4F5]`.
-   - *4. Highlighter:* `highlighter` icon.
-   - *5. Eraser:* `eraser` icon, shortcut `E`.
+   - *Drawing Tools Group:* 3. Draw / Pen Active (`pen-tool`, P, `h-7 px-2.5 rounded-md bg-[#222227] border border-[#323238] text-[#F4F4F5]`), 4. Highlighter (`highlighter`, H, `w-7 h-7`), 5. Eraser (`eraser`, E, `w-7 h-7`), 6. Laser Pointer (`svg` ray icon, L, `w-7 h-7`).
    - *Divider:* Vertical rule `1px x 16px` (`bg-[#27272A] mx-1`).
-   - *6. Shapes Dropdown:* `square` + `chevron-down` icons, shortcut `S`.
-   - *7. Arrow / Connector Dropdown:* `arrow-up-right` + `chevron-down` icons, shortcut `A`.
-   - *8. Text Box:* `type` icon, shortcut `T`.
+   - *Objects Group:* 7. Shapes Dropdown (`square` + `chevron-down`, S, `h-7 px-2`), 8. Arrow / Connector Dropdown (`arrow-up-right` + `chevron-down`, A, `h-7 px-2`), 9. Text Box (`type`, T, `w-7 h-7`).
    - *Divider:* Vertical rule `1px x 16px` (`bg-[#27272A] mx-1`).
-   - *9. Undo:* `undo-2` icon, shortcut `Cmd+Z`.
-   - *10. Redo:* `redo-2` icon, shortcut `Cmd+Y`.
+   - *History Group:* 10. Undo (`undo-2`, Cmd+Z, `w-7 h-7`), 11. Redo (`redo-2`, Cmd+Y, `w-7 h-7`).
+3. **Exact Vertical Centering:** The two tool rows occupy `84px` content height ($$40\text{px} + 44\text{px} = 84\text{px}$$). The container applies `flex flex-col justify-center`, which automatically centers the two rows vertically within the `104px` total height, resulting in balanced $$10\text{px}$$ top and bottom vertical breathing margins ($$10\text{px} + 40\text{px} + 44\text{px} + 10\text{px} = 104\text{px}$$).
 
 ---
 
@@ -257,7 +234,7 @@ Used in **Library** and **Learning — Notes (Document Layer)**:
 ---
 
 ### 6.3 Authentication Split Container
-Used across all 5 auth screens:
+Used across auth screens (accessible from Profile / Settings):
 - Floating centered modal container: `max-w-[980px]`, `rounded-28px`, border `#27272A`.
 - 50/50 split:
   - Left: Minimalist black-and-white architectural/scholarly photography with obsidian readability gradient overlay, S [book] S logo mark, headline, and 3 value-proposition bullet points.

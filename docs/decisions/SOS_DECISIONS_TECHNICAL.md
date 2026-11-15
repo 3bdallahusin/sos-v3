@@ -3,6 +3,7 @@
 
 **Document Identifier:** `SOS_DECISIONS_TECHNICAL.md`  
 **Version:** 1.0 — November 2026  
+**Documentation Baseline:** Post-Audit Canonical Baseline (Ready for Founder Approval)  
 **Audience:** Principal Software Architects, Full-Stack Engineers, AI Coding Agents, Security Engineers  
 **Scope:** Authoritative engineering specification, mathematical standards, technology comparisons, architectural decision records (ADRs), and implementation constraints for SOS V3.
 
@@ -59,7 +60,7 @@ flowchart TD
     end
 
     subgraph ServerDatabase ["Server Storage Infrastructure"]
-        Postgres_DB[("PostgreSQL 18\n(Service Identity, AI Quotas, Community, Sync)")]
+        Postgres_DB[("PostgreSQL 18.7\n(Service Identity, AI Quotas, Community, Sync)")]
     end
 
     subgraph ExternalProviders ["External Services"]
@@ -173,7 +174,7 @@ const mainWindow = new BrowserWindow({
 | **Audio Playback Position** | Shell Audio Manager | Durable (Local DB) | Shell singleton Zustand store; flushes timestamp to Dexie every 5 seconds. |
 | **Active Study Session** | Tracking Session Engine | Durable (Local DB) | Dexie `tracking_sessions` table. Elapsed time calculated from real clock. |
 | **Header Timer** | React Display Component | Ephemeral (Mirror) | Display-only mirror subscribing to Tracking Engine state. Never maintains independent state. |
-| **Remote Server Data** | TanStack Query 5 Cache | Ephemeral Cache | Server PostgreSQL 18 database accessed via Fastify REST API. |
+| **Remote Server Data** | TanStack Query 5 Cache | Ephemeral Cache | Server PostgreSQL 18.7 database accessed via Fastify REST API. |
 | **AI Conversations** | Dexie + React State | Durable (Local DB) | Dexie `ai_conversations` table. Local persistence guarantees user review history. |
 
 ---
@@ -187,7 +188,7 @@ The backend is established in **Phase 01** as a Node.js LTS + Fastify 5 service.
 apps/api/src/
 ├── plugins/
 │   ├── config.ts           # Environment variables validated with Zod
-│   ├── database.ts         # PostgreSQL 18 connection pool & Drizzle ORM
+│   ├── database.ts         # PostgreSQL 18.7 connection pool & Drizzle ORM
 │   ├── security.ts         # CORS, Helmet, Rate limiting (fastify-rate-limit)
 │   ├── auth.ts             # Guest session tokens & optional JWT verification
 │   └── ai-gateway.ts       # Gemini streaming & usage quota enforcement
@@ -217,9 +218,9 @@ apps/api/src/
 
 ### 8.1 Dual Database Responsibilities
 - **Local Database (Dexie / IndexedDB):** The client's authoritative store for notes, flashcards, annotations, folders, and study sessions.
-- **Server Database (PostgreSQL 18 via Drizzle ORM):** Manages service identity, AI usage quotas, model catalogs, community resource indexes, and future synchronization metadata (intended major working recommendation, subject to hosting compatibility and stable patch verification at implementation time).
+- **Server Database (PostgreSQL 18.7 via Drizzle ORM):** Manages service identity, AI usage quotas, model catalogs, community resource indexes, and future synchronization metadata (active stable release line: PostgreSQL 18.0 released September 25, 2025; current maintenance patch 18.7 released November 12, 2026; subject to hosting environment compatibility).
 
-### 8.2 Canonical Entity Relational Schema (PostgreSQL 18 + Local Dexie)
+### 8.2 Canonical Entity Relational Schema (PostgreSQL 18.7 + Local Dexie)
 
 ```mermaid
 erDiagram
@@ -331,6 +332,12 @@ The shared annotation engine utilizes three specialized coordinate adapters:
 1. **Notes Adapter:** Anchored to document origin ($$0, 0$$). Translates vertically with document scrolling (`scrollTop`).
 2. **PDF Adapter:** Anchored to each specific PDF page's media-box dimensions ($$0, 0$$ at page top-left). Zoom transformations scale with PDF.js canvas DPI.
 3. **Slides Adapter:** Anchored to slide dimensions (e.g., $$1920 \times 1080$$). Coordinates scale with the centered 16:9 presentation viewport.
+
+### 11.3 Text Reflow Policy & Coordinate Boundaries
+1. **Coordinate Hierarchy:** Viewport/Screen coordinates ($$\text{ScreenX}, \text{ScreenY}$$) are ephemeral device pixels; Document-Relative coordinates ($$\text{DocX}, \text{DocY}$$) are normalized to the top-left of the document scroll container and invariant to zoom, pan, and scroll.
+2. **Reflow Policy:** Vector marks remain anchored to document coordinates ($$\text{DocX}, \text{DocY}$$). Responsive wide margins provide dedicated spatial canvas space. Text added above marks expands the scroll container downward, preserving spatial alignment to the document canvas.
+3. **Semantic Block Anchoring (Deferred):** Dynamically attaching vector strokes to individual ProseMirror block node UUIDs is explicitly deferred to post-v1 to avoid CPU overhead and coordinate jitter.
+4. **Independent History:** Tiptap and Konva maintain independent undo/redo stacks.
 
 ---
 
@@ -456,7 +463,7 @@ SOS adopts **FSRS (Free Spaced Repetition Scheduler)** as its primary scheduling
 | **ADR-009** | Unified Quiz \| Exam Assessment | `APPROVED` | Quiz \| Exam is one unified assessment tool; an individual Assessment may have its own configuration (such as optional time limit, question shuffling/ordering, or feedback timing) applied directly to the assessment itself without any Quiz vs Exam distinction; FSRS (`ts-fsrs`) preferred for flashcards using recommended defaults. |
 | **ADR-010** | Context-Aware AI Panel | `APPROVED` | Persistent ~340px right drawer. Google Gemini initial candidate via Fastify backend. Vercel AI SDK Core. Dynamic model selection. No silent paid fallback. |
 | **ADR-011** | Docked Workspace Bottom Toolbar | `APPROVED` | Canvas annotation toolbar is fixed and docked at workspace footer (104px height), reserves layout space, and is invariant to canvas pan/zoom. |
-| **ADR-012** | Backend Established in Phase 01 | `APPROVED` | Node.js LTS + Fastify 5 + PostgreSQL 18 + Drizzle modular monolith established in Phase 01 alongside frontend foundations. |
+| **ADR-012** | Backend Established in Phase 01 | `APPROVED` | Node.js LTS + Fastify 5 + PostgreSQL 18.7 + Drizzle modular monolith established in Phase 01 alongside frontend foundations. |
 | **ADR-013** | Library Flexible Folders | `APPROVED` | User-defined flexible folder hierarchy with Gallery, List, and Table views; no forced rigid taxonomy. |
 | **ADR-014** | Tracking as Single Authority for Timer | `APPROVED` | Tracking owns the session; Header Timer is a static display mirror computing elapsed time from persisted timestamps. |
 | **ADR-015** | Community Independent Forking | `APPROVED` | Forking creates an independent copy in the user's Library with provenance snapshot and independent ownership. |
@@ -468,7 +475,7 @@ SOS adopts **FSRS (Free Spaced Repetition Scheduler)** as its primary scheduling
 | Technology | Category | Status | Rationale for Rejection or Deferral |
 | :--- | :--- | :--- | :--- |
 | **Microservices** | Architecture | `REJECTED_FOR_CURRENT_SCOPE` | Adds distributed network latency, deployment complexity, and orchestration overhead. Modular monolith is superior for current stage. |
-| **Kubernetes / Redis** | Infrastructure | `REJECTED_FOR_CURRENT_SCOPE` | Premature infrastructure bloat. PostgreSQL 18 and Fastify easily handle anticipated traffic without distributed caches. |
+| **Kubernetes / Redis** | Infrastructure | `REJECTED_FOR_CURRENT_SCOPE` | Premature infrastructure bloat. PostgreSQL 18.7 and Fastify easily handle anticipated traffic without distributed caches. |
 | **Office Conversion Servers (LibreOffice / ONLYOFFICE)** | Rendering | `REJECTED_FOR_CURRENT_SCOPE` | Heavy server container dependencies (2-4GB RAM, PostgreSQL, RabbitMQ) contradict lightweight zero-setup client philosophy. Client-side SDK evaluated instead. |
 | **Mandatory Accounts** | Product Policy | `REJECTED_FOR_CURRENT_SCOPE` | Violates core Guest-First principle. Onboarding must remain zero-friction. |
 | **Mandatory BYOK** | AI Policy | `REJECTED_FOR_CURRENT_SCOPE` | Forcing ordinary students to obtain developer API keys creates high churn. Provided API with server custody is primary path. |
@@ -489,3 +496,4 @@ SOS adopts **FSRS (Free Spaced Repetition Scheduler)** as its primary scheduling
 8. **FSRS Algorithm (`open-spaced-repetition`):** https://github.com/open-spaced-repetition/fsrs4anki (Verified: Modern DSR model, superior recall scheduling).
 9. **Drizzle ORM:** https://orm.drizzle.team/ (Verified: TypeScript SQL query builder, zero runtime overhead).
 10. **Tailwind CSS v4:** https://tailwindcss.com/docs/v4-beta (Verified: CSS-first theme configuration, native CSS variables).
+11. **PostgreSQL 18 Documentation & Release:** https://www.postgresql.org/docs/18/ and https://www.postgresql.org/about/news/postgresql-18-released-2935/ (Verified: PostgreSQL 18.0 officially released September 25, 2025; current maintenance patch 18.7 released November 12, 2026).

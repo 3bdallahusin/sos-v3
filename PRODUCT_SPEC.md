@@ -1,7 +1,8 @@
 # SOS V3 — Product Specification & Canonical Product Baseline
 
-**Status:** Canonical Product Baseline (Single Source of Truth)  
+**Status:** Canonical Product Baseline (Ready for Founder Approval)  
 **Version:** 1.0 — November 2026  
+**Documentation Baseline:** Post-Audit Canonical Baseline  
 **Supersedes & Consolidates:** `PROJECT_CONTEXT.md`, `PRODUCT_STRUCTURE.md`, `PRODUCT_DECISIONS.md`, `PRODUCT_DECISION_REVIEW.md`, `SCREEN_INVENTORY.md`, `SOS_V2_KNOWLEDGE_TRANSFER.md`, `OPEN_QUESTIONS.md`.
 
 ---
@@ -31,7 +32,7 @@ SOS is **not** another conventional Learning Management System (LMS), basic note
 
 ## 2. Product Structure & Module Inventory
 
-SOS is structured around a persistent navigation hierarchy consisting of nine distinct product sections accessible via the Left Navigation Rail (56px collapsed / 240px expanded) and Top Global Header (48px).
+SOS is structured around the global **App Shell** foundation hosting **eight primary navigation destinations** accessible via the Left Navigation Rail (56px collapsed / 240px expanded) and Top Global Header (48px).
 
 ```mermaid
 flowchart TD
@@ -53,13 +54,13 @@ flowchart TD
 | :--- | :--- | :--- | :--- | :--- |
 | **0. App Shell** | Global Shell | Persistent outer frame: 48px top header (with static mirror timer), 56px/240px collapsible navigation rail, global search, breadcrumbs, 104px docked toolbar zone, and 340px collapsible AI assistant drawer. | **Verified Design** | Fully implemented in Phase 01. |
 | **1. Home** | Home (`/`) | Personal study command center: greeting, daily streak, quick-resume carousel, upcoming deadlines, daily goal progress, and recent activity feed. | **Verified Design** | Implemented with local reactive data in Phase 02. |
-| **2. Library** | Library (`/library`) | Central academic asset repository based on user-defined flexible folders: Gallery, List, and Table views, customizable metadata, structured Pages, and binary file ingestion. | **Core System** | Implemented with local storage hierarchy in Phase 02. |
-| **3. Learning** | Learning (`/learning`) | The core operational workspace: multi-tab environment running the eight primary learning tools, document-synchronized canvas, 104px docked toolbar, and shell-level audio singleton. | **Core System** | Implemented across sub-milestones in Phases 03–08. |
-| **4. Tracking** | Tracking (`/tracking`) | Authoritative study-session tracking: Pomodoro focus sessions, elapsed time calculated from timestamps, daily study heatmaps, time-per-subject analytics, and card retention curves. | **Core System** | Implemented with local analytics logging in Phase 08. |
-| **5. Calendar** | Calendar (`/calendar`) | Study timeline: exam countdowns, scheduled review sessions, assignment due dates, and study block time-boxing. | **Verified Design** | Implemented with local calendar engine in Phase 08. |
-| **6. Community** | Community (`/community`) | Collaborative discovery: shared flashcard decks and study notes. Forking creates an independent copy in the user's Library preserving provenance and attribution. | **Verified Design** | Initial Release: Local-only read/export + structured placeholder UI. Full peer networking deferred to cloud sync phase. |
-| **7. Profile** | Profile (`/profile`) | Student academic identity: university/major, academic level, earned badges, study statistics summary, and avatar customization. | **Verified Design** | Implemented with local profile store in Phase 08. |
-| **8. Settings** | Settings (`/settings`) | Application configuration: theme adjustments, local data export/import (`.sos` / ZIP), AI model configuration, and optional cloud account linking. | **Verified Design** | Implemented with local settings management in Phase 08. |
+| **2. Library** | Library (`/library`) | Central academic asset repository based on user-defined flexible folders: Gallery, List, and Table views, customizable metadata, structured Pages, binary file ingestion, and early `.sos` backup/restore. | **Core System** | Implemented with local storage hierarchy & backup in Phase 03. |
+| **3. Learning** | Learning (`/learning`) | The core operational workspace: multi-tab environment running the eight primary learning tools, document-synchronized canvas, 104px docked toolbar, and shell-level audio singleton. | **Core System** | Implemented across subphases 4.1–4.8 in Phase 04. |
+| **4. Tracking** | Tracking (`/tracking`) | Authoritative study-session tracking: Pomodoro focus sessions, elapsed time calculated from timestamps, daily study heatmaps, time-per-subject analytics, and card retention curves. | **Core System** | Implemented with local analytics logging in Phase 05. |
+| **5. Calendar** | Calendar (`/calendar`) | Study timeline: exam countdowns, scheduled review sessions, assignment due dates, and study block time-boxing. | **Verified Design** | Implemented with local calendar engine in Phase 06. |
+| **6. Community** | Community (`/community`) | Collaborative discovery: shared flashcard decks and study notes. Forking creates an independent copy in the user's Library preserving provenance and attribution. | **Verified Design** | Implemented with discovery catalog & independent copy forking in Phase 07. |
+| **7. Profile** | Profile (`/profile`) | Student academic identity: university/major, academic level, earned badges, study statistics summary, avatar customization, and optional accounts. | **Verified Design** | Implemented with local profile store & non-destructive migration in Phase 08. |
+| **8. Settings** | Settings (`/settings`) | Application configuration: theme adjustments, local data storage inspector, AI model & quota configuration, and optional cloud sync settings. | **Verified Design** | Implemented with local settings & AI configuration in Phase 09. |
 
 ---
 
@@ -140,11 +141,12 @@ flowchart TD
 - **Capabilities (DEC-002 & DEC-003):** Unified note-taking experience combining:
   1. *Document Layer:* Notion-style structured rich-text blocks (headings, lists, code, tables) powered by Tiptap/ProseMirror.
   2. *Spatial Canvas Layer:* React-Konva vector drawing layer for freehand stylus ink, highlighters, arrows, and diagrams.
-- **Document Synchronization:** The Canvas is **document-synchronized**; it follows the document's coordinate environment and movement. When the student scrolls or pans through the document, the Canvas moves with the document.
+- **Document Synchronization:** The Canvas is **document-synchronized**; it follows the document's coordinate environment and movement. When the student scrolls or pans through the document, the Canvas moves in lockstep with the document.
 - **Coordinate & Reflow Policy:**
-  - Canvas marks are stored in zoom-invariant document coordinates, not screen/viewport pixels.
-  - No mandatory fixed-width document column is imposed.
-  - Annotations maintain their spatial positions relative to the document origin.
+  - Canvas marks are stored in zoom-invariant document coordinates ($$\text{DocX}, \text{DocY}$$), not screen/viewport pixels.
+  - Document-relative coordinates anchor to the top-left origin of the document scroll container.
+  - No mandatory fixed-width document column is imposed; responsive wide-margin layout provides dedicated canvas space alongside text blocks.
+  - Spatial marks remain anchored to their document coordinates; semantic block anchoring (automatically shifting strokes when text paragraphs are inserted above) is an advanced feature explicitly deferred post-v1.
 
 ### 3.7 Tool 7: Flashcards
 - **Capabilities:** Active recall flashcard review engine utilizing modern spaced repetition scheduling.
@@ -208,7 +210,7 @@ Library is the central system for organizing academic materials:
 | **DEC-009** | Guest-First & Local-First Access | Full functionality immediately in Guest Mode without mandatory sign-in. Local storage (Dexie/IndexedDB + OPFS/filesystem) by default. Cloud accounts strictly optional. |
 | **DEC-010** | Hybrid Web + Desktop Strategy | Web is universal core product; Desktop provides enhanced local filesystem access and embedded Chromium browser. |
 | **DEC-011** | Docked Workspace Toolbar | Canvas annotation toolbar is fixed and docked at workspace footer (104px height), reserves layout space, and is invariant to canvas pan/zoom. |
-| **DEC-012** | Backend Begins in Phase 01 | Node.js + Fastify + PostgreSQL 18 + Drizzle backend starts in Phase 01 alongside frontend foundations. |
+| **DEC-012** | Backend Begins in Phase 01 | Node.js + Fastify 5 + PostgreSQL 18.7 + Drizzle backend starts in Phase 01 alongside frontend foundations. |
 | **DEC-013** | Library Flexible Folders | User-defined flexible folder hierarchy with Gallery, List, and Table views; no forced rigid taxonomy. |
 | **DEC-014** | Authoritative Tracking & Mirror Timer | Tracking owns the session; Header Timer is a static display mirror deriving time from timestamps. |
 | **DEC-015** | Community Independent Copy Forking | Forking copies the resource into the user's Library with attribution snapshot and independent ownership. |

@@ -1,7 +1,8 @@
 # SOS V3 — Canonical System Architecture Specification
 
-**Status:** Canonical Technical Architecture (Single Source of Truth)  
+**Status:** Canonical Technical Architecture (Ready for Founder Approval)  
 **Version:** 1.0 — November 2026  
+**Documentation Baseline:** Post-Audit Canonical Baseline  
 **Supersedes & Consolidates:** Previous drafts of `ARCHITECTURE.md`, `ARCHITECTURE_DECISIONS.md`, `PLATFORM_STRATEGY.md`, `FULL_BROWSER_TECHNICAL_REVIEW.md`, `DEPENDENCY_LIBRARY_AUDIT.md`, `TECHNICAL_OPTIONS_REVIEW.md`, `TECHNICAL_DECISION_MATRIX.md`, `TECHNICAL_OPEN_QUESTIONS.md`, `PROTOTYPE_EVIDENCE_AUDIT.md`, `PROTOTYPE_VALIDATION_GAPS.md`, `PROTOTYPE_REFINEMENT_REPORT.md`.
 
 ---
@@ -9,6 +10,8 @@
 ## 1. System Overview & Architectural Principles
 
 SOS V3 (**Studying Operating System**) is an integrated learning operating system that unifies academic content ingestion, document-synchronized note-taking, active recall study engines, direct presentation review (native PowerPoint `.pptx` and PDF), embedded research browsing, and context-aware artificial intelligence.
+
+The architecture is founded upon the global **App Shell** hosting **eight primary navigation destinations** accessible via the Left Navigation Rail (56px collapsed / 240px expanded) and Top Global Header (48px).
 
 ```mermaid
 flowchart TD
@@ -18,7 +21,7 @@ flowchart TD
     end
 
     subgraph ProductSections ["Complete Product Module Grid"]
-        S0["0. App Shell (Header 48px + Rail 56/240px + AI Panel 340px + Docked Toolbar 104px)"]
+        S0["Global App Shell (Header 48px + Rail 56/240px + AI Panel 340px + Docked Toolbar 104px)"]
         S1["1. Home (Dashboard & Daily Goals)"]
         S2["2. Library (Flexible Folders & Asset Catalog)"]
         S3["3. Learning (8 Primary Study Tools)"]
@@ -41,7 +44,7 @@ flowchart TD
 
     subgraph BackendServices ["Backend Services (Phase 01 Established)"]
         Fastify_Server["SOS Backend API (Node.js LTS + Fastify Modular Monolith)"]
-        Postgres_DB["Server PostgreSQL 18 (Service Identity, Quotas, Community)"]
+        Postgres_DB["Server PostgreSQL 18.7 (Service Identity, Quotas, Community)"]
         Drizzle_ORM["Drizzle ORM & Schema Migrations"]
         AI_Service["AI Provider Gateway (Vercel AI SDK Core + @ai-sdk/google)"]
     end
@@ -87,7 +90,7 @@ flowchart TD
 | **Large Binary Storage (Web)** | OPFS (Origin Private File System) | `APPROVED` | High-speed, private filesystem access for multi-megabyte PDF and video blobs in standard browsers. |
 | **Large Binary Storage (Desktop)** | App-Managed Local Filesystem | `APPROVED` | Direct OS disk streaming via Node.js `fs` in the Electron privileged process. |
 | **Backend Framework** | Node.js LTS + Fastify 5 | `APPROVED` | High-throughput, low-overhead async server, native TypeScript support, built-in schema validation, SSE streaming. |
-| **Server Database** | PostgreSQL 18 | `APPROVED` | Intended major working recommendation for server-owned identity, AI usage logs, community metadata, and future sync (subject to hosting compatibility and stable patch verification at implementation time). |
+| **Server Database** | PostgreSQL 18.7 | `APPROVED` | Active stable major working recommendation (PostgreSQL 18.0 officially released September 25, 2025; current maintenance patch 18.7 released November 12, 2026; https://www.postgresql.org/docs/18/) for server-owned identity, AI usage logs, community metadata, and future sync (subject to hosting environment compatibility). |
 | **Server ORM & Migrations** | Drizzle ORM | `APPROVED` | Lightweight TypeScript-first SQL query builder and migration runner with zero runtime bloat. |
 | **Validation & Schemas** | Zod 3.24 | `APPROVED` | Universal runtime validation sharing contract schemas between frontend, desktop, and Fastify endpoints. |
 | **Document Rich-Text Core** | Tiptap 3 / ProseMirror | `APPROVED` | Headless, block-based structured document engine with versioned JSON serialization. |
@@ -108,7 +111,7 @@ SOS delivers a cohesive experience across both Web and Desktop targets while res
 ```mermaid
 graph TD
     subgraph UniversalWebCore ["Universal SOS Web Target (Any Modern Browser)"]
-        W_Shell["Complete 9-Section Product Shell + Docked Toolbar"]
+        W_Shell["Complete 8-Destination App Shell + Docked Toolbar"]
         W_Tools["All 8 Learning Tools Available"]
         W_Slides["Slides: PDF via PDF.js + PPTX via Evaluated SDK"]
         W_Browser["Browser Tool: Iframe for compatible sites + External Launcher"]
@@ -227,9 +230,21 @@ $$\text{ScreenX} = (\text{DocX} \times \text{ZoomScale}) + \text{StageOffsetX}$$
 $$\text{ScreenY} = (\text{DocY} \times \text{ZoomScale}) + \text{StageOffsetY} - \text{ScrollTop}$$
 
 ### 5.3 Text Reflow Policy & Coordinate Boundaries
-- **Spatial Marks (Default):** Freehand drawings and annotations remain positioned at their absolute document coordinates ($$\text{DocX}, \text{DocY}$$).
-- **Text Insertion Above Annotations:** When text is added above a spatial mark, the mark retains its absolute coordinate position unless explicitly grouped with a section.
-- **Separation of Undo/Redo:** The Tiptap text editor and Konva canvas maintain independent undo/redo history stacks initially. Keyboard shortcuts target the currently focused layer.
+To resolve spatial consistency across document editing, layout changes, and freehand drawing, SOS defines clear coordinate boundaries:
+
+1. **Coordinate Hierarchy & Separation:**
+   - **Viewport / Screen Coordinates ($$\text{ScreenX}, \text{ScreenY}$$):** Ephemeral device pixel locations relative to the active browser window and Stage viewport. Never persisted.
+   - **Document-Relative Coordinates ($$\text{DocX}, \text{DocY}$$):** Normalized 2D canvas coordinates anchored strictly to the top-left origin ($$0, 0$$) of the document scroll container. Persistent and invariant to zoom scale, pan translation, and scroll offset.
+2. **Document Reflow Behavior (Baseline Architecture):**
+   - **Absolute Document Anchoring:** Vector drawings, freehand ink, highlighters, and shapes are rendered onto the Konva stage at their document-relative coordinates ($$\text{DocX}, \text{DocY}$$).
+   - **Wide Margin Layout:** Notes documents employ a responsive wide-margin layout. Students are encouraged to use margins for diagrams, callout annotations, and freehand summaries. Content placed in margins remains unaffected by body text wrapping.
+   - **Text Insertion Above Marks:** When text is added or deleted above existing annotations, or when line breaks change due to viewport resizing, spatial marks retain their absolute document coordinates. The document scroll container expands downward, and marks maintain their spatial relationship to the document canvas space.
+3. **Semantic Block Anchoring (Explicitly Deferred Post-v1):**
+   - Dynamically binding vector strokes to individual ProseMirror block node IDs (`data-block-id` UUIDs) or text character offsets—so that strokes shift downward automatically when paragraphs are inserted above—is recognized as an advanced reflow capability.
+   - To avoid excessive CPU overhead, coordinate jitter, and spatial distortion during active typing, semantic block anchoring is **explicitly deferred to post-v1 releases**.
+4. **Separation of History Stacks:**
+   - The Tiptap text editor and Konva vector canvas maintain completely independent undo/redo history stacks.
+   - Keyboard shortcuts (`⌘Z`, `⇧⌘Z`) target the currently active or focused layer (editor text vs. canvas drawing tool).
 
 ---
 
@@ -286,7 +301,7 @@ The backend begins in **Phase 01** as an integral part of the architecture:
   2. Guest/device service identity registration without forced accounts.
   3. Server-side custody of AI provider credentials (Gemini API keys).
   4. AI request proxying, context transmission, SSE streaming, and quota enforcement.
-  5. PostgreSQL 18 database migrations and health monitoring.
+  5. PostgreSQL 18.7 database migrations and health monitoring.
   6. Optional cloud accounts and future synchronization foundations.
 
 ```mermaid
@@ -300,7 +315,7 @@ flowchart LR
     end
 
     subgraph DataStorage ["Server Data Store"]
-        Postgres["PostgreSQL 18"]
+        Postgres["PostgreSQL 18.7"]
         Drizzle["Drizzle ORM & Schema Engine"]
     end
 
@@ -340,7 +355,7 @@ flowchart LR
 | **Local Structured Store** | Dexie 4 (IndexedDB) | `workspaces`, `folders`, `library_resources`, `documents`, `canvas_annotations`, `flashcards`, `quizzes`, `tracking_sessions`, `calendar_events` | 100% locally owned. Persists offline across reboots and browser refreshes. Primary source of truth. |
 | **Local Binary Store (Web)** | OPFS (Origin Private File System) | PDF files, PPTX decks, video blobs, audio recordings | Streamed directly into memory; isolated from standard DOM heap. |
 | **Local Binary Store (Desktop)** | App-Managed Filesystem | PDF files, PPTX decks, video files, local exports | Direct OS file path storage managed by Electron main process. |
-| **Server Database** | PostgreSQL 18 via Drizzle ORM | `users`, `device_registrations`, `ai_usage_logs`, `model_configs`, `community_resources`, `fork_records`, `sync_metadata` | Server-owned metadata, quotas, and optional account synchronization data (subject to hosting compatibility and stable patch verification). |
+| **Server Database** | PostgreSQL 18.7 via Drizzle ORM | `users`, `device_registrations`, `ai_usage_logs`, `model_configs`, `community_resources`, `fork_records`, `sync_metadata` | Server-owned metadata, quotas, and optional account synchronization data (subject to hosting environment compatibility). |
 
 ### 9.2 Stable Identifier Standard
 All user-created entities use locally generated **UUIDv7** identifiers. UUIDv7 guarantees global uniqueness without network roundtrips while preserving natural chronological sortability.
@@ -409,7 +424,7 @@ When a user forks a resource from the Community:
 | **ADR-009** | Unified Quiz \| Exam Assessment | `APPROVED` | Quiz \| Exam is one unified assessment tool; an individual Assessment may have its own configuration (such as optional time limit, question shuffling/ordering, or feedback timing) applied directly to the assessment itself without any Quiz vs Exam distinction; FSRS (`ts-fsrs`) preferred for flashcards. |
 | **ADR-010** | Context-Aware AI Panel | `APPROVED` | Persistent ~340px right drawer. Google Gemini initial candidate via Fastify backend. Vercel AI SDK Core. Dynamic model selection. No silent paid fallback. |
 | **ADR-011** | Docked Workspace Bottom Toolbar | `APPROVED` | Canvas annotation toolbar is fixed and docked at workspace footer (104px height), reserves layout space, and is invariant to canvas pan/zoom. |
-| **ADR-012** | Backend Established in Phase 01 | `APPROVED` | Node.js LTS + Fastify 5 + PostgreSQL 18 + Drizzle modular monolith established in Phase 01 alongside frontend foundations. |
+| **ADR-012** | Backend Established in Phase 01 | `APPROVED` | Node.js LTS + Fastify 5 + PostgreSQL 18.7 + Drizzle modular monolith established in Phase 01 alongside frontend foundations. |
 | **ADR-013** | Library Flexible Folders | `APPROVED` | User-defined flexible folder hierarchy with Gallery, List, and Table views; no forced rigid taxonomy. |
 | **ADR-014** | Tracking as Single Authority for Timer | `APPROVED` | Tracking owns the session; Header Timer is a static display mirror computing elapsed time from persisted timestamps. |
 | **ADR-015** | Community Independent Forking | `APPROVED` | Forking creates an independent copy in the user's Library with provenance snapshot and independent ownership. |
@@ -420,5 +435,5 @@ When a user forks a resource from the Community:
 
 | Gate ID | Scope & Question | Scheduled Phase | Risk & Resolution Strategy |
 | :--- | :--- | :--- | :--- |
-| **DG-01** | **PPTX Rendering SDK Selection Spike:** Evaluate Nutrient Web SDK (Office Files component) vs. Apryse WebViewer (Office Conversion add-on) vs. Syncfusion JavaScript PowerPoint Library vs. transparent conversion for fidelity, bundle size, and licensing. | Phase 06 (Slides) | Medium risk; isolated validation spike will measure rendering fidelity and licensing terms before finalizing production SDK. |
-| **DG-02** | **Desktop Electron Final Sign-Off:** Verify session isolation, persistent cookie handling, navigation restrictions, download routing, and security boundaries in `WebContentsView`. | Phase 07 (Browser) | Low risk; fallback to external tab launcher is already fully implemented. |
+| **DG-01** | **PPTX Rendering SDK Selection Spike:** Evaluate Nutrient Web SDK (Office Files component) vs. Apryse WebViewer (Office Conversion add-on) vs. Syncfusion JavaScript PowerPoint Library vs. transparent conversion for fidelity, bundle size, and licensing. | Phase 04 (Subphase 4.4: Slides) | Medium risk; isolated validation spike will measure rendering fidelity and licensing terms before finalizing production SDK. |
+| **DG-02** | **Desktop Electron Final Sign-Off:** Verify session isolation, persistent cookie handling, navigation restrictions, download routing, and security boundaries in `WebContentsView`. | Phase 04 (Subphase 4.6: Browser) | Low risk; fallback to external tab launcher is already fully implemented. |
