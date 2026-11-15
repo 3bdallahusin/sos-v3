@@ -84,4 +84,34 @@ export const DailyStudyGoalSchema = z.object({
 });
 export type DailyStudyGoalContract = z.infer<typeof DailyStudyGoalSchema>;
 
+// ==========================================
+// Phase 03: Library Document & Folder Contracts
+// ==========================================
+
+export const LibraryDocumentSchema = z.object({
+  id: z.string().min(1),
+  workspaceId: z.string().min(1),
+  folderId: z.string().nullable().optional(),
+  title: z.string(),
+  content: z.record(z.string(), z.unknown()),
+  plainTextPreview: z.string().optional(),
+  wordCount: z.number().int().nonnegative(),
+  readTimeMinutes: z.number().nonnegative(),
+  createdAt: z.string(),
+  updatedAt: z.string()
+});
+export type LibraryDocumentContract = z.infer<typeof LibraryDocumentSchema>;
+
+export const LibraryFolderSchema = z.object({
+  id: z.string().min(1),
+  workspaceId: z.string().min(1),
+  name: z.string().min(1),
+  icon: z.string().optional(),
+  color: z.string().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string()
+});
+export type LibraryFolderContract = z.infer<typeof LibraryFolderSchema>;
+
+
 

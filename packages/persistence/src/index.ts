@@ -4,7 +4,9 @@ import {
   type Workspace,
   type GuestWorkspace,
   type TaskItem,
-  type RecentStudyItem
+  type RecentStudyItem,
+  type LibraryDocument,
+  type LibraryFolder
 } from '@sos/domain';
 
 export interface ShellPreferenceRecord {
@@ -18,6 +20,8 @@ export class SosDexieDatabase extends Dexie {
   shellPreferences!: EntityTable<ShellPreferenceRecord, 'key'>;
   tasks!: EntityTable<TaskItem, 'id'>;
   recentItems!: EntityTable<RecentStudyItem, 'id'>;
+  libraryDocuments!: EntityTable<LibraryDocument, 'id'>;
+  libraryFolders!: EntityTable<LibraryFolder, 'id'>;
 
   constructor() {
     super('sos_local_v3');
@@ -40,6 +44,11 @@ export class SosDexieDatabase extends Dexie {
     this.version(4).stores({
       libraryFolders: null,
       libraryItems: null
+    });
+    // Schema Version 5: Rebuilt Tiptap-centric Library documents and folder organization
+    this.version(5).stores({
+      libraryDocuments: 'id, workspaceId, folderId, title, updatedAt',
+      libraryFolders: 'id, workspaceId, name, updatedAt'
     });
   }
 }
@@ -254,3 +263,217 @@ export async function saveRecentStudyItem(item: RecentStudyItem): Promise<void> 
     console.warn('Failed to save recent item to Dexie:', err);
   }
 }
+
+// ==========================================
+// Phase 03: Library Documents (Tiptap-centered)
+// ==========================================
+
+export const INITIAL_LIBRARY_FOLDERS: LibraryFolder[] = [
+  {
+    id: 'folder-neurobiology',
+    workspaceId: 'default-workspace',
+    name: 'Neurobiology & Synapse',
+    icon: '🧠',
+    color: '#3F3F46',
+    createdAt: '2026-11-14T08:00:00Z',
+    updatedAt: '2026-11-14T08:00:00Z'
+  },
+  {
+    id: 'folder-molecular-bio',
+    workspaceId: 'default-workspace',
+    name: 'Molecular Genetics',
+    icon: '🧬',
+    color: '#27272A',
+    createdAt: '2026-11-14T08:30:00Z',
+    updatedAt: '2026-11-14T08:30:00Z'
+  }
+];
+
+export const INITIAL_LIBRARY_DOCUMENTS: LibraryDocument[] = [
+  {
+    id: 'doc-synaptic-plasticity',
+    workspaceId: 'default-workspace',
+    folderId: 'folder-neurobiology',
+    title: 'Synaptic Plasticity & Memory Synthesis',
+    content: {
+      type: 'doc',
+      content: [
+        {
+          type: 'heading',
+          attrs: { level: 1 },
+          content: [{ type: 'text', text: 'Synaptic Plasticity & Memory Synthesis' }]
+        },
+        {
+          type: 'paragraph',
+          content: [
+            {
+              type: 'text',
+              text: 'Synaptic plasticity is the biological foundation of learning and memory in the central nervous system. It describes the activity-dependent modification of synaptic transmission strength across chemical synapses.'
+            }
+          ]
+        },
+        {
+          type: 'heading',
+          attrs: { level: 2 },
+          content: [{ type: 'text', text: '1. Induction Mechanisms (NMDA-Dependent LTP)' }]
+        },
+        {
+          type: 'paragraph',
+          content: [
+            {
+              type: 'text',
+              text: 'Long-Term Potentiation (LTP) at the CA3-CA1 Schaffer collateral pathway requires coincident presynaptic glutamate release and postsynaptic depolarization to displace Mg²⁺ ions blocking the NMDA receptor pore.'
+            }
+          ]
+        },
+        {
+          type: 'blockquote',
+          content: [
+            {
+              type: 'paragraph',
+              content: [
+                {
+                  type: 'text',
+                  text: '“Coincidence detection by NMDA receptors represents Hebb’s postulate formulated at the single-channel biophysical level.”'
+                }
+              ]
+            }
+          ]
+        },
+        {
+          type: 'heading',
+          attrs: { level: 2 },
+          content: [{ type: 'text', text: '2. High-Yield Study Checklist' }]
+        },
+        {
+          type: 'taskList',
+          content: [
+            {
+              type: 'taskItem',
+              attrs: { checked: true },
+              content: [
+                {
+                  type: 'paragraph',
+                  content: [{ type: 'text', text: 'Review CaMKII subunit autophosphorylation at Thr286' }]
+                }
+              ]
+            },
+            {
+              type: 'taskItem',
+              attrs: { checked: false },
+              content: [
+                {
+                  type: 'paragraph',
+                  content: [{ type: 'text', text: 'Analyze retrograde messengers: Nitric Oxide (NO) and endocannabinoids' }]
+                }
+              ]
+            },
+            {
+              type: 'taskItem',
+              attrs: { checked: false },
+              content: [
+                {
+                  type: 'paragraph',
+                  content: [{ type: 'text', text: 'Differentiate Early-LTP (protein kinase activation) from Late-LTP (CREB-dependent gene transcription)' }]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    plainTextPreview:
+      'Synaptic plasticity is the biological foundation of learning and memory in the central nervous system.',
+    wordCount: 85,
+    readTimeMinutes: 1,
+    createdAt: '2026-11-14T09:00:00Z',
+    updatedAt: '2026-11-14T10:30:00Z'
+  }
+];
+
+export async function loadLibraryDocuments(workspaceId?: string): Promise<LibraryDocument[]> {
+  try {
+    const db = getLocalDatabase();
+    const count = await db.libraryDocuments.count();
+    if (count === 0) {
+      await db.libraryDocuments.bulkAdd(INITIAL_LIBRARY_DOCUMENTS);
+      return INITIAL_LIBRARY_DOCUMENTS;
+    }
+    const docs = await db.libraryDocuments.toArray();
+    return docs.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+  } catch (err) {
+    console.warn('Failed to load library documents from Dexie:', err);
+    return INITIAL_LIBRARY_DOCUMENTS;
+  }
+}
+
+export async function getLibraryDocument(id: string): Promise<LibraryDocument | undefined> {
+  try {
+    const db = getLocalDatabase();
+    return await db.libraryDocuments.get(id);
+  } catch (err) {
+    console.warn(`Failed to get document ${id} from Dexie:`, err);
+    return undefined;
+  }
+}
+
+export async function saveLibraryDocument(doc: LibraryDocument): Promise<void> {
+  try {
+    const db = getLocalDatabase();
+    await db.libraryDocuments.put(doc);
+  } catch (err) {
+    console.warn('Failed to save library document in Dexie:', err);
+    throw err;
+  }
+}
+
+export async function deleteLibraryDocument(id: string): Promise<void> {
+  try {
+    const db = getLocalDatabase();
+    await db.libraryDocuments.delete(id);
+  } catch (err) {
+    console.warn('Failed to delete library document from Dexie:', err);
+    throw err;
+  }
+}
+
+export async function loadLibraryFolders(workspaceId?: string): Promise<LibraryFolder[]> {
+  try {
+    const db = getLocalDatabase();
+    const count = await db.libraryFolders.count();
+    if (count === 0) {
+      await db.libraryFolders.bulkAdd(INITIAL_LIBRARY_FOLDERS);
+      return INITIAL_LIBRARY_FOLDERS;
+    }
+    return await db.libraryFolders.toArray();
+  } catch (err) {
+    console.warn('Failed to load library folders from Dexie:', err);
+    return INITIAL_LIBRARY_FOLDERS;
+  }
+}
+
+export async function saveLibraryFolder(folder: LibraryFolder): Promise<void> {
+  try {
+    const db = getLocalDatabase();
+    await db.libraryFolders.put(folder);
+  } catch (err) {
+    console.warn('Failed to save library folder in Dexie:', err);
+    throw err;
+  }
+}
+
+export async function deleteLibraryFolder(id: string): Promise<void> {
+  try {
+    const db = getLocalDatabase();
+    await db.libraryFolders.delete(id);
+    // Unassign documents from deleted folder
+    const docs = await db.libraryDocuments.where('folderId').equals(id).toArray();
+    for (const doc of docs) {
+      await db.libraryDocuments.update(doc.id, { folderId: null, updatedAt: new Date().toISOString() });
+    }
+  } catch (err) {
+    console.warn('Failed to delete library folder from Dexie:', err);
+    throw err;
+  }
+}
+

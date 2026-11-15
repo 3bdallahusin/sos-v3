@@ -115,4 +115,32 @@ export interface DailyEditorial {
   };
 }
 
+// ==========================================
+// Phase 03: Library & Tiptap Document Models
+// ==========================================
+
+export interface LibraryDocument {
+  id: string;
+  workspaceId: string;
+  folderId?: string | null;
+  title: string;
+  content: Record<string, unknown>; // Tiptap JSONContent structured tree
+  plainTextPreview?: string;
+  wordCount: number;
+  readTimeMinutes: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LibraryFolder {
+  id: string;
+  workspaceId: string;
+  name: string;
+  icon?: string;
+  color?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+
 

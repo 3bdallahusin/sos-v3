@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@sos/domain": "workspace:*",
+    "lucide-react": "1.73.0",
     "@tiptap/core": "3.34.0",
     "@tiptap/extension-image": "3.34.0",
     "@tiptap/extension-link": "3.34.0",

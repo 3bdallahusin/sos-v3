@@ -57,7 +57,7 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
   test('verifies eight navigation destinations in canonical order and routing', async ({ page }) => {
     const expectedDestinations = [
       { id: 'home', label: 'Home', path: '/', expectedText: 'Good' },
-      { id: 'library', label: 'Library', path: '/library', expectedText: 'Library & Knowledge Base' },
+      { id: 'library', label: 'Library', path: '/library', expectedText: 'Library' },
       { id: 'learning', label: 'Learning', path: '/learning', expectedText: 'Learning Workspace' },
       { id: 'tracking', label: 'Tracking', path: '/tracking', expectedText: 'Study Tracking' },
       { id: 'calendar', label: 'Calendar', path: '/calendar', expectedText: 'Academic Calendar' },

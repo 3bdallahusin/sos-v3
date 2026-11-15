@@ -6,7 +6,9 @@ import {
   WorkspaceSchema,
   TaskItemSchema,
   RecentStudyItemSchema,
-  DailyStudyGoalSchema
+  DailyStudyGoalSchema,
+  LibraryDocumentSchema,
+  LibraryFolderSchema
 } from '../src/index.js';
 
 describe('Shared Contracts (Phase 01 & Phase 02)', () => {
@@ -87,5 +89,39 @@ describe('Shared Contracts (Phase 01 & Phase 02)', () => {
       lastOpenedAt: new Date().toISOString()
     };
     expect(RecentStudyItemSchema.safeParse(item).success).toBe(true);
+  });
+
+  it('validates Phase 03 LibraryDocumentSchema and LibraryFolderSchema', () => {
+    const validDoc = {
+      id: 'doc-1',
+      workspaceId: 'ws-1',
+      title: 'Synaptic Plasticity & Memory Synthesis',
+      content: {
+        type: 'doc',
+        content: [
+          {
+            type: 'heading',
+            attrs: { level: 1 },
+            content: [{ type: 'text', text: 'Synaptic Plasticity' }]
+          }
+        ]
+      },
+      plainTextPreview: 'Synaptic Plasticity',
+      wordCount: 2,
+      readTimeMinutes: 1,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    expect(LibraryDocumentSchema.safeParse(validDoc).success).toBe(true);
+
+    const validFolder = {
+      id: 'folder-1',
+      workspaceId: 'ws-1',
+      name: 'Neurobiology',
+      icon: '🧠',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    expect(LibraryFolderSchema.safeParse(validFolder).success).toBe(true);
   });
 });

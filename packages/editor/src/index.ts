@@ -1,2 +1,4 @@
-// SOS Editor package entry point (Phase 04 scope)
-export const EDITOR_PACKAGE_VERSION = '0.1.0';
+export * from './types.js';
+export * from './extensions.js';
+export * from './EditorToolbar.js';
+export * from './SosEditor.js';
