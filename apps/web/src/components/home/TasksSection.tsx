@@ -30,7 +30,7 @@ export const TasksSection: React.FC<TasksSectionProps> = ({
   return (
     <div
       data-testid="tasks-section"
-      className="bg-[#111114] border border-[#1F1F23] hover:border-[#27272A] rounded-2xl p-4.5 md:p-5 flex flex-col justify-between shadow-sm transition-colors"
+      className="h-full bg-[#111114] border border-[#1F1F23] hover:border-[#27272A] rounded-2xl p-5 flex flex-col justify-between shadow-sm transition-colors"
     >
       <div>
         {/* Header Row */}
@@ -46,8 +46,8 @@ export const TasksSection: React.FC<TasksSectionProps> = ({
           </span>
         </div>
 
-        {/* Quick-Add Task Input */}
-        <div className="w-full h-9 px-3 bg-[#09090B] border border-[#1F1F23] rounded-xl flex items-center gap-2 mb-2 focus-within:border-[#2E2E33] focus-within:ring-1 focus-within:ring-[#2E2E33] transition-all">
+        {/* Slim & Refined Quick-Add Task Input (34px height) */}
+        <div className="w-full h-[34px] px-3 bg-[#09090B] border border-[#1F1F23] rounded-xl flex items-center gap-2 mb-2.5 focus-within:border-[#2E2E33] focus-within:ring-1 focus-within:ring-[#2E2E33] transition-all">
           <Plus className="w-3.5 h-3.5 text-[#71717A] shrink-0" />
           <input
             type="text"
@@ -60,8 +60,8 @@ export const TasksSection: React.FC<TasksSectionProps> = ({
           />
         </div>
 
-        {/* Interactive Task Rows */}
-        <div className="flex flex-col divide-y divide-[#161619]" data-testid="tasks-list">
+        {/* Interactive Task Rows without divider lines */}
+        <div className="flex flex-col space-y-1.5" data-testid="tasks-list">
           {tasks.length === 0 ? (
             <div className="py-6 text-center text-[12px] text-[#71717A] font-mono">
               No tasks for today. Add one above!
@@ -72,7 +72,7 @@ export const TasksSection: React.FC<TasksSectionProps> = ({
                 key={task.id}
                 data-testid={`task-row-${task.id}`}
                 onClick={() => onToggleTask(task.id)}
-                className="py-2 px-2 flex items-center justify-between text-[13px] hover:bg-white/[0.02] rounded-lg transition-colors group cursor-pointer"
+                className="px-2.5 py-2 flex items-center justify-between text-[13px] hover:bg-[#18181B]/70 rounded-[8px] transition-colors group cursor-pointer"
               >
                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
                   <button
