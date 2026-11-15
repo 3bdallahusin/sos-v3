@@ -5,3 +5,7 @@ packages:
 allowBuilds:
   electron: true
   esbuild: true
+  '@tailwindcss/oxide': true
+
+minimumReleaseAgeExclude:
+  - '@fastify/swagger-ui@6.1.4'

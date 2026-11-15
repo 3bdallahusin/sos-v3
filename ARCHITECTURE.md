@@ -75,32 +75,40 @@ flowchart TD
 
 ### 2.1 Stack Selection Matrix
 
-| Component | Selected Technology | Status | Engineering Rationale |
+| Component | Selected Technology & Pinned Version | Status | Engineering Rationale |
 | :--- | :--- | :--- | :--- |
-| **Workspace Architecture** | pnpm Monorepo | `APPROVED` | Strict workspace dependency isolation, shared TypeScript packages (`domain`, `contracts`, `ui`, `editor`), single lockfile. |
-| **Frontend Framework** | React 19.3.1 (Stable) | `APPROVED` | Universal component model, high-performance concurrent rendering, zero SSR hydration mismatches. |
-| **Language & Typing** | TypeScript 5.8 (Strict) | `APPROVED` | End-to-end type safety across client, desktop, and backend. |
-| **Client Bundler** | Vite 8 | `APPROVED` | Sub-100ms HMR, optimized static SPA output directly loadable by Electron and static CDNs. |
-| **Desktop Shell** | Electron 45 | `APPROVED` | Native Chromium engine enabling `WebContentsView` for embedded browsing, local filesystem access, and OS window control. |
-| **Routing** | TanStack Router | `RECOMMENDED` | Fully type-safe route trees, search parameter validation, and nested layout preservation. |
-| **Styling** | Tailwind CSS v4 | `APPROVED` | CSS-first `@theme` block matching obsidian tokens without JavaScript configuration overhead. |
-| **Ephemeral UI State** | React State & Zustand 5 | `APPROVED` | Lightweight stores for transient UI states (active tab, tool switcher, modal visibility). RAM is a cache, not source of truth. |
-| **Server State Client** | TanStack Query 5 | `RECOMMENDED` | Declarative server data caching, background revalidation, and optimistic updates. |
-| **Local Structured Database** | Dexie 4 (IndexedDB) | `APPROVED` | Durable client-side indexed storage for workspaces, notes, flashcards, and annotations across Web and Desktop. |
-| **Large Binary Storage (Web)** | OPFS (Origin Private File System) | `APPROVED` | High-speed, private filesystem access for multi-megabyte PDF and video blobs in standard browsers. |
-| **Large Binary Storage (Desktop)** | App-Managed Local Filesystem | `APPROVED` | Direct OS disk streaming via Node.js `fs` in the Electron privileged process. |
-| **Backend Framework** | Node.js LTS + Fastify 5 | `APPROVED` | High-throughput, low-overhead async server, native TypeScript support, built-in schema validation, SSE streaming. |
-| **Server Database** | PostgreSQL 18.x | `APPROVED` | Active stable major-version baseline (PostgreSQL 18.0 officially released September 25, 2025; local environment verified with 18.6, patch versions updateable at implementation time; https://www.postgresql.org/docs/18/) for server-owned identity, AI usage logs, community metadata, and future sync (subject to hosting environment compatibility). |
-| **Server ORM & Migrations** | Drizzle ORM | `APPROVED` | Lightweight TypeScript-first SQL query builder and migration runner with zero runtime bloat. |
-| **Validation & Schemas** | Zod 3.24 | `APPROVED` | Universal runtime validation sharing contract schemas between frontend, desktop, and Fastify endpoints. |
-| **Document Rich-Text Core** | Tiptap 3 / ProseMirror | `APPROVED` | Headless, block-based structured document engine with versioned JSON serialization. |
-| **Vector Drawing Canvas** | Konva 10 / React-Konva 19 | `APPROVED` | High-performance 2D canvas with hardware-accelerated transforms, hit testing, and vector serialization. |
-| **PDF Rendering Core** | PDF.js 4.10 (`pdfjs-dist`) | `APPROVED` | Client-side standard for rendering PDF documents and presentation decks via HTML5 Canvas. |
-| **PPTX Viewing Core** | Evaluated Presentation SDK | `RECOMMENDED_PENDING_VALIDATION` | Dedicated PowerPoint rendering solution (Nutrient Web SDK as leading candidate, Apryse WebViewer, Syncfusion JavaScript PowerPoint Library, or transparent conversion). |
-| **Flashcard Scheduling** | FSRS via `ts-fsrs` | `RECOMMENDED` | Modern Free Spaced Repetition Scheduler delivering higher retention and lower review burden than legacy SM-2. Starts with recommended defaults. |
-| **AI Integration Core** | Vercel AI SDK Core | `APPROVED` | Universal streaming and tool-calling abstraction decoupled from Vercel hosting. |
-| **AI Initial Provider** | `@ai-sdk/google` (Gemini API) | `RECOMMENDED` | Direct connection to Google Gemini Developer API with server-side API key custody. No AI Gateway required initially. |
-| **Testing Framework** | Vitest 3 & Playwright | `APPROVED` | Fast unit testing with Vite compatibility and cross-browser/Electron E2E automation. |
+| **Workspace Architecture** | pnpm 12.21.0 Monorepo (`save-exact=true`) | `APPROVED` | Strict workspace dependency isolation across apps and packages, single reproducible lockfile. |
+| **Frontend Framework** | React 19.3.1 & React DOM 19.3.1 | `APPROVED` | Universal component model, high-performance concurrent rendering, zero SSR hydration mismatches. |
+| **Language & Typing** | TypeScript 7.0.2 (Strict) | `APPROVED` | Maximum static safety across shared contracts, domain logic, and client/server packages. |
+| **Client Bundler** | Vite 8.3.8 & @vitejs/plugin-react 6.3.0 | `APPROVED` | Sub-100ms HMR, native Rolldown/ESBuild pipeline, optimized static SPA output. |
+| **Desktop Shell** | Electron 45.3.2 & electron-vite 6.0.0 | `APPROVED` | Native Chromium engine enabling `WebContentsView` for embedded browsing, local filesystem access, and OS window control. |
+| **Routing** | TanStack Router 1.170.46 | `APPROVED` | Fully type-safe route trees, search parameter validation, and nested layout preservation. |
+| **Styling** | Tailwind CSS 4.3.5 & @tailwindcss/vite 4.3.5 | `APPROVED` | CSS-first `@theme` block matching obsidian tokens without JavaScript configuration overhead. |
+| **Ephemeral UI State** | React State & Zustand 5.1.0 | `APPROVED` | Lightweight stores for transient UI states (active tab, tool switcher, modal visibility). RAM is a cache, not source of truth. |
+| **Server State Client** | TanStack Query 5.107.1 | `APPROVED` | Declarative server data caching, background revalidation, and optimistic updates. |
+| **Local Structured Database** | Dexie 4.4.7 (IndexedDB) | `APPROVED` | Durable client-side indexed storage for workspaces, notes, flashcards, and annotations across Web and Desktop. |
+| **Large Binary Storage (Web)** | OPFS (Origin Private File System) | `APPROVED` | Native browser API for high-speed, private filesystem access for multi-megabyte PDF and video blobs. (No package required). |
+| **Large Binary Storage (Desktop)** | App-Managed Local Filesystem | `APPROVED` | Direct OS disk streaming via Node.js native `fs` in the Electron privileged process. (No package required). |
+| **Backend Framework** | Node.js 24 + Fastify 5.12.8 | `APPROVED` | High-throughput, low-overhead async server, native TypeScript support, built-in schema validation, SSE streaming. |
+| **Backend Security** | @fastify/cors 11.4.3, @fastify/helmet 13.2.0, @fastify/rate-limit 11.2.2 | `APPROVED` | Platform security headers, CORS boundary enforcement, and guest request throttling. |
+| **Backend Documentation** | @fastify/swagger 9.9.4 & @fastify/swagger-ui 6.1.4 | `APPROVED` | Auto-generated OpenAPI v3 documentation and interactive exploration UI for Fastify endpoints. |
+| **Server Database** | PostgreSQL 18.x (Verified 18.6) | `APPROVED` | Active stable major-version baseline (local environment running 18.6) for server-owned identity, AI usage logs, community metadata, and future sync. |
+| **Database Driver** | postgres.js 4.1.1 (`postgres`) | `APPROVED` | Fastest full-featured native PostgreSQL client for Node.js with connection pooling and typed queries. |
+| **Server ORM & Migrations** | Drizzle ORM 0.45.4 & Drizzle Kit 0.31.11 | `APPROVED` | Lightweight TypeScript-first SQL query builder and migration runner with zero runtime bloat. |
+| **Validation & Schemas** | Zod 4.6.7 | `APPROVED` | Universal runtime validation sharing contract schemas between frontend, desktop, and Fastify endpoints. |
+| **Document Rich-Text Core** | Tiptap 3.34.0 / ProseMirror | `APPROVED` | Headless, block-based structured document engine with versioned JSON serialization across `@tiptap/core`, `@tiptap/react`, `@tiptap/starter-kit`, and structured content extensions. |
+| **Vector Drawing Canvas** | Konva 10.9.1 & React-Konva 19.3.2 | `APPROVED` | High-performance 2D canvas with hardware-accelerated transforms, hit testing, and vector serialization. |
+| **PDF Rendering Core** | PDF.js 6.5.438 (`pdfjs-dist`) | `APPROVED` | Client-side standard for rendering PDF documents and presentation decks via HTML5 Canvas. |
+| **PPTX Viewing Core** | Evaluated Presentation SDK | `PENDING_FOUNDER_APPROVED_DG-01_SELECTION` | Mandatory direct native `.pptx` playback. Candidates under evaluation (Nutrient Web SDK, Apryse WebViewer, Syncfusion). No conversion server installed. |
+| **Flashcard Scheduling** | FSRS via `ts-fsrs` 6.0.0 | `APPROVED` | Modern Free Spaced Repetition Scheduler delivering higher retention and lower review burden than legacy SM-2. |
+| **Backup & Restoration** | JSZip 3.10.2 | `APPROVED` | Client-side compressed `.sos` workspace export and import archive generator in `packages/persistence`. |
+| **Mathematical Notation** | KaTeX 0.19.1 & @types/katex 0.16.8 | `APPROVED` | KaTeX math notation renderer in `packages/ui` for mathematical expressions in Notes and Flashcards. |
+| **UI Iconography** | Lucide React 1.73.0 | `APPROVED` | Clean, lightweight SVG icon system matching Google Stitch design specifications. |
+| **AI Integration Core** | Vercel AI SDK Core (`ai` 7.0.173) | `APPROVED` | Universal streaming and tool-calling abstraction decoupled from Vercel hosting. |
+| **AI Initial Provider** | `@ai-sdk/google` 4.0.121 (Gemini API) | `APPROVED` | Direct connection to Google Gemini Developer API with server-side API key custody. No AI Gateway required. |
+| **AI UI Components** | `@ai-sdk/react` 4.0.177 | `APPROVED` | React hooks and streaming UI primitives for AI assistant panel. |
+| **Unit Testing** | Vitest 5.1.0 & @vitest/coverage-v8 5.1.0 | `APPROVED` | Fast unit testing with Vite 8 compatibility and native v8 code coverage reporting. |
+| **End-to-End Testing** | Playwright 1.65.1 (`@playwright/test`) | `APPROVED` | Cross-browser and Electron E2E test runner with installed Chromium browser binary. |
 
 ---
 
@@ -415,7 +423,7 @@ When a user forks a resource from the Community:
 
 | ADR ID | Decision Title | Status | Summary & Governing Architectural Rule |
 | :--- | :--- | :--- | :--- |
-| **ADR-001** | Monorepo & Framework | `APPROVED` | pnpm workspace with React 19 + TypeScript 5.8 + Vite 8 in modular structure (`apps/web`, `apps/desktop`, `apps/api`, `packages/*`). |
+| **ADR-001** | Monorepo & Framework | `APPROVED` | pnpm 12.21.0 workspace with React 19.3.1 + TypeScript 7.0.2 + Vite 8.3.8 in modular structure (`apps/web`, `apps/desktop`, `apps/api`, `packages/*`) with exact version pinning (`save-exact=true`). |
 | **ADR-002** | Guest-First Access Policy | `APPROVED` | Full functionality in Guest Mode via local Dexie/OPFS; low-profile `Guest Mode →` escape hatch on Login/Register; optional 5-screen Auth Suite in Phase 08 with atomic non-destructive migration. |
 | **ADR-003** | Hybrid Web + Desktop Strategy | `APPROVED` | Universal Web SPA core; Desktop uses Electron 45 with `WebContentsView` for embedded browsing and native filesystem. |
 | **ADR-004** | Tiered Tab Lifecycle | `APPROVED` | Three-tier lifecycle: Active (1 in DOM), Warm (5 in RAM cache), Cold (>5 flushed to local storage) to prevent memory crashes. |

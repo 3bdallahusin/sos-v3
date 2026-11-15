@@ -42,6 +42,7 @@ flowchart TD
 4. **Early Data Portability (Phase 03):** Local workspace backup, export, and restore (`.sos` / ZIP archive) are implemented early in Phase 03 alongside the Library, ensuring users can safeguard their data before heavy multi-tool content generation begins in Phase 04.
 5. **Contextual Toolbar Scope:** The verified 104px docked toolbar belongs specifically to canvas-enabled Learning tools (Notes, PDF Reader, Slides). The App Shell provides a flexible workspace layout composition without forcing an unnecessary 104px global reservation across non-canvas views (Home, Library, Tracking, Calendar, Community, Profile, Settings).
 6. **Rigorous Decision Gates (`DG-01`, `DG-02`):** Complex third-party integrations (such as the direct PPTX presentation engine and native embedded browser) follow formal decision gates with defined evaluation criteria.
+7. **Complete Pinned Dependency Foundation Pre-Installed:** All approved direct dependencies across the entire 9-phase architecture (Tiptap 3.34.0, Konva 10.9.1, PDF.js 6.5.438, ts-fsrs 6.0.0, JSZip 3.10.2, KaTeX 0.19.1, Vercel AI SDK Core 7.0.173, Google Provider 4.0.121, Vitest 5.1.0, Playwright 1.65.1) are pre-installed and locked with exact pinned versions in `pnpm-lock.yaml`. Application features remain strictly sequenced across their respective implementation phases.
 
 ---
 
