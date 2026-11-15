@@ -2,17 +2,22 @@
   "name": "sos-workspace",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@12.21.0",
   "engines": {
     "node": ">=24.18.0",
     "pnpm": ">=12.21.0"
   },
   "scripts": {
+    "dev": "pnpm --filter @sos/web dev",
+    "dev:web": "pnpm --filter @sos/web dev",
+    "dev:api": "pnpm --filter @sos/api dev",
+    "dev:desktop": "pnpm --filter @sos/desktop dev",
     "build": "pnpm -r build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "typecheck": "tsc -b --noEmit"
+    "typecheck": "tsc -b"
   },
   "devDependencies": {
     "@playwright/test": "1.65.1",

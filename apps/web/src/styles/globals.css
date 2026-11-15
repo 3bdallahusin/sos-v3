@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@theme {
+  --color-sos-base: #000000;
+  --color-sos-sidebar: #09090B;
+  --color-sos-surface1: #0C0C0E;
+  --color-sos-surface2: #141417;
+  --color-sos-surface3: #1C1C21;
+  --color-sos-hover: rgba(255, 255, 255, 0.05);
+  --color-sos-active: rgba(255, 255, 255, 0.09);
+
+  --color-sos-border-subtle: #222226;
+  --color-sos-border-default: #2A2A30;
+  --color-sos-border-strong: #3F3F46;
+
+  --color-sos-primary: #FAFAFA;
+  --color-sos-secondary: #A1A1AA;
+  --color-sos-muted: #71717A;
+  --color-sos-pomodoro: #F97316;
+
+  --radius-sos-micro: 10px;
+  --radius-sos-control: 14px;
+  --radius-sos-card: 18px;
+  --radius-sos-island: 24px;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+/* Restrained obsidian custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #222226;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2A2A30;
+}

@@ -1,0 +1,62 @@
+import { describe, it, expect } from 'vitest';
+import {
+  HealthResponseSchema,
+  ReadinessResponseSchema,
+  NavigationDestinationSchema,
+  WorkspaceSchema
+} from '../src/index.js';
+
+describe('Shared Contracts (Phase 01)', () => {
+  it('validates health response schema', () => {
+    const valid = {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      version: '0.1.0',
+      uptime: 12.34
+    };
+    expect(HealthResponseSchema.safeParse(valid).success).toBe(true);
+
+    const invalid = { status: 'bad' };
+    expect(HealthResponseSchema.safeParse(invalid).success).toBe(false);
+  });
+
+  it('validates readiness response schema', () => {
+    const ready = {
+      status: 'ready',
+      database: 'connected',
+      databaseName: 'sos_v3_dev',
+      databaseUser: 'sos_v3_app',
+      timestamp: new Date().toISOString()
+    };
+    expect(ReadinessResponseSchema.safeParse(ready).success).toBe(true);
+
+    const notReady = {
+      status: 'not_ready',
+      database: 'disconnected',
+      error: 'Connection timed out',
+      timestamp: new Date().toISOString()
+    };
+    expect(ReadinessResponseSchema.safeParse(notReady).success).toBe(true);
+  });
+
+  it('validates navigation destinations', () => {
+    expect(NavigationDestinationSchema.safeParse('home').success).toBe(true);
+    expect(NavigationDestinationSchema.safeParse('settings').success).toBe(true);
+    expect(NavigationDestinationSchema.safeParse('unknown').success).toBe(false);
+  });
+
+  it('validates workspace contracts', () => {
+    const ws = {
+      id: '018f6c35-7140-7bc0-a19e-e0921471d87f',
+      name: 'Guest Workspace',
+      isGuest: true,
+      createdAt: new Date().toISOString(),
+      lastActiveAt: new Date().toISOString(),
+      settings: {
+        railExpanded: false,
+        aiPanelOpen: true
+      }
+    };
+    expect(WorkspaceSchema.safeParse(ws).success).toBe(true);
+  });
+});

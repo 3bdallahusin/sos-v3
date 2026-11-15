@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "module": "ESNext"
+  },
+  "references": [
+    { "path": "../../packages/domain" },
+    { "path": "../../packages/contracts" },
+    { "path": "../../packages/persistence" },
+    { "path": "../../packages/ui" }
+  ],
+  "include": ["src/**/*"]
+}

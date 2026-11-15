@@ -1,0 +1,14 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/domain" },
+    { "path": "./packages/contracts" },
+    { "path": "./packages/persistence" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/editor" },
+    { "path": "./packages/canvas" },
+    { "path": "./apps/api" },
+    { "path": "./apps/web" },
+    { "path": "./apps/desktop" }
+  ]
+}
