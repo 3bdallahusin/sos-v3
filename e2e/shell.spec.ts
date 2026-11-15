@@ -318,4 +318,12 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
     await expect(homePage.getByText('Complete Mitochondria Review')).toBeVisible();
     await expect(homePage.getByText('2 / 5')).toBeVisible();
   });
+
+  test('verifies application tab favicon uses SOS Logo v3 asset', async ({ page }) => {
+    const favicon = page.locator('link[rel="icon"][href="/favicon.png"]');
+    await expect(favicon).toHaveCount(1);
+
+    const appleIcon = page.locator('link[rel="apple-touch-icon"][href="/apple-touch-icon.png"]');
+    await expect(appleIcon).toHaveCount(1);
+  });
 });

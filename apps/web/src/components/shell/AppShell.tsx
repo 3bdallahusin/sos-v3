@@ -166,7 +166,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           isDragging={activeDragHandle === 'left'}
           onMouseDown={(e) => handleStartDrag('left', e)}
           onDoubleClick={resetLeftRailWidth}
-          title="Drag to resize rail (Double-click to reset to 240px)"
         />
       )}
 
@@ -178,7 +177,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           isDragging={activeDragHandle === 'right'}
           onMouseDown={(e) => handleStartDrag('right', e)}
           onDoubleClick={resetRightAiPanelWidth}
-          title="Drag to resize AI panel (Double-click to reset to 340px)"
         />
       )}
 
