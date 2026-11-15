@@ -36,3 +36,5 @@ desktop.ini
 
 # Scratch and POC artifacts
 scratch/
+logs/
+.pids/
