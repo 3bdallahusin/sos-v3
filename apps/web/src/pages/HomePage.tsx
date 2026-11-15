@@ -124,7 +124,7 @@ export const HomePage: React.FC = () => {
           </div>
 
           {/* Progress Track */}
-          <div className="w-full h-1 bg-[#18181B] rounded-full overflow-hidden">
+          <div className="w-full h-[2.5px] bg-[#18181B] rounded-full overflow-hidden">
             <div
               className="h-full bg-[#E4E4E7] rounded-full transition-all duration-500"
               style={{ width: '50%' }}

@@ -37,12 +37,13 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
     // 1440 - (8px outer * 2) - 56px (rail) - 340px (ai) - (8px gap * 2) = 1012px
     expect(centralBox!.width).toBeGreaterThan(950);
 
-    // 5. Expand Left Rail to 240px
+    // 5. Expand Left Rail to 240px and verify Logo v3 is rendered
     const toggleButton = page.locator('button[aria-label="Expand navigation rail"]');
     await toggleButton.click();
     await page.waitForTimeout(400); // Allow spring animation
     railBox = await leftRail.boundingBox();
     expect(railBox!.width).toBe(240);
+    await expect(page.locator('img[alt="SOS Logo v3"]')).toBeVisible();
 
     // Collapse it back to 56px
     const collapseButton = page.locator('button[aria-label="Collapse navigation rail"]');
@@ -100,18 +101,58 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
     await expect(timerMirror).toContainText('24:18');
   });
 
-  test('verifies Right AI Panel toggle functionality', async ({ page }) => {
+  test('verifies Right AI Panel toggle and Center Fullscreen Focus Mode', async ({ page }) => {
     const aiPanel = page.locator('[data-testid="right-ai-panel"]');
     await expect(aiPanel).toBeVisible();
 
-    // Click collapse button in AI panel header
-    const toggleButton = page.locator('button[aria-label="Collapse AI panel"]');
-    await toggleButton.click();
+    // 1. Click Maximize2 / Fullscreen icon in Central Workspace header
+    const fullscreenBtn = page.locator('button[aria-label="Toggle Workspace Fullscreen"]');
+    await fullscreenBtn.click();
     await expect(aiPanel).toBeHidden();
 
-    // Re-open via keyboard shortcut (Ctrl+J / ⌘J)
+    // 2. Dynamic MessageCircle AI icon must now be visible in Central header (rightmost)
+    const dynamicAiBtn = page.locator('button[aria-label="Expand AI panel"]');
+    await expect(dynamicAiBtn).toBeVisible();
+
+    // 3. Click dynamic AI icon to reopen AI panel
+    await dynamicAiBtn.click();
+    await expect(aiPanel).toBeVisible();
+
+    // 4. Dynamic AI icon must disappear from Central header
+    await expect(dynamicAiBtn).toBeHidden();
+
+    // 5. Test collapse via AI panel header button
+    const collapseButton = page.locator('button[aria-label="Collapse AI panel"]');
+    await collapseButton.click();
+    await expect(aiPanel).toBeHidden();
+
+    // 6. Re-open via keyboard shortcut (Ctrl+J / ⌘J)
     await page.keyboard.press('Control+j');
     await expect(aiPanel).toBeVisible();
+  });
+
+  test('verifies animated search bar expansion and live filtering', async ({ page }) => {
+    const searchInput = page.locator('input[placeholder*="Search SOS"]');
+
+    // Initially search trigger button is visible
+    const searchToggle = page.locator('button[title*="Search or Jump to"]');
+    await searchToggle.click();
+    await expect(searchInput).toBeVisible();
+
+    // Type query
+    await searchInput.fill('Kandel');
+    const popoverItem = page.locator('[data-testid="search-popover"]').getByText('Kandel_Principles_Ch12.pdf');
+    await expect(popoverItem).toBeVisible();
+
+    // Click item to navigate
+    await popoverItem.click();
+    await expect(page).toHaveURL(/\/learning/);
+  });
+
+  test('verifies unread indicator dots on header icons are clean by default', async ({ page }) => {
+    // Both Messages and Bell should NOT have unread badge by default
+    const unreadDots = page.locator('[data-testid="global-header"] span.bg-\\[\\#F4F4F5\\]');
+    await expect(unreadDots).toHaveCount(0);
   });
 
   test('verifies local Guest Workspace initialization and resumption', async ({ page }) => {

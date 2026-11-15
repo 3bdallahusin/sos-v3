@@ -50,10 +50,12 @@ export const LeftRail: React.FC = () => {
       >
         {railExpanded ? (
           <div className="flex items-center justify-between w-full px-1">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-[8px] bg-[#141417] border border-[#27272A] flex items-center justify-center">
-                <BookOpen className="w-4 h-4 text-[#F4F4F5]" />
-              </div>
+            <div className="flex items-center gap-2.5">
+              <img
+                src="/logo-v3.jpg"
+                alt="SOS Logo v3"
+                className="w-7 h-7 rounded-[8px] object-cover border border-[#27272A] shadow-sm"
+              />
               <span className="font-semibold text-xs tracking-wider uppercase text-[#F4F4F5] truncate">
                 SOS v3
               </span>

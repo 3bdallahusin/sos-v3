@@ -5,6 +5,8 @@ import { getShellPreference, setShellPreference } from '@sos/persistence';
 interface ShellStoreState {
   railExpanded: boolean;
   aiPanelOpen: boolean;
+  hasUnreadMessages: boolean;
+  hasUnreadNotifications: boolean;
   workspace: GuestWorkspace | null;
   isInitializing: boolean;
   activeDestination: NavigationDestination;
@@ -13,6 +15,8 @@ interface ShellStoreState {
   setRailExpanded: (expanded: boolean) => void;
   toggleAiPanel: () => void;
   setAiPanelOpen: (open: boolean) => void;
+  setHasUnreadMessages: (hasUnread: boolean) => void;
+  setHasUnreadNotifications: (hasUnread: boolean) => void;
   setWorkspace: (workspace: GuestWorkspace | null) => void;
   setIsInitializing: (isInit: boolean) => void;
   setActiveDestination: (dest: NavigationDestination) => void;
@@ -22,6 +26,8 @@ interface ShellStoreState {
 export const useShellStore = create<ShellStoreState>((set, get) => ({
   railExpanded: false,
   aiPanelOpen: true,
+  hasUnreadMessages: false,
+  hasUnreadNotifications: false,
   workspace: null,
   isInitializing: true,
   activeDestination: 'home',
@@ -47,6 +53,9 @@ export const useShellStore = create<ShellStoreState>((set, get) => ({
     set({ aiPanelOpen: open });
     setShellPreference('shell:aiPanelOpen', open);
   },
+
+  setHasUnreadMessages: (hasUnreadMessages) => set({ hasUnreadMessages }),
+  setHasUnreadNotifications: (hasUnreadNotifications) => set({ hasUnreadNotifications }),
 
   setWorkspace: (workspace) => set({ workspace }),
   setIsInitializing: (isInitializing) => set({ isInitializing }),
