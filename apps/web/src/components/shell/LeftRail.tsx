@@ -46,15 +46,15 @@ export const LeftRail: React.FC = () => {
       {/* 1. Top Collapse/Expand Toggle Header (Exact 48px height matching Central Workspace & AI Panel) */}
       <div
         data-testid="left-rail-header"
-        className="h-12 w-full border-b border-[#1F1F23] flex items-center justify-center shrink-0 bg-[#09090B] px-2"
+        className="h-12 w-full border-b border-[#1F1F23] flex items-center justify-center shrink-0 bg-[#09090B]"
       >
         {railExpanded ? (
-          <div className="flex items-center justify-between w-full px-2.5">
+          <div className="flex items-center justify-between w-full pl-3 pr-2.5">
             <div className="flex items-center">
               <img
                 src="/logo-v3.png"
                 alt="SOS Logo v3"
-                className="h-[26px] w-auto object-contain select-none pointer-events-none"
+                className="h-[18px] w-auto object-contain select-none pointer-events-none"
               />
             </div>
             <button
