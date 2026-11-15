@@ -49,7 +49,7 @@ export const LeftRail: React.FC = () => {
         className="h-12 w-full border-b border-[#1F1F23] flex items-center justify-center shrink-0 bg-[#09090B]"
       >
         {railExpanded ? (
-          <div className="flex items-center justify-between w-full pl-3 pr-2.5">
+          <div className="flex items-center justify-between w-full pl-[21px] pr-2.5">
             <div className="flex items-center">
               <img
                 src="/logo-v3.png"
