@@ -16,6 +16,14 @@ async function main() {
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);
 
+  process.on('unhandledRejection', (reason) => {
+    server.log.error({ reason }, 'Unhandled Promise Rejection detected in API process');
+  });
+
+  process.on('uncaughtException', (err) => {
+    server.log.error({ err }, 'Uncaught Exception in API process');
+  });
+
   try {
     await server.listen({
       port: config.API_PORT,

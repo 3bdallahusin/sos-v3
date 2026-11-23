@@ -34,7 +34,23 @@ pnpm-debug.log*
 Thumbs.db
 desktop.ini
 
-# Scratch and POC artifacts
+# Scratch, POC, and test artifacts
 scratch/
 logs/
 .pids/
+screenshots/
+e2e/screenshots/
+
+# Runtime Uploads & Temporary Storage
+uploads/learning/
+uploads/library/covers/
+
+# Test Proofs & Verification Screenshots
+board_tab_check.png
+home-ai-fullscreen.png
+home-center-fullscreen.png
+jpg_o_mark.png
+playwright_*_proof.png
+playwright_toolbar_perfection_*.png
+playwright_verification_state.png
+apps/web/test_playwright_verification.mjs

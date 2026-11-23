@@ -26,7 +26,7 @@ export const DailyEssayCard: React.FC<DailyEssayCardProps> = ({
           onClick?.();
         }
       }}
-      className="w-full bg-[#111114] border border-[#1F1F23] hover:border-[#2E2E33] rounded-2xl px-6 py-3.5 md:px-7 md:py-3.5 shadow-sm flex flex-col cursor-pointer transition-all duration-200 group focus:outline-none focus:ring-1 focus:ring-[#3F3F46]"
+      className="w-full bg-[#111114] border border-[#1F1F23] hover:border-[#2E2E33] rounded-2xl px-6 py-3.5 md:px-7 md:py-3.5 shadow-sm flex flex-col cursor-pointer transition-colors duration-140 ease-out group focus:outline-none focus:ring-1 focus:ring-[#3F3F46]"
     >
       <div className="flex items-center justify-between mb-1.5">
         <span className="text-[10px] text-[#71717A] font-mono uppercase tracking-[0.12em]">

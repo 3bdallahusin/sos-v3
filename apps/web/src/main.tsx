@@ -4,6 +4,10 @@ import { RouterProvider } from '@tanstack/react-router';
 import { router } from './router.js';
 import { useShellStore } from './stores/shell-store.js';
 import { initializeOrResumeGuestWorkspace } from '@sos/persistence';
+import 'katex/dist/katex.min.css';
+import '@blocknote/core/fonts/inter.css';
+import '@blocknote/mantine/style.css';
+import '@excalidraw/excalidraw/index.css';
 import './styles/globals.css';
 
 const AppRoot: React.FC = () => {

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from '@tanstack/react-router';
 import { FileText, Video, FileCode, Layers, ArrowRight } from 'lucide-react';
 import type { RecentStudyItem, StudyAssetType } from '@sos/domain';
+import { humanizeTitle } from '../../utils/formatters.js';
 
 interface QuickResumeSectionProps {
   items: RecentStudyItem[];
@@ -54,7 +55,7 @@ export const QuickResumeSection: React.FC<QuickResumeSectionProps> = ({ items })
                   </div>
                   <div className="flex flex-col min-w-0 gap-0.5">
                     <span className="text-[#F4F4F5] font-medium truncate text-[13px] group-hover/item:text-white transition-colors">
-                      {item.title}
+                      {humanizeTitle(item.title)}
                     </span>
                     <span className="text-[11.5px] text-[#71717A] truncate font-normal">
                       {item.subtitle}
@@ -62,7 +63,7 @@ export const QuickResumeSection: React.FC<QuickResumeSectionProps> = ({ items })
                   </div>
                 </div>
                 <div className="flex items-center shrink-0 ml-3">
-                  <ArrowRight className="w-3.5 h-3.5 text-[#52525B] group-hover/item:text-[#F4F4F5] group-hover/item:translate-x-0.5 transition-all" />
+                  <ArrowRight className="w-3.5 h-3.5 text-[#52525B] group-hover/item:text-[#F4F4F5] transition-colors duration-140 ease-out" />
                 </div>
               </Link>
             );

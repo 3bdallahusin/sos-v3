@@ -8,7 +8,10 @@ import {
   RecentStudyItemSchema,
   DailyStudyGoalSchema,
   LibraryDocumentSchema,
-  LibraryFolderSchema
+  LibraryFolderSchema,
+  UserProfileSchema,
+  AggregatedStudyStatsSchema,
+  PreMigrationSnapshotSchema
 } from '../src/index.js';
 
 describe('Shared Contracts (Phase 01 & Phase 02)', () => {
@@ -123,5 +126,86 @@ describe('Shared Contracts (Phase 01 & Phase 02)', () => {
       updatedAt: new Date().toISOString()
     };
     expect(LibraryFolderSchema.safeParse(validFolder).success).toBe(true);
+  });
+
+  it('validates Phase 08 UserProfileSchema, AggregatedStudyStatsSchema, and PreMigrationSnapshotSchema', () => {
+    const validProfile = {
+      id: 'scholar-1',
+      name: 'Abdalla Husin',
+      handle: '@abdalla7usin',
+      isAuthenticated: true,
+      institution: 'Stanford Online',
+      learningFocus: 'Computer Science',
+      joinedDate: 'November 2026'
+    };
+    expect(UserProfileSchema.safeParse(validProfile).success).toBe(true);
+
+    const validStats = {
+      tasksCompleted: 4,
+      tasksTotal: 6,
+      libraryFoldersCount: 3,
+      libraryFilesCount: 2,
+      streakDays: 7,
+      studyHours: null,
+      flashcardsReviewed: null
+    };
+    expect(AggregatedStudyStatsSchema.safeParse(validStats).success).toBe(true);
+
+    const validSnapshot = {
+      snapshotId: 'snap-123',
+      createdAt: new Date().toISOString(),
+      workspaceId: 'guest-ws',
+      taskCount: 6,
+      folderCount: 3,
+      fileCount: 2,
+      integrityHash: 'sha256_mock_hash'
+    };
+    expect(PreMigrationSnapshotSchema.safeParse(validSnapshot).success).toBe(true);
+  });
+
+  it('validates Phase 05 TrackingSessionSchema', async () => {
+    const { TrackingSessionSchema } = await import('../src/index.js');
+    const validSession = {
+      id: 'session-1',
+      title: 'Distributed Consensus & Raft Protocol',
+      mode: 'countdown',
+      status: 'completed',
+      startTime: 1700000000000,
+      endTime: 1700003000000,
+      pauseIntervals: [{ pausedAt: 1700001000000, resumedAt: 1700001200000 }],
+      durationSeconds: 2800,
+      durationMinutes: 47,
+      plannedDurationMinutes: 50,
+      folderId: 'folder-cs',
+      fileId: 'file-raft-paper',
+      subtitle: 'Computer Science • Research Paper Analysis',
+      createdAt: new Date().toISOString()
+    };
+    expect(TrackingSessionSchema.safeParse(validSession).success).toBe(true);
+
+    const invalid = { id: '', title: '', mode: 'unknown' };
+    expect(TrackingSessionSchema.safeParse(invalid).success).toBe(false);
+  });
+
+  it('validates Phase 06 CalendarEventSchema', async () => {
+    const { CalendarEventSchema } = await import('../src/index.js');
+    const validEvent = {
+      id: 'event-1',
+      title: 'Synaptic Vesicle Exocytosis Deep Dive',
+      type: 'study_block',
+      startTime: '2026-11-12T16:00:00.000Z',
+      endTime: '2026-11-12T17:30:00.000Z',
+      folderId: 'folder-neurobiology',
+      fileId: 'file-kandel-pdf',
+      resourceMeta: 'p. 42',
+      notes: 'Focus on SNARE complex mechanism',
+      completed: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    expect(CalendarEventSchema.safeParse(validEvent).success).toBe(true);
+
+    const invalid = { id: '', type: 'bad_type' };
+    expect(CalendarEventSchema.safeParse(invalid).success).toBe(false);
   });
 });

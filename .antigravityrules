@@ -1,0 +1,43 @@
+# SOS v3 Mandatory Single Source of Truth Directive
+# Read `docs/DESIGN.md`, `docs/SOS_TECHNICAL_ARCHITECTURE.md`, and `docs/SOS_PRODUCT_AND_UX_SPEC.md` before modifying any code.
+# `docs/DESIGN.md` is mandatory reading before ANY UI or frontend code changes.
+# The `Library` module is Audited & Hardened and serves as the reference architecture standard.
+# Always update these documents when completing audits or refactoring other modules.
+
+# SOS V3 Mandatory Global Design System Rules
+# Single Source of Truth: Home Page (HomePage.tsx / SOSCard.tsx) & docs/DESIGN.md
+
+All agent code generation, refactoring, and UI feature additions MUST strictly adhere to the standards below:
+
+## 1. Page Container Width & Layout Consistency
+Every page and view rendered in the central workspace MUST use the exact Home page container geometry:
+- Outer wrapper:
+  className="flex-1 overflow-y-auto custom-scrollbar px-4 py-4 md:px-8 md:py-6 flex flex-col items-center bg-[#09090B]"
+  (or import <PageContainer> from components/ui/PageContainer.js)
+- Inner container:
+  className="w-[92%] max-w-[1360px] flex flex-col gap-4"
+- NEVER use arbitrary max-widths (such as 660px, 860px, or 4xl) for top-level pages.
+
+## 2. Unified Card Colors, Surfaces & Hover Effects
+Zero discrepancies in shade, border color, or border radius are permitted:
+- Card Background: #111113 (var(--color-sos-card))
+- Card Border: 1px solid #1E1E22 (var(--color-sos-border-subtle)) — Strict Single 1px Border Rule (zero double borders or stacked rings)
+- Card Radius: 12px (rounded-[12px])
+- Card Transition: transition-all duration-150 ease-out
+- Card Hover: hover:-translate-y-[1px] hover:border-[#323238] hover:shadow-[0_4px_12px_rgba(0,0,0,0.25)] (micro-tactile elevation with soft low-opacity shadow; avoid aggressive -2px+ lift or heavy shadows)
+- Selected State: !border-[#60A5FA] bg-[#60A5FA]/10 (clean single 1px accent border)
+- Interactive Primary Cards: Use <SOSCard> with crisp cursor-tracking border spotlight (alpha ~0.18, 320px diffused falloff to transparent 70%) and interior radial sheen (alpha ~0.03).
+- Embedded Rows / Chips / Badges: bg-[#161619] border border-[#242428] rounded-lg (or rounded-md), transition-colors duration-150 ease-out.
+
+## 3. Calibrated Motion & Micro-tactile Scaling (Linear/Vercel Standard)
+All transitions must feel snappy, immediate, and responsive (150ms ease-out across transform, border-color, background-color, box-shadow, opacity):
+- Page/Card Entrance: Instant loading without slow staggered reveals or translateY jumps.
+- Micro-tactile Scaling:
+  * Media thumbnails & cover images: group-hover:scale-[1.015]
+  * Interactive buttons & logo triggers: hover:scale-[1.02] active:scale-[0.98]
+  * Activity heatmap cells: hover:scale-[1.15]
+- Modals: animate-scale-up (scale(0.985) to 1, 0.12s ease-out) with animate-fade-in backdrop (0.12s ease-out)
+- Floating Toasts: animate-fade-in-up (translate(-50%, 4px) to 0, 0.14s ease-out)
+- Ambient Pulses: Subtle opacity pulse only (opacity 1.0 to 0.65) where functionally required (active focus timer).
+
+Never introduce purple/violet gradients, glowing card borders, or arbitrary saturated accents. Stick strictly to the Obsidian Dark palette.

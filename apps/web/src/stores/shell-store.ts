@@ -67,7 +67,7 @@ interface ShellStoreState {
 
 export const useShellStore = create<ShellStoreState>((set, get) => ({
   railExpanded: false,
-  aiPanelOpen: true,
+  aiPanelOpen: false,
   isAiPanelFullscreen: false,
   hasUnreadMessages: false,
   hasUnreadNotifications: false,
@@ -183,9 +183,10 @@ export const useShellStore = create<ShellStoreState>((set, get) => ({
   setIsDragging: (isDragging: boolean) => set({ isDragging }),
 
   loadInitialPreferences: async () => {
+    const isLearning = typeof window !== 'undefined' && window.location.pathname.startsWith('/learning');
     const [savedRail, savedAi, savedLeftWidth, savedRightWidth] = await Promise.all([
       getShellPreference('shell:railExpanded', false),
-      getShellPreference('shell:aiPanelOpen', true),
+      getShellPreference('shell:aiPanelOpen', false),
       getShellPreference('shell:leftRailWidth', get().leftRailWidth),
       getShellPreference('shell:rightAiPanelWidth', get().rightAiPanelWidth)
     ]);
@@ -193,7 +194,7 @@ export const useShellStore = create<ShellStoreState>((set, get) => ({
     const validRight = Number(savedRightWidth);
     set({
       railExpanded: Boolean(savedRail),
-      aiPanelOpen: Boolean(savedAi),
+      aiPanelOpen: isLearning ? Boolean(savedAi) : false,
       leftRailWidth:
         !isNaN(validLeft) && validLeft >= MIN_LEFT_RAIL_WIDTH
           ? validLeft

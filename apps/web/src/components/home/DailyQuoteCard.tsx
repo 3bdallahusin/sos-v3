@@ -1,4 +1,5 @@
 import React from 'react';
+import { SOSCard } from '../ui/SOSCard.js';
 
 interface DailyQuoteCardProps {
   quote?: string;
@@ -10,32 +11,23 @@ export const DailyQuoteCard: React.FC<DailyQuoteCardProps> = ({
   author = 'Aristotle'
 }) => {
   return (
-    <div
+    <SOSCard
       data-testid="daily-quote-card"
-      className="w-full bg-[#111114] border border-[#1F1F23] hover:border-[#27272A] rounded-2xl px-6 py-3.5 md:px-7 md:py-3.5 shadow-sm flex flex-col justify-between transition-colors"
+      className="h-[112px] px-8 py-4"
+      innerClassName="w-full h-full flex flex-col items-center justify-center text-center"
     >
-      <div className="flex items-center justify-between mb-1.5">
-        <span className="text-[10px] text-[#71717A] font-mono uppercase tracking-[0.12em]">
-          DAILY QUOTE
-        </span>
-      </div>
-
-      {/* Spacious, Elegant Serif Quote */}
-      <blockquote className="my-1">
-        <p
-          className="text-[17px] md:text-[18.5px] text-[#F4F4F5] italic font-serif leading-[1.4] tracking-[-0.01em] m-0"
-          style={{ fontFamily: "'Newsreader', Georgia, serif" }}
-        >
-          {quote}
-        </p>
-      </blockquote>
-
-      {/* Clean Attribution Row: — Aristotle */}
-      <div className="flex items-center pt-1.5 mt-0.5 text-xs">
-        <span className="text-[12.5px] font-medium text-[#71717A] tracking-tight">
-          — {author}
-        </span>
-      </div>
-    </div>
+      <span className="text-[10px] text-[#A1A1AA] font-mono uppercase tracking-[0.1em] mb-1 text-center">
+        DAILY QUOTE
+      </span>
+      <p
+        className="w-full text-[17px] font-semibold leading-snug text-[#EDEDED] italic font-serif tracking-[-0.015em] m-0 text-center"
+        style={{ fontFamily: "'Newsreader', Georgia, serif" }}
+      >
+        {quote}
+      </p>
+      <span className="text-[12px] text-[#A1A1AA] mt-1 tracking-tight font-medium text-center">
+        — {author}
+      </span>
+    </SOSCard>
   );
 };

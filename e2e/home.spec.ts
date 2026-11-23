@@ -1,148 +1,106 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('SOS V3 Phase 02: Home Dashboard', () => {
+test.describe('SOS V3: Home Dashboard (Pitch-Black OLED 50/50 Layout)', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('[data-testid="home-page"]')).toBeVisible();
   });
 
-  test('verifies complete Home dashboard layout, dynamic greeting and date, and absence of bottom status bar', async ({ page }) => {
-    // 1. Dynamic Greeting Header (Generic fallback for guest, dynamic time of day)
-    const greetingHeader = page.locator('[data-testid="greeting-header"]');
-    await expect(greetingHeader).toBeVisible();
-    await expect(greetingHeader.locator('[data-testid="greeting-heading"]')).toHaveText(/Good (morning|afternoon|evening)/);
+  test('verifies OLED layout, greeting, semester calculator, live clock, and absence of Today Tasks', async ({ page }) => {
+    // 1. Hero Greeting Card
+    const greetingCard = page.locator('[data-testid="hero-greeting-card"]');
+    await expect(greetingCard).toBeVisible();
+    await expect(greetingCard.locator('[data-testid="greeting-heading"]')).toHaveText(/Good (Morning|Afternoon|Evening)/);
+    await expect(greetingCard.locator('[data-testid="semester-days-badge"]')).toContainText('days left');
+    await expect(greetingCard.locator('[data-testid="semester-percent-badge"]')).toContainText('%');
 
-    // Dynamic date in local timezone
-    const expectedDate = new Intl.DateTimeFormat(undefined, {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    }).format(new Date());
-    await expect(greetingHeader.locator('[data-testid="greeting-date"]')).toHaveText(expectedDate);
+    // 2. Hero Clock Card (Analog + Live Digital + European Date)
+    const clockCard = page.locator('[data-testid="hero-clock-card"]');
+    await expect(clockCard).toBeVisible();
+    await expect(clockCard.locator('[data-testid="analog-clock-svg"]')).toBeVisible();
+    await expect(clockCard.locator('[data-testid="digital-time-readout"]')).toBeVisible();
+    await expect(clockCard.locator('[data-testid="european-date"]')).toBeVisible();
 
-    // 2. Horizon Bar
-    const horizonBar = page.locator('[data-testid="horizon-bar"]');
-    await expect(horizonBar).toBeVisible();
-    await expect(horizonBar).toContainText('Fall Semester 2026');
-    await expect(horizonBar).toContainText('48 days left');
-    await expect(horizonBar).toContainText('50%');
-
-    // 3. Editorial Stack: Daily Quote & Daily Essay
+    // 3. Editorial Stack: Daily Quote & Daily Article (112px height each)
     const quoteCard = page.locator('[data-testid="daily-quote-card"]');
     await expect(quoteCard).toBeVisible();
     await expect(quoteCard).toContainText('DAILY QUOTE');
-    await expect(quoteCard).toContainText('We are what we repeatedly do');
-    await expect(quoteCard).toContainText('Aristotle');
 
-    const essayCard = page.locator('[data-testid="daily-essay-card"]');
-    await expect(essayCard).toBeVisible();
-    await expect(essayCard).toContainText('DAILY ESSAY');
-    await expect(essayCard).toContainText('3 MIN READ');
-    await expect(essayCard).toContainText('On the Architecture of Deep Memory & Forgetting');
+    const articleCard = page.locator('[data-testid="daily-article-card"]');
+    await expect(articleCard).toBeVisible();
+    await expect(articleCard).toContainText('DAILY ARTICLE');
 
-    // 4. 50/50 Grid: Quick Resume (Left) and Tasks (Right)
-    const quickResume = page.locator('[data-testid="quick-resume-section"]');
-    await expect(quickResume).toBeVisible();
-    await expect(quickResume).toContainText('CONTINUE WHERE YOU LEFT OFF');
-    await expect(quickResume.locator('[data-testid="resume-item-kandel-pdf"]')).toBeVisible();
-    await expect(quickResume.locator('[data-testid="resume-item-stanford-video"]')).toBeVisible();
-    await expect(quickResume.locator('[data-testid="resume-item-plasticity-notes"]')).toBeVisible();
-    await expect(quickResume.locator('[data-testid="resume-item-snare-flashcards"]')).toBeVisible();
+    // 4. Symmetrical 50/50 2-Column Grid: Flashcards (Left) & Continue Learning (Right)
+    const flashcardsSection = page.locator('[data-testid="flashcards-section"]');
+    await expect(flashcardsSection).toBeVisible();
+    await expect(flashcardsSection).toContainText('FLASHCARDS');
+    await expect(page.locator('[data-testid="deck-row-deck-snare"]')).toBeVisible();
 
-    const tasksSection = page.locator('[data-testid="tasks-section"]');
-    await expect(tasksSection).toBeVisible();
-    await expect(tasksSection).toContainText("TODAY'S TASKS");
-    await expect(page.locator('[data-testid="tasks-counter"]')).toContainText('1 / 4');
+    const continueLearning = page.locator('[data-testid="continue-learning-section"]');
+    await expect(continueLearning).toBeVisible();
+    await expect(continueLearning).toContainText('CONTINUE LEARNING');
+    await expect(page.locator('[data-testid="continue-item-kandel-pdf"]')).toBeVisible();
 
-    // 5. Verify Complete Removal of Bottom Status Footer
+    // 5. Verify LeftRail Home navigation item is present and active
+    const homeNavItem = page.locator('[data-testid="nav-item-home"]');
+    await expect(homeNavItem).toBeVisible();
+    await expect(homeNavItem).toHaveAttribute('data-active', 'true');
+
+    // 6. Verify Complete Absence of Today's Tasks on Home
+    await expect(page.locator('[data-testid="tasks-section"]')).toHaveCount(0);
+    await expect(page.getByText("TODAY'S TASKS")).toHaveCount(0);
+
+    // 7. Verify Complete Absence of Legacy Scratchpad / Quick Capture on Home
     await expect(page.locator('[data-testid="open-quick-capture-btn"]')).toHaveCount(0);
     await expect(page.getByText('Quick Scratchpad Note')).toHaveCount(0);
     await expect(page.getByText('SOS Local Persistence')).toHaveCount(0);
-    await expect(page.getByText('Dexie v2')).toHaveCount(0);
   });
 
-  test('interactively adds, completes, and deletes tasks with persistence', async ({ page }) => {
-    // Check initial counter
-    const counter = page.locator('[data-testid="tasks-counter"]');
-    await expect(counter).toContainText('1 / 4');
+  test('clicking flashcard deck navigates to learning workspace with deck context', async ({ page }) => {
+    const snareDeckRow = page.locator('[data-testid="deck-row-deck-snare"]');
+    await expect(snareDeckRow).toBeVisible();
+    await snareDeckRow.click();
 
-    // Add a new task
-    const input = page.locator('[data-testid="add-task-input"]');
-    await input.fill('Master Synaptic Plasticity Mechanisms');
-    await input.press('Enter');
+    // Should navigate to /learning?deckId=deck-snare&mode=recall
+    await expect(page).toHaveURL(/\/learning/);
+    await expect(page.locator('[data-testid="learning-tab-bar"]')).toBeVisible();
 
-    // Verify task is added
-    const newTaskRow = page.locator('[data-testid="tasks-list"]').getByText('Master Synaptic Plasticity Mechanisms');
-    await expect(newTaskRow).toBeVisible();
-    await expect(counter).toContainText('1 / 5');
-
-    // Toggle completion on the new task
-    const lastCheckbox = page.locator('[data-testid^="task-checkbox-"]').last();
-    await lastCheckbox.click();
-    await expect(counter).toContainText('2 / 5');
-
-    // Allow Dexie transaction to commit before page reload
-    await page.waitForTimeout(300);
-
-    // Reload the page to verify local Dexie persistence
-    await page.reload();
+    // Return to home via LeftRail Home icon
+    await page.locator('[data-testid="nav-item-home"]').click();
     await expect(page.locator('[data-testid="home-page"]')).toBeVisible();
-    await expect(page.locator('[data-testid="tasks-counter"]')).toContainText('2 / 5');
-    await expect(page.locator('[data-testid="tasks-list"]').getByText('Master Synaptic Plasticity Mechanisms')).toBeVisible();
-
-    // Delete the task
-    const addedTaskRow = page.locator('[data-testid^="task-row-"]').last();
-    await addedTaskRow.hover();
-    const deleteBtn = addedTaskRow.locator('[data-testid^="task-delete-"]');
-    await deleteBtn.click();
-
-    // Verify task is removed and counter drops back to 1 / 4
-    await expect(counter).toContainText('1 / 4');
   });
 
-  test('swaps corner-bracket fullscreen icons dynamically on CentralWorkspace and RightAiPanel', async ({ page }) => {
-    // 1. Central Workspace Fullscreen Toggle
-    const centerFsBtn = page.locator('button[aria-label="Toggle Workspace Fullscreen"]');
-    await expect(centerFsBtn).toBeVisible();
-
-    // In default state (AI panel open), outward corner brackets are rendered
-    await centerFsBtn.click(); // Collapses AI panel into fullscreen focus mode
-    await page.waitForTimeout(400);
-    await page.screenshot({ path: 'home-center-fullscreen.png' });
-
-    // AI panel is now closed, central workspace is in Fullscreen Focus Mode
-    // The button title now says "Exit Fullscreen Focus Mode"
-    await expect(centerFsBtn).toHaveAttribute('title', /Exit Fullscreen Focus Mode/);
-
-    // Click again to exit fullscreen
-    await centerFsBtn.click();
-    await page.waitForTimeout(400);
-    await expect(centerFsBtn).toHaveAttribute('title', /Focus Mode/);
-
-    // 2. Right AI Panel Fullscreen Toggle
-    const aiFsBtn = page.locator('button[aria-label="Fullscreen AI panel"]');
-    await expect(aiFsBtn).toBeVisible();
-
-    // Click to enter AI Panel Fullscreen
-    await aiFsBtn.click();
-    await page.waitForTimeout(400);
-    await page.screenshot({ path: 'home-ai-fullscreen.png' });
-    const exitAiFsBtn = page.locator('button[aria-label="Exit AI panel fullscreen"]');
-    await expect(exitAiFsBtn).toBeVisible();
-
-    // Click again to restore default width
-    await exitAiFsBtn.click();
-    await page.waitForTimeout(400);
-    await expect(page.locator('button[aria-label="Fullscreen AI panel"]')).toBeVisible();
-  });
-
-  test('navigates to learning view when clicking a resume item', async ({ page }) => {
-    const kandelItem = page.locator('[data-testid="resume-item-kandel-pdf"]');
+  test('clicking continue learning item navigates to learning workspace and touches timestamp', async ({ page }) => {
+    const kandelItem = page.locator('[data-testid="continue-item-kandel-pdf"]');
+    await expect(kandelItem).toBeVisible();
     await kandelItem.click();
 
-    // Router should transition to /learning?assetId=kandel-pdf
+    // Should navigate to /learning?assetId=kandel-pdf
     await expect(page).toHaveURL(/\/learning/);
-    await expect(page.locator('[data-testid="app-shell"]')).toBeVisible();
+    await expect(page.locator('[data-testid="learning-tab-bar"]')).toBeVisible();
+
+    // Return to home via LeftRail Home icon
+    await page.locator('[data-testid="nav-item-home"]').click();
+    await expect(page.locator('[data-testid="home-page"]')).toBeVisible();
+  });
+
+  test('deleting item from continue learning shows undo toast and can be undone', async ({ page }) => {
+    const firstRow = page.locator('[data-testid^="continue-item-"]').first();
+    await expect(firstRow).toBeVisible();
+    await firstRow.hover();
+
+    const deleteBtn = firstRow.locator('[data-testid^="delete-recent-"]');
+    await expect(deleteBtn).toBeVisible();
+    await deleteBtn.click();
+
+    // Undo toast should appear
+    const undoToast = page.locator('[data-testid="undo-toast"]');
+    await expect(undoToast).toBeVisible();
+
+    // Click undo
+    const undoBtn = page.locator('[data-testid="undo-toast-button"]');
+    await undoBtn.click();
+
+    await expect(undoToast).not.toBeVisible();
   });
 });

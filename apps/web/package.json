@@ -5,11 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "typecheck": "tsc -b",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "@ai-sdk/react": "4.0.177",
+    "@blocknote/core": "0.57.0",
+    "@blocknote/mantine": "0.57.0",
+    "@blocknote/react": "0.57.0",
+    "@excalidraw/excalidraw": "^0.18.1",
+    "@mantine/core": "^9.0.2",
+    "@mantine/hooks": "^9.0.2",
     "@sos/canvas": "workspace:*",
     "@sos/contracts": "workspace:*",
     "@sos/domain": "workspace:*",
@@ -21,7 +28,9 @@
     "dexie": "4.4.7",
     "katex": "0.19.1",
     "konva": "10.9.1",
+    "tslib": "^2.8.1",
     "lucide-react": "1.73.0",
+    "pdf-lib": "^1.17.1",
     "pdfjs-dist": "6.5.438",
     "react": "19.3.1",
     "react-dom": "19.3.1",

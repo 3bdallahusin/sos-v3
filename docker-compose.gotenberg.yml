@@ -1,0 +1,27 @@
+# SOS (Studying Operating System) — Gotenberg Conversion Service
+# Production Docker Compose for headless LibreOffice document conversions (DOCX, PPTX -> PDF)
+
+services:
+  gotenberg:
+    image: gotenberg/gotenberg:8.17.0
+    container_name: sos-gotenberg
+    restart: unless-stopped
+    ports:
+      # Port 3002 on host mapped to 3000 in container to avoid host port collisions
+      - "3002:3000"
+    environment:
+      - LOG_LEVEL=info
+      - LIBREOFFICE_AUTO_START=true
+      - API_TIMEOUT=60s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - sos-network
+
+networks:
+  sos-network:
+    driver: bridge

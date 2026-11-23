@@ -7,6 +7,9 @@ import { fileURLToPath } from 'node:url';
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  define: {
+    'process.env.IS_PREACT': JSON.stringify('false')
+  },
   plugins: [
     tailwindcss(),
     react()
@@ -16,11 +19,23 @@ export default defineConfig({
       '@sos/domain': path.resolve(currentDir, '../../packages/domain/src/index.ts'),
       '@sos/contracts': path.resolve(currentDir, '../../packages/contracts/src/index.ts'),
       '@sos/persistence': path.resolve(currentDir, '../../packages/persistence/src/index.ts'),
+      '@sos/editor': path.resolve(currentDir, '../../packages/editor/src/index.ts'),
       '@sos/ui': path.resolve(currentDir, '../../packages/ui/src/index.ts')
     }
   },
   server: {
     port: 5173,
-    host: 'localhost'
+    strictPort: true,
+    host: 'localhost',
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:3001',
+        changeOrigin: true
+      },
+      '/uploads': {
+        target: 'http://127.0.0.1:3001',
+        changeOrigin: true
+      }
+    }
   }
 });

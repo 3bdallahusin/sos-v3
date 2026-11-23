@@ -6,7 +6,6 @@ import {
   Bell,
   MessageCircle
 } from 'lucide-react';
-import { CornerExpandIcon, CornerCollapseIcon } from './CornerIcons.js';
 import { useShellStore } from '../../stores/shell-store.js';
 import { useTrackingStore } from '../../stores/tracking-store.js';
 import { useLibraryStore } from '../../stores/library-store.js';
@@ -342,45 +341,30 @@ export const CentralWorkspace: React.FC<CentralWorkspaceProps> = ({ children }) 
             )}
           </button>
 
-          {/* 4. Full Screen Icon Button (Collapses AI panel into Fullscreen Focus Mode) */}
-          <button
-            type="button"
-            onClick={toggleAiPanel}
-            className="w-8 h-8 rounded-[10px] flex items-center justify-center text-[#A1A1AA] hover:text-[#F4F4F5] hover:bg-white/5 active:scale-90 transition-all"
-            title={!aiPanelOpen ? "Exit Fullscreen Focus Mode (⌘J)" : "Focus Mode / Hide AI Panel (⌘J)"}
-            aria-label="Toggle Workspace Fullscreen"
-          >
-            {!aiPanelOpen ? (
-              <CornerCollapseIcon className="w-3.5 h-3.5" />
-            ) : (
-              <CornerExpandIcon className="w-3.5 h-3.5" />
-            )}
-          </button>
-
-          {/* 5. Standard Global Tracking Timer Pill (Controlled by Tracking module, hidden when idle) */}
-          {timerStatus !== 'idle' && (
+          {/* 4. Global Top Bar Timer Pill: Render ONLY when running or paused */}
+          {(timerStatus === 'running' || timerStatus === 'paused') && (
             <button
               type="button"
-              data-testid="header-timer-mirror"
+              data-testid="header-timer-pill"
               title="Active Focus Timer (Click to view Tracking)"
               onClick={() => navigate({ to: '/tracking' })}
               className="h-8 px-2.5 rounded-full bg-[#141417] border border-[#27272A] flex items-center gap-1.5 text-xs shadow-sm cursor-pointer hover:border-[#3F3F46] hover:bg-[#1A1A1E] transition-all"
             >
               <span
                 className={`w-2 h-2 rounded-full ${
-                  timerStatus === 'running' || timerStatus === 'break_running'
-                    ? 'bg-[#F97316] animate-pulse'
-                    : 'bg-[#71717A]'
+                  timerStatus === 'running'
+                    ? 'bg-[#60A5FA] animate-pulse'
+                    : 'bg-white'
                 }`}
               />
-              <span className="font-mono text-[#F4F4F5] tabular-nums text-xs">
+              <span className="font-mono text-[#F4F4F5] tabular-nums text-xs font-medium">
                 {formatTimerDigits(activeTimerSeconds)}
               </span>
             </button>
           )}
 
-          {/* 6. Dynamic AI Toggle Icon (Only rendered when AI Panel is collapsed) */}
-          {!aiPanelOpen && (
+          {/* 5. Dynamic AI Toggle Icon (Only rendered when AI Panel is collapsed AND strictly on /learning) */}
+          {currentPath === '/learning' && !aiPanelOpen && (
             <button
               type="button"
               onClick={toggleAiPanel}

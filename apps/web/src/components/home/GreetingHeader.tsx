@@ -36,7 +36,7 @@ export const GreetingHeader: React.FC<GreetingHeaderProps> = ({
   return (
     <div
       data-testid="greeting-header"
-      className="w-full flex flex-col items-center text-center mb-3.5 select-none"
+      className="w-full flex flex-col items-center text-center mb-3.5"
     >
       <h1
         data-testid="greeting-heading"

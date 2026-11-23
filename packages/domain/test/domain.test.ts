@@ -7,14 +7,13 @@ import {
 } from '../src/index.js';
 
 describe('Domain Models & Constants (Phase 01)', () => {
-  it('defines the approved eight navigation destinations in the exact order', () => {
+  it('defines the approved seven navigation destinations in the exact order', () => {
     expect(NAVIGATION_DESTINATIONS).toEqual([
       'home',
       'library',
       'learning',
       'tracking',
       'calendar',
-      'community',
       'profile',
       'settings'
     ]);

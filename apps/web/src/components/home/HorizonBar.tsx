@@ -87,7 +87,7 @@ export const HorizonBar: React.FC<HorizonBarProps> = ({
         aria-valuemax={100}
       >
         <div
-          className="h-full bg-[#E4E4E7] rounded-full transition-all duration-500 ease-out"
+          className="h-full bg-[#E4E4E7] rounded-full transition-all duration-150 ease-out"
           style={{ width: `${hasActiveHorizon ? Math.min(100, Math.max(0, percentage)) : 0}%` }}
         />
       </div>

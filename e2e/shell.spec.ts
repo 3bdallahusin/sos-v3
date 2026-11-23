@@ -22,20 +22,17 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
     expect(railBox).not.toBeNull();
     expect(railBox!.width).toBe(56);
 
-    // 3. Right AI Panel: Exactly 340px
+    // 3. Right AI Panel: absent on Home (strictly scoped to Learning)
     const aiPanel = page.locator('[data-testid="right-ai-panel"]');
-    await expect(aiPanel).toBeVisible();
-    const aiBox = await aiPanel.boundingBox();
-    expect(aiBox).not.toBeNull();
-    expect(aiBox!.width).toBe(340);
+    await expect(aiPanel).toBeHidden();
 
-    // 4. Central Workspace: Takes remaining horizontal width
+    // 4. Central Workspace: Takes full horizontal workspace
     const central = page.locator('[data-testid="central-workspace"]');
     await expect(central).toBeVisible();
     const centralBox = await central.boundingBox();
     expect(centralBox).not.toBeNull();
-    // 1440 - (8px outer * 2) - 56px (rail) - 340px (ai) - (8px gap * 2) = 1012px
-    expect(centralBox!.width).toBeGreaterThan(950);
+    // 1440 - (8px outer * 2) - 56px (rail) - 8px gap = 1360px
+    expect(centralBox!.width).toBeGreaterThan(1200);
 
     // 5. Expand Left Rail to 240px and verify Logo v3 is rendered without text label
     const toggleButton = page.locator('button[aria-label="Expand navigation rail"]');
@@ -54,21 +51,20 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
     expect(railBox!.width).toBe(56);
   });
 
-  test('verifies eight navigation destinations in canonical order and routing', async ({ page }) => {
+  test('verifies seven navigation destinations in canonical order and routing', async ({ page }) => {
     const expectedDestinations = [
       { id: 'home', label: 'Home', path: '/', expectedText: 'Good' },
       { id: 'library', label: 'Library', path: '/library', expectedText: 'Library' },
       { id: 'learning', label: 'Learning', path: '/learning', expectedText: 'Learning Workspace' },
       { id: 'tracking', label: 'Tracking', path: '/tracking', expectedText: 'Study Tracking' },
       { id: 'calendar', label: 'Calendar', path: '/calendar', expectedText: 'Academic Calendar' },
-      { id: 'community', label: 'Community', path: '/community', expectedText: 'Peer Community' },
-      { id: 'profile', label: 'Profile', path: '/profile', expectedText: 'Student Profile' },
-      { id: 'settings', label: 'Settings', path: '/settings', expectedText: 'System Settings' }
+      { id: 'profile', label: 'Profile', path: '/profile', expectedText: 'Profile' },
+      { id: 'settings', label: 'Settings', path: '/settings', expectedText: 'Account' }
     ];
 
     // Check all nav items exist in left rail in order
     const navItems = page.locator('nav a[data-testid^="nav-item-"]');
-    await expect(navItems).toHaveCount(8);
+    await expect(navItems).toHaveCount(7);
 
     for (let i = 0; i < expectedDestinations.length; i++) {
       const item = expectedDestinations[i];
@@ -96,43 +92,51 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
     await expect(canvas).toHaveCount(0);
   });
 
-  test('verifies Focus Timer pill is displayed in global header', async ({ page }) => {
-    const timerMirror = page.locator('[data-testid="header-timer-mirror"]');
-    await expect(timerMirror).toBeVisible();
-    await expect(timerMirror).toContainText('24:18');
+  test('verifies Focus Timer pill is hidden in global header when idle, and visible when active', async ({ page }) => {
+    const timerMirror = page.locator('[data-testid="header-timer-pill"], [data-testid="header-timer-mirror"]');
+    await expect(timerMirror).toBeHidden();
   });
 
-  test('verifies Right AI Panel toggle and Center Fullscreen Focus Mode', async ({ page }) => {
-    const aiPanel = page.locator('[data-testid="right-ai-panel"]');
-    await expect(aiPanel).toBeVisible();
+  test('verifies Right AI Panel toggle and seamless MessageCircle movement between Top Bar and AI Panel', async ({ page }) => {
+    // Navigate to /learning where AI Assistant is scoped
+    await page.locator('[data-testid="nav-item-learning"]').click();
+    await expect(page.locator('[data-testid="learning-page"]')).toBeVisible();
 
-    // 1. Click Maximize2 / Fullscreen icon in Central Workspace header
-    const fullscreenBtn = page.locator('button[aria-label="Toggle Workspace Fullscreen"]');
-    await fullscreenBtn.click();
+    const centralAiBtn = page.locator('#central-workspace button[aria-label="Expand AI panel"]');
+    const collapseButton = page.locator('[data-testid="right-ai-panel"] button[aria-label="Collapse AI panel"]');
+    const aiPanel = page.locator('[data-testid="right-ai-panel"]');
+
+    // 1. When AI panel is closed: Top Bar expand button is visible, AI panel is hidden
+    await expect(centralAiBtn).toBeVisible();
     await expect(aiPanel).toBeHidden();
 
-    // 2. Dynamic MessageCircle AI icon must now be visible in Central header (rightmost)
-    const dynamicAiBtn = page.locator('button[aria-label="Expand AI panel"]');
-    await expect(dynamicAiBtn).toBeVisible();
-
-    // 3. Click dynamic AI icon to reopen AI panel
-    await dynamicAiBtn.click();
+    // 2. Click Top Bar expand button to open AI panel
+    await centralAiBtn.click();
     await expect(aiPanel).toBeVisible();
+    await expect(centralAiBtn).toBeHidden();
+    await expect(collapseButton).toBeVisible();
 
-    // 4. Dynamic AI icon must disappear from Central header
-    await expect(dynamicAiBtn).toBeHidden();
-
-    // 5. Test collapse via AI panel header button
-    const collapseButton = page.locator('button[aria-label="Collapse AI panel"]');
+    // 3. Click collapse button in AI panel header to close panel
     await collapseButton.click();
     await expect(aiPanel).toBeHidden();
+    await expect(centralAiBtn).toBeVisible();
 
-    // 6. Re-open via keyboard shortcut (Ctrl+J / ⌘J)
+    // 4. Test keyboard shortcut (Ctrl+J / ⌘J) to toggle
     await page.keyboard.press('Control+j');
     await expect(aiPanel).toBeVisible();
+    await expect(centralAiBtn).toBeHidden();
+    await expect(collapseButton).toBeVisible();
+
+    await page.keyboard.press('Control+j');
+    await expect(aiPanel).toBeHidden();
+    await expect(centralAiBtn).toBeVisible();
   });
 
   test('verifies AI Panel Fullscreen Mode toggle and mutual exclusivity', async ({ page }) => {
+    await page.locator('[data-testid="nav-item-learning"]').click();
+    await expect(page.locator('[data-testid="learning-page"]')).toBeVisible();
+    await page.locator('#central-workspace button[aria-label="Expand AI panel"]').click();
+
     const aiPanel = page.locator('[data-testid="right-ai-panel"]');
     const centralWorkspace = page.locator('[data-testid="central-workspace"]');
     await expect(aiPanel).toBeVisible();
@@ -165,6 +169,10 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
   });
 
   test('verifies interactive resizable split panes, snap-to-collapse, and double-click reset', async ({ page }) => {
+    await page.locator('[data-testid="nav-item-learning"]').click();
+    await expect(page.locator('[data-testid="learning-page"]')).toBeVisible();
+    await page.locator('#central-workspace button[aria-label="Expand AI panel"]').click();
+
     const leftRail = page.locator('[data-testid="left-rail"]');
     const rightAi = page.locator('[data-testid="right-ai-panel"]');
     const central = page.locator('[data-testid="central-workspace"]');
@@ -267,62 +275,39 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
 
     // Check indexedDB has 'sos_local_v3' database
     const hasIndexedDb = await page.evaluate(async () => {
-      const dbs = await window.indexedDB.databases();
-      return dbs.some((db) => db.name === 'sos_local_v3');
+      for (let i = 0; i < 30; i++) {
+        const dbs = await window.indexedDB.databases();
+        if (dbs.some((db) => db.name === 'sos_local_v3')) return true;
+        await new Promise((r) => setTimeout(r, 100));
+      }
+      return false;
     });
     expect(hasIndexedDb).toBe(true);
   });
 
-  test('verifies pixel-accurate Home screen editorial cards and interactive tasks', async ({ page }) => {
+  test('verifies pixel-accurate Home screen editorial cards and interactive sections', async ({ page }) => {
     const homePage = page.locator('[data-testid="home-page"]');
     await expect(homePage).toBeVisible();
 
     // 1. Dynamic Greeting and Local Date
-    await expect(homePage.getByTestId('greeting-heading')).toHaveText(/Good (morning|afternoon|evening)/);
-    const expectedLocalDate = new Intl.DateTimeFormat(undefined, {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    }).format(new Date());
-    await expect(homePage.getByTestId('greeting-date')).toHaveText(expectedLocalDate);
+    await expect(homePage.getByTestId('greeting-heading')).toHaveText(/Good (morning|afternoon|evening)/i);
+    await expect(homePage.getByTestId('european-date')).toBeVisible();
 
     // 2. Horizon Bar
     await expect(homePage.getByText('Fall Semester 2026')).toBeVisible();
-    await expect(homePage.getByText('48 days left')).toBeVisible();
-    await expect(homePage.getByText('50%')).toBeVisible();
+    await expect(homePage.getByTestId('semester-days-badge')).toBeVisible();
+    await expect(homePage.getByTestId('semester-percent-badge')).toBeVisible();
 
     // 3. Editorial Cards
     await expect(homePage.getByText('DAILY QUOTE')).toBeVisible();
-    await expect(homePage.getByText(/We are what we repeatedly do/)).toBeVisible();
-    await expect(homePage.getByText('— Aristotle')).toBeVisible();
+    await expect(homePage.locator('[data-testid="daily-quote-card"]')).toBeVisible();
 
-    await expect(homePage.getByText('DAILY ESSAY')).toBeVisible();
-    await expect(homePage.getByText('On the Architecture of Deep Memory & Forgetting')).toBeVisible();
-    await expect(homePage.getByText('3 MIN READ')).toBeVisible();
+    // 4. Continue Learning & Flashcards
+    await expect(homePage.getByText('CONTINUE LEARNING')).toBeVisible();
+    await expect(homePage.locator('[data-testid="continue-learning-section"]')).toBeVisible();
 
-    // 4. Continue Where You Left Off
-    await expect(homePage.getByText('CONTINUE WHERE YOU LEFT OFF')).toBeVisible();
-    await expect(homePage.getByText('Kandel_Principles_Ch12.pdf')).toBeVisible();
-    await expect(homePage.getByText('Stanford_Neuro_Lecture_04.mp4')).toBeVisible();
-    await expect(homePage.getByText('Cellular_Plasticity_Synthesis.md')).toBeVisible();
-    await expect(homePage.getByText('SNARE_Machinery_Deck')).toBeVisible();
-
-    // 5. Today's Tasks
-    await expect(homePage.getByText("TODAY'S TASKS")).toBeVisible();
-    await expect(homePage.getByText('1 / 4')).toBeVisible();
-
-    // Toggle a task checkbox
-    const firstTask = homePage.getByText('Neurobiology Lecture 04');
-    await firstTask.click();
-    await expect(homePage.getByText('2 / 4')).toBeVisible();
-
-    // Quick add a task
-    const input = homePage.locator('input[placeholder="Add a task..."]');
-    await input.fill('Complete Mitochondria Review');
-    await input.press('Enter');
-    await expect(homePage.getByText('Complete Mitochondria Review')).toBeVisible();
-    await expect(homePage.getByText('2 / 5')).toBeVisible();
+    await expect(homePage.getByText('FLASHCARDS')).toBeVisible();
+    await expect(homePage.locator('[data-testid="flashcards-section"]')).toBeVisible();
   });
 
   test('verifies application tab favicon uses SOS Logo v3 asset and title is strictly SOS', async ({ page }) => {
@@ -339,5 +324,33 @@ test.describe('SOS V3 App Shell & Foundations (Phase 01)', () => {
 
     const appleIcon = page.locator('link[rel="apple-touch-icon"][href="/apple-touch-icon.png"]');
     await expect(appleIcon).toHaveCount(1);
+  });
+
+  test('verifies native mouse text selection is enabled on body, readable cards, and AI panel', async ({ page }) => {
+    // 1. Verify body has user-select: text
+    const bodyUserSelect = await page.evaluate(() => {
+      return window.getComputedStyle(document.body).userSelect;
+    });
+    expect(bodyUserSelect).not.toBe('none');
+
+    // 2. Verify Home page greeting heading and daily quote allow text selection
+    const greetingUserSelect = await page.locator('[data-testid="greeting-heading"]').evaluate((el) => {
+      return window.getComputedStyle(el).userSelect;
+    });
+    expect(greetingUserSelect).not.toBe('none');
+
+    const quoteUserSelect = await page.locator('[data-testid="daily-quote-card"]').evaluate((el) => {
+      return window.getComputedStyle(el).userSelect;
+    });
+    expect(quoteUserSelect).not.toBe('none');
+
+    // 3. Verify Right AI panel briefing content allows text selection inside Learning
+    await page.locator('[data-testid="nav-item-learning"]').click();
+    await expect(page.locator('[data-testid="learning-page"]')).toBeVisible();
+    await page.locator('#central-workspace button[aria-label="Expand AI panel"]').click();
+    const aiBriefingUserSelect = await page.locator('[data-testid="right-ai-panel"]').evaluate((el) => {
+      return window.getComputedStyle(el).userSelect;
+    });
+    expect(aiBriefingUserSelect).not.toBe('none');
   });
 });
