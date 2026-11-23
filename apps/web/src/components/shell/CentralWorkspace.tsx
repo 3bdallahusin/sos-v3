@@ -8,6 +8,10 @@ import {
 } from 'lucide-react';
 import { CornerExpandIcon, CornerCollapseIcon } from './CornerIcons.js';
 import { useShellStore } from '../../stores/shell-store.js';
+import { useTrackingStore } from '../../stores/tracking-store.js';
+import { useLibraryStore } from '../../stores/library-store.js';
+import { LearningTabBar } from '../learning/LearningTabBar.js';
+import { HeaderBreadcrumb } from './HeaderBreadcrumb.js';
 
 interface CentralWorkspaceProps {
   children: React.ReactNode;
@@ -19,7 +23,6 @@ const ROUTE_TITLES: Record<string, string> = {
   '/learning': 'Learning',
   '/tracking': 'Tracking',
   '/calendar': 'Calendar',
-  '/community': 'Community',
   '/profile': 'Profile',
   '/settings': 'Settings'
 };
@@ -39,7 +42,6 @@ const SEARCH_DATABASE: SearchResultItem[] = [
   { id: 'nav-learn', title: 'Learning', subtitle: 'Workspaces & Study Tools', category: 'Navigation', path: '/learning' },
   { id: 'nav-track', title: 'Tracking', subtitle: 'Habits & Pomodoro Activity', category: 'Navigation', path: '/tracking' },
   { id: 'nav-cal', title: 'Calendar', subtitle: 'Academic Schedule & Deadlines', category: 'Navigation', path: '/calendar' },
-  { id: 'nav-comm', title: 'Community', subtitle: 'Peer Discussions & Feed', category: 'Navigation', path: '/community' },
   { id: 'nav-prof', title: 'Profile', subtitle: 'Student Profile & Bio', category: 'Navigation', path: '/profile' },
   { id: 'nav-sett', title: 'Settings', subtitle: 'Account & Preferences', category: 'Navigation', path: '/settings' },
   // Tasks
@@ -70,6 +72,24 @@ export const CentralWorkspace: React.FC<CentralWorkspaceProps> = ({ children }) 
   const navigate = useNavigate();
   const currentPath = routerState.location.pathname;
   const currentTitle = ROUTE_TITLES[currentPath] ?? 'Home';
+  const trackingActiveView = useTrackingStore((s) => s.activeView);
+  const libraryBreadcrumbs = useLibraryStore((s) => s.breadcrumbs);
+  const libraryActiveFolderId = useLibraryStore((s) => s.activeFolderId);
+  const libraryNavigateToFolder = useLibraryStore((s) => s.navigateToFolder);
+  const libraryNavigateUp = useLibraryStore((s) => s.navigateUp);
+
+  // Tracking timer mirror state
+  const timerStatus = useTrackingStore((s) => s.status);
+  const timerMode = useTrackingStore((s) => s.mode);
+  const timerRemaining = useTrackingStore((s) => s.remainingSeconds);
+  const timerElapsed = useTrackingStore((s) => s.elapsedSeconds);
+  const activeTimerSeconds = timerMode === 'stopwatch' ? timerElapsed : timerRemaining;
+  const formatTimerDigits = (sec: number) => {
+    const safeSec = Math.max(0, sec);
+    const m = Math.floor(safeSec / 60);
+    const s = safeSec % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
 
   // Search State
   const [searchOpen, setSearchOpen] = useState(false);
@@ -167,11 +187,54 @@ export const CentralWorkspace: React.FC<CentralWorkspaceProps> = ({ children }) 
         data-testid="global-header"
         className="h-12 border-b border-[#1F1F23] flex items-center justify-between px-3 shrink-0 bg-[#0C0C0E] select-none z-20 relative"
       >
-        {/* Left: Static View Title */}
-        <div className="flex items-center flex-1 pl-4">
-          <span className="text-[13.5px] font-medium text-[#F4F4F5] tracking-tight">
-            {currentTitle}
-          </span>
+        {/* Left: Learning Browser Tabs on /learning, Tracking History Breadcrumb on /tracking history, or Static View Title elsewhere */}
+        <div className="flex items-center flex-1 min-w-0 pr-4">
+          {currentPath === '/learning' ? (
+            <LearningTabBar />
+          ) : currentPath === '/library' ? (
+            <HeaderBreadcrumb
+              onBack={libraryActiveFolderId ? () => libraryNavigateUp() : undefined}
+              backAriaLabel="Back to Parent Folder"
+              backTitle="Back to Parent Folder"
+              backTestId="library-breadcrumb-back-btn"
+              segments={[
+                {
+                  label: 'Library',
+                  onClick: () => libraryNavigateToFolder(null),
+                  testId: 'library-breadcrumb-root'
+                },
+                ...libraryBreadcrumbs.map((b, idx) => ({
+                  label: b.name,
+                  onClick: () => libraryNavigateToFolder(b._id),
+                  testId: `library-breadcrumb-segment-${idx}`
+                }))
+              ]}
+              testId="library-header-breadcrumb"
+            />
+          ) : currentPath === '/tracking' && trackingActiveView === 'history' ? (
+            <HeaderBreadcrumb
+              onBack={() => useTrackingStore.getState().setActiveView('dashboard')}
+              backAriaLabel="Back to Tracking Dashboard"
+              backTitle="Back to Tracking Dashboard"
+              backTestId="history-back-to-dashboard-btn"
+              segments={[
+                {
+                  label: 'Tracking',
+                  onClick: () => useTrackingStore.getState().setActiveView('dashboard'),
+                  testId: 'tracking-breadcrumb-parent'
+                },
+                {
+                  label: 'Session History',
+                  testId: 'tracking-breadcrumb-child'
+                }
+              ]}
+              testId="tracking-header-breadcrumb"
+            />
+          ) : (
+            <span className="text-[13.5px] font-medium text-[#F4F4F5] tracking-tight pl-4">
+              {currentTitle}
+            </span>
+          )}
         </div>
 
         {/* Right Side Global Window Controls */}
@@ -255,7 +318,6 @@ export const CentralWorkspace: React.FC<CentralWorkspaceProps> = ({ children }) 
           <button
             type="button"
             onClick={() => {
-              navigate({ to: '/community' });
               setHasUnreadMessages(false);
             }}
             className="w-8 h-8 rounded-[10px] flex items-center justify-center text-[#A1A1AA] hover:text-[#F4F4F5] hover:bg-white/5 active:scale-90 transition-all relative"
@@ -295,15 +357,27 @@ export const CentralWorkspace: React.FC<CentralWorkspaceProps> = ({ children }) 
             )}
           </button>
 
-          {/* 5. Standard Global Tracking Timer Pill (🟠 24:18) */}
-          <div
-            data-testid="header-timer-mirror"
-            title="Tracking Timer Mirror (Controlled by Tracking module)"
-            className="h-8 px-2.5 rounded-full bg-[#141417] border border-[#27272A] flex items-center gap-1.5 text-xs shadow-sm cursor-pointer hover:border-[#3F3F46] transition-colors"
-          >
-            <span className="w-2 h-2 rounded-full bg-[#F97316] animate-pulse" />
-            <span className="font-mono text-[#F4F4F5] tabular-nums text-xs">24:18</span>
-          </div>
+          {/* 5. Standard Global Tracking Timer Pill (Controlled by Tracking module, hidden when idle) */}
+          {timerStatus !== 'idle' && (
+            <button
+              type="button"
+              data-testid="header-timer-mirror"
+              title="Active Focus Timer (Click to view Tracking)"
+              onClick={() => navigate({ to: '/tracking' })}
+              className="h-8 px-2.5 rounded-full bg-[#141417] border border-[#27272A] flex items-center gap-1.5 text-xs shadow-sm cursor-pointer hover:border-[#3F3F46] hover:bg-[#1A1A1E] transition-all"
+            >
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  timerStatus === 'running' || timerStatus === 'break_running'
+                    ? 'bg-[#F97316] animate-pulse'
+                    : 'bg-[#71717A]'
+                }`}
+              />
+              <span className="font-mono text-[#F4F4F5] tabular-nums text-xs">
+                {formatTimerDigits(activeTimerSeconds)}
+              </span>
+            </button>
+          )}
 
           {/* 6. Dynamic AI Toggle Icon (Only rendered when AI Panel is collapsed) */}
           {!aiPanelOpen && (
@@ -323,7 +397,7 @@ export const CentralWorkspace: React.FC<CentralWorkspaceProps> = ({ children }) 
       {/* Central Viewport */}
       <div
         data-testid="workspace-content"
-        className="flex-1 overflow-hidden flex flex-col"
+        className="flex-1 overflow-hidden flex flex-col select-text"
       >
         {children}
       </div>
