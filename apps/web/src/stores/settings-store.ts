@@ -32,7 +32,11 @@ function getInitialSettings(): { settings: UserSettings; isHydrated: boolean } {
       const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (parsed && parsed.general?.horizonBar?.milestoneName) {
+        if (
+          parsed &&
+          parsed.general?.horizonBar?.milestoneName &&
+          parsed.general.horizonBar.milestoneName !== '2026'
+        ) {
           return { settings: parsed, isHydrated: true };
         }
       }
@@ -137,10 +141,20 @@ export const useSettingsStore = create<SettingsStoreState>((set, get) => {
             settings: {
               ...apiSettings,
               usage: state.settings.usage // keep dynamic client storage calculation
-            }
+            },
+            isLoading: false,
+            isHydrated: true
           }));
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(apiSettings));
+            } catch {}
+          }
           if (apiSettings.account) {
             await updateAccountSettings(apiSettings.account);
+          }
+          if (apiSettings.general) {
+            await updateGeneralSettings(apiSettings.general);
           }
         }
       } catch {}

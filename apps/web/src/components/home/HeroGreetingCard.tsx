@@ -36,9 +36,9 @@ export function calculateSemesterProgress(
 }
 
 export const HeroGreetingCard: React.FC<HeroGreetingCardProps> = ({
-  milestoneName = 'Fall Semester 2026',
-  startDate = '2026-09-01',
-  endDate = '2026-12-31',
+  milestoneName,
+  startDate,
+  endDate,
   isLoading = false,
   isHydrated = true
 }) => {
@@ -51,8 +51,13 @@ export const HeroGreetingCard: React.FC<HeroGreetingCardProps> = ({
   };
 
   const greeting = getGreeting();
-  const showSkeleton = isLoading || !isHydrated;
-  const { daysLeft, progressPercent } = calculateSemesterProgress(startDate, endDate);
+  // Never show default content until settings are hydrated and horizon dates are verified
+  const showSkeleton = isLoading || !isHydrated || !milestoneName || !startDate || !endDate || milestoneName === '2026';
+  const effectiveMilestone = milestoneName || 'Fall Semester 2026';
+  const { daysLeft, progressPercent } = calculateSemesterProgress(
+    startDate || '2026-09-26',
+    endDate || '2027-01-01'
+  );
 
   return (
     <SOSCard
@@ -90,7 +95,7 @@ export const HeroGreetingCard: React.FC<HeroGreetingCardProps> = ({
           <>
             <div className="flex items-center justify-between">
               <span className="text-[13px] font-medium text-[#EDEDED] tracking-tight">
-                {milestoneName}
+                {effectiveMilestone}
               </span>
               <div className="flex items-center gap-2">
                 <span

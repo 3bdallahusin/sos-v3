@@ -9,6 +9,7 @@ import {
   getLocalLibraryItems,
   saveLocalLibraryItem,
   bulkSaveLocalLibraryItems,
+  syncLocalLibraryItemsForParent,
   deleteLocalLibraryItem,
   bulkDeleteLocalLibraryItems
 } from '@sos/persistence';
@@ -208,7 +209,12 @@ function getInitialLibraryCache(): { items: LibraryItem[]; isHydrated: boolean }
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return { items: parsed, isHydrated: true };
+          const valid = parsed.filter(
+            (i) => i && (i.parentId === null || i.parentId === 'root') && i._id !== 'library-root'
+          );
+          if (valid.length > 0) {
+            return { items: valid, isHydrated: true };
+          }
         }
       }
     } catch {}
@@ -452,9 +458,7 @@ export const useLibraryStore = create<LibraryStoreState>((set, get) => {
           } catch {}
         }
 
-        if (data.items && data.items.length > 0) {
-          await bulkSaveLocalLibraryItems(data.items);
-        }
+        await syncLocalLibraryItemsForParent(activeId, data.items || []);
       } catch (err: any) {
         console.warn('Network fetch error, retaining local items:', err);
         set({ isLoading: false, isHydrated: true, error: err.message });
@@ -465,7 +469,11 @@ export const useLibraryStore = create<LibraryStoreState>((set, get) => {
       const targetId = folderId === 'root' || !folderId ? null : folderId;
       set({
         activeFolderId: targetId,
+        items: [],
         selectedId: null,
+        selectedIds: [],
+        isLoading: true,
+        isHydrated: false,
         itemContextMenu: null,
         canvasContextMenu: null
       });
